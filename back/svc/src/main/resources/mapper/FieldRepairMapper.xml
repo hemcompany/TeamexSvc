@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.teamex.svc.mapper.FieldRepairMapper">
+  
+  <!-- id : Mapper 인터페이스에 사용할 메소드명 -->
+  <!-- resultType : Response Parameter에 반환할 변수 값의 대한 내용 -->
+  <!-- parameterType : Request Parameter에 들어갈 변수 값을 저장된 내용 -->
+
+  <!-- ## List 조회용 ## -->
+  <!-- 전체 파라미터 조회 관련 게시글 -->
+  <select id="selectList" parameterType="Map" resultType="FieldRepair">
+    SELECT reportno  as id,
+           div,
+           reportno,
+           report_sts,
+           tran_date,
+           visit_dt,
+           technician,
+           (select name from mscarsms where div = #{div} and car_id = a.ev_car) as ev_car,
+           cust_cd,
+           bill_to_cust,
+           beg_ptc,
+           end_ptc,
+           beg_noc,
+           end_noc,
+           site_cd,
+           site_name,
+           address, city, state, zip, 
+           wt_ci1, wt_co1, wt_ci2, wt_co2, wt_ci3, wt_co3, wt_ci4, wt_co4, wt_ci5, wt_co5, 
+           nvl(((wt_co1 - wt_ci1) * 1440), 0) as wt1,
+           nvl(((wt_co2 - wt_ci2) * 1440), 0) as wt2,
+           nvl(((wt_co3 - wt_ci3) * 1440), 0) as wt3,
+           nvl(((wt_co4 - wt_ci4) * 1440), 0) as wt4,
+           nvl(((wt_co5 - wt_ci5) * 1440), 0) as wt5,
+           hotel_night, hotel_amt, mileage, rental_amt, others_amt, fiscal_period, 
+           fs_no, work_type, invoice_no, 
+           img1_nm, img2_nm, img3_nm, img4_nm, img5_nm, img6_nm, 
+           create_id, create_dt, update_id, update_dt, confirm_id, confirm_dt, modified, mod_yn, mod_dt, 
+           reviewd, review_yn, review_dt, email_fg,
+           (select fname || ' ' || lname from msuserms where div = #{div} and user_id = a.create_id) as prepared,
+           (select fname || ' ' || lname from msuserms where div = #{div} and user_id = a.reviewd) as approved
+      FROM sitevrhd a
+     WHERE div = #{div}
+     <if test='report_sts != null and report_sts != ""'>
+	   AND report_sts = #{report_sts}
+	 </if>
+  </select>
+  
+  <!-- mybatis에서 param1, param2 를 이용하여 삽입이 가능합니다. -->
+  <!-- 이는 mapper에서 첫번째 파라미터가 div이고, 두번째 파라미터는 reportno, 세번째가 status 입니다. -->
+  <!-- 생성 sql문  -->
+  <insert id="insertFieldRepair">
+    <!-- insert into scroll_board (title, contents) value (#{title}, #{contents}) -->
+    insert into sitevrhd (div, reportno, status) value (#{div}, #{reoortno}, #{status})
+  </insert>
+
+  <!-- 현재 내용 수정 sql문 -->
+  <update id="updateFieldRepair" parameterType="FieldRepair"> 
+      update sitevrhd
+         set report_sts=#{report_sts} ,
+             visit_dt=#{visit_dt}
+       where div=#{div} and reportno=#{reportno}
+  </update>
+
+  <!-- 현재 내용을 삭제하는 sql문 -->
+  <delete id="deleteFieldRepair">
+    delete from sitevrhd where div=#{div} and reportno=#{reportno}
+  </delete>
+
+  <!-- ## Report 조회용 ## -->
+  <!-- Basic Information --> 
+  <select id="select_r_basic" parameterType="Map" resultType="FieldRepair">
+	SELECT a.div          as div,
+	       a.reportno     as reportno,
+           to_char(a.visit_dt, 'MM-DD-YYYY')     as visit_dt,
+           a.TECHNICIAN   as technician,
+           (select name from mscarsms where div = #{div} and car_id = a.ev_car) as ev_car, 
+           a.cust_cd      as cust_cd,
+           a.bill_to_cust as bill_to_cust,
+           a.beg_ptc      as beg_ptc,
+           a.end_ptc      as end_ptc,
+           a.beg_noc      as beg_noc,
+           a.end_noc      as end_noc,
+           a.site_cd      as site_cd,
+           a.site_name    as site_name,
+           a.address      as address,
+           a.city         as city,
+           a.state        as state,
+           a.zip          as zip,
+           a.wt_ci1       as wt_ci1,
+           a.wt_co1       as wt_co1,
+           a.wt_ci2       as wt_ci2,
+           a.wt_co2       as wt_co2,
+           a.wt_ci3       as wt_ci3,
+           a.wt_co3       as wt_co3,
+           a.wt_ci4       as wt_ci4,
+           a.wt_co4       as wt_co4,
+           a.wt_ci5       as wt_ci5,
+           a.wt_co5       as wt_co5,
+           a.hotel_night  as hotel_noght,
+           a.hotel_amt    as hotel_amt,
+           a.mileage      as mileage,
+           a.rental_amt   as rental_amt,
+           a.others_amt   as others_amt,
+           nvl(((a.wt_co1 - a.wt_ci1) * 1440), 0) as wt1,
+           nvl(((a.wt_co2 - a.wt_ci2) * 1440), 0) as wt2,
+           nvl(((a.wt_co3 - a.wt_ci3) * 1440), 0) as wt3,
+           nvl(((a.wt_co4 - a.wt_ci4) * 1440), 0) as wt4,
+           nvl(((a.wt_co5 - a.wt_ci5) * 1440), 0) as wt5,
+           (select fname || ' ' || lname 
+              from msuserms 
+             where div = #{div} and user_id = a.create_id) as prepared,
+           (select fname || ' ' || lname 
+              from msuserms 
+             where div = #{div} and user_id = a.reviewd) as approved
+     from sitevrhd a
+    where div=#{div}
+      and reportno=#{reportno}
+  </select>
+
+  <!-- Refort Detail -->
+  <select id="select_r_detail" parameterType="Map" resultType="FieldRepair_d">
+    SELECT a.div,
+           a.reportno,
+           a.seq,
+           a.dispenser_id,
+           a.serialno,
+           a.model_no,
+           a.work_order,
+           a.visit_reason,
+           decode(e.sow, null, a.action_detail, e.sow) as action_detail,
+           a.action_performed,
+           a.partcode,
+           a.partsname,
+           a.qty,
+           a.issues_found,
+           a.vehicle,
+           a.frequency,
+           a.result,
+           a.cable_type,
+           a.times,
+           a.new_error,
+           a.hmi,
+           a.nayax,
+           a.rf_reader,
+           a.ver_check,
+           a.pcdpcomm_am,
+           a.pcdpcomm_as,
+           a.rv_schedule,
+           a.rv_reason,
+           a.rv_partcode,
+           a.rv_partname,
+           (select name from mscarsms where div = #{div} and car_id = a.vehicle) as car,
+           a.part1_cd,
+           b.part_name as part1_nm,
+           a.part1_qty,
+           a.part2_cd,
+           c.part_name as part2_nm,
+           a.part2_qty,
+           a.part3_cd,
+           d.part_name as part3_nm,
+           a.part3_qty
+      FROM sitevrdt a
+       LEFT OUTER JOIN mspartms b on b.div = a.div and b.part_no = a.part1_cd
+       LEFT OUTER JOIN mspartms c on c.div = a.div and c.part_no = a.part2_cd
+       LEFT OUTER JOIN mspartms d on d.div = a.div and d.part_no = a.part3_cd
+       LEFT OUTER JOIN fssowmsg e on e.div = a.div and e.transaction_no = a.reportno and e.wo_no = a.work_order
+     WHERE a.div = #{div}
+       AND a.reportno = #{reportno}
+     ORDER BY a.seq
+  </select>
+  
+  <!-- Report Future Work --> 
+  <select id="select_r_fw" parameterType="Map" resultType="FieldRepair_fw">
+    SELECT div,
+           reportno,
+           seq,
+           dispenser_id,
+           schedule,
+           reason,
+           part_cd
+      FROM sitefwr
+     WHERE div = #{div}
+       AND reportno = #{reportno}
+     ORDER BY seq
+  </select>
+  
+  <!-- Report Image --> 
+  <select id="select_r_img" parameterType="Map" resultType="FieldRepair_img">
+    SELECT div,
+           reportno,
+           img_seq,
+           img_yyyymm,
+           img_nm
+      FROM sitevriu
+     WHERE div = #{div}
+       AND reportno = #{reportno}
+     ORDER BY img_seq
+  </select>
+</mapper>
