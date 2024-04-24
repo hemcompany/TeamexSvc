@@ -3,7 +3,9 @@ package com.teamex.svc.entity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 @Getter
 @JsonInclude
 public class FieldRepair_img {

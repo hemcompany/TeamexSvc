@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import dayjs from 'dayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useEffect, useState } from "react";
 import axios from 'axios';
 //reporting tool : ActiveReportsJs viewer
@@ -55,6 +57,7 @@ const columns = [
   { field: 'reportno', 
     headerName: 'Report NO.', 
     width: 150,
+    color: 'blue',
   },
   {
     field: 'report_sts',
@@ -155,36 +158,40 @@ export default function Board({ boardState, setBoardState }) {
     //List 조회
     const [boardList, setBoardList] = useState([]);
     const FIELD_REPAIR_LIST_URL = "/api/fieldRepair/select/list";
+    const [frDate, setFrDate] = useState(null);
+    const [toDate, setToDate] = useState(null);
     
-    useEffect(() => {
-      // API를 이용하여 조회
-      const fetchList = async () => {
-        try {
-            const response = await 
-            axios(FIELD_REPAIR_LIST_URL, {
-                method: 'GET',
-                headers: {
-                  "Content-Type": "application/json;charset=UTF-8",
-                  "Accept": "application/json",
-                  "Access-Control-Allow-Origin": "http://localhost:3000",
-                  "Access-Control-Allow-Credentials":"true",},
-                params: { div: "80"},
-              })
-              .then((res) => {
-                setBoardList(res.data);
-              })
-              .catch((e) => {
-                console.error(e);
-              });
-        } catch (err) {
-            console.log(err);
-        }
+    const fetchList = async () => {
+      try {
+          const response = await 
+          axios(FIELD_REPAIR_LIST_URL, {
+              method: 'GET',
+              headers: {
+                "Content-Type": "application/json;charset=UTF-8",
+                "Accept": "application/json",
+                "Access-Control-Allow-Origin": "http://localhost:3000",
+                "Access-Control-Allow-Credentials":"true",},
+              params: { div: "80"},
+            })
+            .then((res) => {
+              setBoardList(res.data);
+            })
+            .catch((e) => {
+              console.error(e);
+            });
+      } catch (err) {
+          console.log(err);
       }
-      
+    }
+
+    useEffect(() => {
+      setFrDate(dayjs().add(-1, 'month')); //조회 조건 visit dt from 1달전 오늘날짜 세팅
+      setToDate(dayjs()); //조회 조건 visit dt to 오늘날짜 세팅
+      // API를 이용하여 조회
       fetchList();
-      
     }, []);
 
+    //Report 조회
     useEffect(() => {
         try {
           if (reportno== null) return;
@@ -218,6 +225,29 @@ export default function Board({ boardState, setBoardState }) {
 
           <CustomTabPanel value={value} index={0}>
             <div style={{ height: '70vh', width: '100%' }}>
+              <div style={{paddingBottom: '3px'}}>
+                <DatePicker 
+                  label="Visit Date From" 
+                  format="YYYY-MM-DD" 
+                  defaultValue={frDate}
+                  value={frDate}
+                  onChange={setFrDate}
+                  slotProps={{ textField: { size: 'small' } }}/>
+                ~ 
+                <DatePicker 
+                  label="Visit Date To" 
+                  format="YYYY-MM-DD" 
+                  defaultValue={toDate}
+                  value={toDate}
+                  onChange={setToDate}
+                  slotProps={{ textField: { size: 'small' } }}/>
+                <Button 
+                  variant="outlined" 
+                  size="middle"
+                  onClick={() => {
+                    fetchList();
+                  }}>Search</Button>
+              </div>
                 <DataGrid
                     rows={boardList}
                     columns={columns}

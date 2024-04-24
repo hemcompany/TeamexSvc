@@ -54,3 +54,15 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// profile 값이 없을 경우 dev 설정
+//ext.profile = (!project.hasProperty('profile') || !profile) ? 'dev' : profile
+ 
+// profile 값에 따른 소스파일 변경 설정
+//sourceSets {
+//    main {
+//        resources {
+//            srcDirs "src/main/resources", "src/main/resources-env/${profile}"
+//        }
+//    }
+//}

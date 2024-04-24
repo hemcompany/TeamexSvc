@@ -6,7 +6,9 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 //import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class WebConfig implements WebMvcConfigurer {
             "classpath:/META-INF/resources/",
             "classpath:/META-INF/resources/webjars/"
     };
-
+    
     /**
      * 뷰 컨트롤러를 추가할때 사용된다. 여기서는 루트 URL("/")에 접근했을 때 "/login"으로 리다이렉트하도록 설정하고 있다.
      */
@@ -55,10 +57,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
         /* 리포트 이미지 경로 지정 */
         registry.addResourceHandler("/RepairImage/**")
-		 .addResourceLocations("file:///C:/RepairImage/");
-
+		 .addResourceLocations("file:///P:/SOW/FR_IMG/");
     }
-    
     //public void addCorsMappings(CorsRegistry registry) {
     //   registry
     //            .addMapping("/api/**")

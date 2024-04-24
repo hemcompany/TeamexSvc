@@ -40,6 +40,6 @@ public interface FieldRepairMapper {
   //Future work 조회
   List<FieldRepair_fw> select_r_fw(Map<String,Object> map);
   
-  //IMAGE 조회
+  //IMAGE 조회 (DB 사용할 때)
   List<FieldRepair_img> select_r_img(Map<String,Object> map);
 }

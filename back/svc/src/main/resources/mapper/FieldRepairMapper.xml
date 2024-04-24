@@ -9,41 +9,53 @@
   <!-- ## List 조회용 ## -->
   <!-- 전체 파라미터 조회 관련 게시글 -->
   <select id="selectList" parameterType="Map" resultType="FieldRepair">
-    SELECT reportno  as id,
-           div,
-           reportno,
-           report_sts,
-           tran_date,
-           visit_dt,
-           technician,
+    SELECT a.reportno  as id,
+           a.div,
+           a.reportno,
+           a.report_sts,
+           a.tran_date,
+           a.visit_dt,
+           a.technician,
            (select name from mscarsms where div = #{div} and car_id = a.ev_car) as ev_car,
-           cust_cd,
-           bill_to_cust,
-           beg_ptc,
-           end_ptc,
-           beg_noc,
-           end_noc,
-           site_cd,
-           site_name,
-           address, city, state, zip, 
-           wt_ci1, wt_co1, wt_ci2, wt_co2, wt_ci3, wt_co3, wt_ci4, wt_co4, wt_ci5, wt_co5, 
-           nvl(((wt_co1 - wt_ci1) * 1440), 0) as wt1,
-           nvl(((wt_co2 - wt_ci2) * 1440), 0) as wt2,
-           nvl(((wt_co3 - wt_ci3) * 1440), 0) as wt3,
-           nvl(((wt_co4 - wt_ci4) * 1440), 0) as wt4,
-           nvl(((wt_co5 - wt_ci5) * 1440), 0) as wt5,
-           hotel_night, hotel_amt, mileage, rental_amt, others_amt, fiscal_period, 
-           fs_no, work_type, invoice_no, 
-           img1_nm, img2_nm, img3_nm, img4_nm, img5_nm, img6_nm, 
-           create_id, create_dt, update_id, update_dt, confirm_id, confirm_dt, modified, mod_yn, mod_dt, 
-           reviewd, review_yn, review_dt, email_fg,
+           a.cust_cd,
+           a.bill_to_cust,
+           a.beg_ptc,
+           a.end_ptc,
+           a.beg_noc,
+           a.end_noc,
+           a.site_cd,
+           a.site_name,
+           a.address, a.city, a.state, a.zip, 
+           a.wt_ci1, a.wt_co1, a.wt_ci2, a.wt_co2, a.wt_ci3, a.wt_co3, a.wt_ci4, a.wt_co4, a.wt_ci5, a.wt_co5, 
+           nvl(((a.wt_co1 - a.wt_ci1) * 1440), 0) as wt1,
+           nvl(((a.wt_co2 - a.wt_ci2) * 1440), 0) as wt2,
+           nvl(((a.wt_co3 - a.wt_ci3) * 1440), 0) as wt3,
+           nvl(((a.wt_co4 - a.wt_ci4) * 1440), 0) as wt4,
+           nvl(((a.wt_co5 - a.wt_ci5) * 1440), 0) as wt5,
+           a.hotel_night, a.hotel_amt, a.mileage, a.rental_amt, a.others_amt, a.fiscal_period, 
+           a.fs_no, a.work_type, a.invoice_no,  
+           a.create_id, a.create_dt, a.update_id, a.update_dt, a.confirm_id, a.confirm_dt, a.modified, a.mod_yn, a.mod_dt, 
+           a.reviewd, a.review_yn, a.review_dt, a.email_fg,
            (select fname || ' ' || lname from msuserms where div = #{div} and user_id = a.create_id) as prepared,
            (select fname || ' ' || lname from msuserms where div = #{div} and user_id = a.reviewd) as approved
       FROM sitevrhd a
-     WHERE div = #{div}
+     WHERE a.div = #{div}
+     <if test='frDate != null and frDate != ""'>
+       <![CDATA[ AND a.visit_dt >= to_date( #{frDate}, 'YYYY-MM-DD') ]]>
+     </if>
+     <if test='toDate != null and toDate != ""'>
+       <![CDATA[ AND a.visit_dt <= to_date( #{toDate}, 'YYYY-MM-DD') ]]>
+     </if>
      <if test='report_sts != null and report_sts != ""'>
-	   AND report_sts = #{report_sts}
+	   AND a.report_sts = #{report_sts}
 	 </if>
+	 <if test='reportno != null and reportno != ""'>
+       AND a.reportno = #{reportno}
+     </if>
+     <if test='wo_no != null and wo_no != ""'>
+       AND a.fs_no = #{wo_no}
+     </if>
+	 ORDER BY a.visit_dt DESC
   </select>
   
   <!-- mybatis에서 param1, param2 를 이용하여 삽입이 가능합니다. -->
