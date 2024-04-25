@@ -13,6 +13,7 @@ public class FieldRepair_img {
     String div;
     String reportno;
     int    img_seq;
-    String img_yyyymm;
     String img_nm;
+    String img_path;
+    String img_desc;
 }

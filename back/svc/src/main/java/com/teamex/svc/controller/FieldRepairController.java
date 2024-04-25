@@ -30,8 +30,10 @@ public class FieldRepairController {
   // API : /api/fieldRepair/select/list
   // 전체 조회를 이용한 API 기능
   @GetMapping("/select/list")
-  public List<FieldRepair> selectList(@RequestParam(name="div", required=true) String div) {
-    return fieldRepairService.selectList(div);
+  public List<FieldRepair> selectList(@RequestParam(name="div", required=true) String div, 
+		  								@RequestParam(name="visit_fr") String visit_fr, 
+		  								@RequestParam(name="visit_to") String visit_to) {
+    return fieldRepairService.selectList(div, visit_fr, visit_to);
   }
 
   // API : /api/fieldRepair/insert/fieldRepair

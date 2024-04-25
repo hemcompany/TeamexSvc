@@ -40,11 +40,11 @@
            (select fname || ' ' || lname from msuserms where div = #{div} and user_id = a.reviewd) as approved
       FROM sitevrhd a
      WHERE a.div = #{div}
-     <if test='frDate != null and frDate != ""'>
-       <![CDATA[ AND a.visit_dt >= to_date( #{frDate}, 'YYYY-MM-DD') ]]>
+     <if test='visit_fr != null and visit_fr != ""'>
+       <![CDATA[ AND a.visit_dt >= to_date( #{visit_fr}, 'YYYY-MM-DD') ]]>
      </if>
-     <if test='toDate != null and toDate != ""'>
-       <![CDATA[ AND a.visit_dt <= to_date( #{toDate}, 'YYYY-MM-DD') ]]>
+     <if test='visit_to != null and visit_to != ""'>
+       <![CDATA[ AND a.visit_dt <= to_date( #{visit_to}, 'YYYY-MM-DD') ]]>
      </if>
      <if test='report_sts != null and report_sts != ""'>
 	   AND a.report_sts = #{report_sts}
@@ -171,12 +171,14 @@
            a.part2_qty,
            a.part3_cd,
            d.part_name as part3_nm,
-           a.part3_qty
+           a.part3_qty,
+           f.case_no
       FROM sitevrdt a
        LEFT OUTER JOIN mspartms b on b.div = a.div and b.part_no = a.part1_cd
        LEFT OUTER JOIN mspartms c on c.div = a.div and c.part_no = a.part2_cd
        LEFT OUTER JOIN mspartms d on d.div = a.div and d.part_no = a.part3_cd
        LEFT OUTER JOIN fssowmsg e on e.div = a.div and e.transaction_no = a.reportno and e.wo_no = a.work_order
+       LEFT OUTER JOIN fstranel f on f.div = a.div and f.wo_no = a.work_order
      WHERE a.div = #{div}
        AND a.reportno = #{reportno}
      ORDER BY a.seq
@@ -202,8 +204,9 @@
     SELECT div,
            reportno,
            img_seq,
-           img_yyyymm,
-           img_nm
+           img_nm,
+           img_path,
+           img_desc
       FROM sitevriu
      WHERE div = #{div}
        AND reportno = #{reportno}

@@ -46,4 +46,5 @@ public class FieldRepair_d {
     String part3_nm;
     int    part3_qty;
     String car;
+    String case_no;
 }

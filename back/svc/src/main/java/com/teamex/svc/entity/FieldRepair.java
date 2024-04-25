@@ -73,9 +73,4 @@ public class FieldRepair {
     String email_fg;
     String prepared;
     String approved;
-    
-    //REPORT FUTURE WORK
-    //String schedule;
-    //String reason;
-    //String part_cd;
 }

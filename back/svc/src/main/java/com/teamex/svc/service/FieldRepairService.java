@@ -33,14 +33,14 @@ public class FieldRepairService {
 
   //## List
   // 전체 조회 로직
-  public List<FieldRepair> selectList(String div) {
+  public List<FieldRepair> selectList(String div, String visit_fr, String visit_to) {
 	Map<String,Object>map = new HashMap<String,Object>();
 	if(div == null)
 		map.put("div", "80");
 	else
 		map.put("div", div);
-	map.put("frDate", "2023-04-22");
-	map.put("toDate", "2024-04-22");
+	map.put("visit_fr", visit_fr);	//yyyy-mm-dd
+	map.put("visit_to", visit_to);
     return fieldRepairMapper.selectList(map);
   }
 
@@ -147,8 +147,8 @@ public class FieldRepairService {
 				imgInfo.setDiv(div);
 				imgInfo.setReportno(reportno);
 				imgInfo.setImg_seq(seq);
-				imgInfo.setImg_yyyymm(yyyymm);
 				imgInfo.setImg_nm(filename);
+				imgInfo.setImg_path(filePath);
 				System.out.println("filename : " + filename);
 				imgList.add(imgInfo);
 				seq ++;
