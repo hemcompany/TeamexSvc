@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Button, Container } from '@mui/material';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -31,9 +31,11 @@ function CustomTabPanel(props) {
         {...other}
       >
         {value === index && (
-          <Box sx={{ p: 3 }}>
-            <Typography>{children}</Typography>
-          </Box>
+          <Container  sx={{ p: 1}}>
+            <Box>
+              {children}
+            </Box>
+          </Container>
         )}
       </div>
     );
@@ -158,12 +160,11 @@ export default function Board({ boardState, setBoardState }) {
     //List 조회
     const [boardList, setBoardList] = useState([]);
     const FIELD_REPAIR_LIST_URL = "/api/fieldRepair/select/list";
-    const [frDate, setFrDate] = useState(null);
-    const [toDate, setToDate] = useState(null);
+    const [frDate, setFrDate] = useState(dayjs().add(-1, 'month'));
+    const [toDate, setToDate] = useState(dayjs());
     
     const fetchList = async () => {
       try {
-          const response = await 
           axios(FIELD_REPAIR_LIST_URL, {
               method: 'GET',
               headers: {
@@ -171,7 +172,11 @@ export default function Board({ boardState, setBoardState }) {
                 "Accept": "application/json",
                 "Access-Control-Allow-Origin": "http://localhost:3000",
                 "Access-Control-Allow-Credentials":"true",},
-              params: { div: "80"},
+              params: { 
+                div: "80",     // 로그인단 구현 후 로그인 div에서 가져오기
+                visit_fr: dayjs(frDate).format('YYYY-MM-DD'),
+                visit_to: dayjs(toDate).format('YYYY-MM-DD')
+              },
             })
             .then((res) => {
               setBoardList(res.data);
@@ -185,8 +190,8 @@ export default function Board({ boardState, setBoardState }) {
     }
 
     useEffect(() => {
-      setFrDate(dayjs().add(-1, 'month')); //조회 조건 visit dt from 1달전 오늘날짜 세팅
-      setToDate(dayjs()); //조회 조건 visit dt to 오늘날짜 세팅
+      //setFrDate(dayjs().add(-1, 'month')); //조회 조건 visit dt from 1달전 오늘날짜 세팅
+      //setToDate(dayjs()); //조회 조건 visit dt to 오늘날짜 세팅
       // API를 이용하여 조회
       fetchList();
     }, []);
@@ -223,59 +228,65 @@ export default function Board({ boardState, setBoardState }) {
                 </Tabs>
         </Box>
 
-          <CustomTabPanel value={value} index={0}>
-            <div style={{ height: '70vh', width: '100%' }}>
-              <div style={{paddingBottom: '3px'}}>
-                <DatePicker 
+        <CustomTabPanel value={value} index={0}>
+          <div style={{ height: '67vh', width: '100%' }}>
+            <Box display="flex" sx={{ m: 1 }}>
+              <DatePicker 
                   label="Visit Date From" 
-                  format="YYYY-MM-DD" 
+                  format="YYYY-MM-DD"
                   defaultValue={frDate}
                   value={frDate}
+                  sx={{ mr: 1}}
                   onChange={setFrDate}
-                  slotProps={{ textField: { size: 'small' } }}/>
-                ~ 
-                <DatePicker 
+                  slotProps={{ textField: { size: 'small' } }}
+              />
+              ~ 
+              <DatePicker 
                   label="Visit Date To" 
                   format="YYYY-MM-DD" 
                   defaultValue={toDate}
                   value={toDate}
+                  sx={{ ml: 1}}
                   onChange={setToDate}
-                  slotProps={{ textField: { size: 'small' } }}/>
-                <Button 
+                  slotProps={{ textField: { size: 'small' } }}
+              />
+              <Button 
                   variant="outlined" 
                   size="middle"
+                  sx={{ ml: 1}}
                   onClick={() => {
                     fetchList();
-                  }}>Search</Button>
-              </div>
-                <DataGrid
-                    rows={boardList}
-                    columns={columns}
-                    initialState={{
-                    pagination: {
-                        paginationModel: {
-                        pageSize: 5,
-                        },
-                    },
-                    }}
-                    slots={{
-                        toolbar: CustomToolbar,
-                    }}
-                    density='compact'
-                    sx={{ '--DataGrid-overlayHeight': '300px' }}
-                    onCellClick={handleEvent}
-                    paginationModel={paginationModel}
-                    onPaginationModelChange={setPaginationModel}
-                    checkboxSelection
-                    disableRowSelectionOnClick
-                />
-              </div>
-            </CustomTabPanel>
-            <CustomTabPanel value={value} index={1} >
-              <div id="designer-host" style={{ height: '70vh', width: '100%' }} >
-                <Viewer ref={viewerRef} />
-              </div>
-            </CustomTabPanel>
-        </Box>
+                  }}>Search
+                </Button>
+            </Box>
+            <DataGrid
+                rows={boardList}
+                columns={columns}
+                initialState={{
+                  pagination: {
+                      paginationModel: {
+                      pageSize: 5,
+                      },
+                  },
+                }}
+                slots={{
+                    toolbar: CustomToolbar,
+                }}
+                density='compact'
+                sx={{ '--DataGrid-overlayHeight': '300px' }}
+                onCellClick={handleEvent}
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
+                checkboxSelection
+                disableRowSelectionOnClick
+            />
+          </div>
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={1} >
+          <div id="designer-host" style={{ height: '70vh', width: '100%' }} >
+            <Viewer ref={viewerRef} />
+          </div>
+        </CustomTabPanel>
+      </Box>
     );
 }
