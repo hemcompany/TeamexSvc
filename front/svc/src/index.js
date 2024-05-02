@@ -8,6 +8,9 @@ import reportWebVitals from './reportWebVitals';
 import { UserProvider } from './provider/UserProvider';
 import { MenuProvider } from './provider/MenuProvider';
 
+// [24.04.30] HEM ADD REPORT LICENSE
+import {} from "./utils/arjs-license";
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

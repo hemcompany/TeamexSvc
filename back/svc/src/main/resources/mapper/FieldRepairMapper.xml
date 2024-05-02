@@ -14,7 +14,7 @@
            a.reportno,
            a.report_sts,
            a.tran_date,
-           a.visit_dt,
+           to_char(a.visit_dt,'mm/dd/yyyy hh24:mi:ss') as visit_dt,
            a.technician,
            (select name from mscarsms where div = #{div} and car_id = a.ev_car) as ev_car,
            a.cust_cd,
@@ -41,10 +41,10 @@
       FROM sitevrhd a
      WHERE a.div = #{div}
      <if test='visit_fr != null and visit_fr != ""'>
-       <![CDATA[ AND a.visit_dt >= to_date( #{visit_fr}, 'YYYY-MM-DD') ]]>
+       <![CDATA[ AND a.visit_dt >= to_date( #{visit_fr}, 'MM/DD/YYYY') ]]>
      </if>
      <if test='visit_to != null and visit_to != ""'>
-       <![CDATA[ AND a.visit_dt <= to_date( #{visit_to}, 'YYYY-MM-DD') ]]>
+       <![CDATA[ AND a.visit_dt <= to_date( #{visit_to}, 'MM/DD/YYYY') ]]>
      </if>
      <if test='report_sts != null and report_sts != ""'>
 	   AND a.report_sts = #{report_sts}
@@ -84,7 +84,7 @@
   <select id="select_r_basic" parameterType="Map" resultType="FieldRepair">
 	SELECT a.div          as div,
 	       a.reportno     as reportno,
-           to_char(a.visit_dt, 'MM-DD-YYYY')     as visit_dt,
+           to_char(a.visit_dt, 'MM/DD/YYYY')     as visit_dt,
            a.TECHNICIAN   as technician,
            (select name from mscarsms where div = #{div} and car_id = a.ev_car) as ev_car, 
            a.cust_cd      as cust_cd,
@@ -99,16 +99,16 @@
            a.city         as city,
            a.state        as state,
            a.zip          as zip,
-           a.wt_ci1       as wt_ci1,
-           a.wt_co1       as wt_co1,
-           a.wt_ci2       as wt_ci2,
-           a.wt_co2       as wt_co2,
-           a.wt_ci3       as wt_ci3,
-           a.wt_co3       as wt_co3,
-           a.wt_ci4       as wt_ci4,
-           a.wt_co4       as wt_co4,
-           a.wt_ci5       as wt_ci5,
-           a.wt_co5       as wt_co5,
+           to_char(a.wt_ci1,'mm/dd/yyyy hh24:mi:ss')       as wt_ci1,
+           to_char(a.wt_co1,'mm/dd/yyyy hh24:mi:ss')       as wt_co1,
+           to_char(a.wt_ci2,'mm/dd/yyyy hh24:mi:ss')       as wt_ci2,
+           to_char(a.wt_co2,'mm/dd/yyyy hh24:mi:ss')       as wt_co2,
+           to_char(a.wt_ci3,'mm/dd/yyyy hh24:mi:ss')       as wt_ci3,
+           to_char(a.wt_co3,'mm/dd/yyyy hh24:mi:ss')       as wt_co3,
+           to_char(a.wt_ci4,'mm/dd/yyyy hh24:mi:ss')       as wt_ci4,
+           to_char(a.wt_co4,'mm/dd/yyyy hh24:mi:ss')       as wt_co4,
+           to_char(a.wt_ci5,'mm/dd/yyyy hh24:mi:ss')       as wt_ci5,
+           to_char(a.wt_co5,'mm/dd/yyyy hh24:mi:ss')       as wt_co5,
            a.hotel_night  as hotel_noght,
            a.hotel_amt    as hotel_amt,
            a.mileage      as mileage,

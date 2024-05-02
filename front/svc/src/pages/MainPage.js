@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import MenuBar from "../components/MenuBar";
 import FieldRepair from "../pages/FieldRepair";
+import Login from "../pages/LoginPage";
 import { useMenuContext } from "../provider/MenuProvider";
 import { useEffect } from "react";
 import User from "../components/User";
@@ -36,7 +37,7 @@ const MenuRender = (menu) => {
         case "USER":
             return <User/>
         default:
-            return <FieldRepair/>
+            return <Login/>
     }
 }
 

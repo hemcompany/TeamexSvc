@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -108,7 +109,23 @@ public class FieldRepairService {
 		if(reportno == null)
 			reportno = "";
 		map.put("reportno", reportno);
-    return fieldRepairMapper.select_r_img(map);
+		List<FieldRepair_img> imgList = fieldRepairMapper.select_r_img(map);
+		//file_path 가 full 이 들어오기 때문에 잘라서 사용 ex) P:\SOW\FR_IMG\2404\FR24040245A-1.PNG
+		if (imgList != null) { 
+			for (int i=0, n=imgList.size(); i < n; i++) {
+				FieldRepair_img imgInfo = imgList.get(i);
+				String img_path = imgInfo.getImg_path();
+				img_path = img_path.replaceAll(Matcher.quoteReplacement(File.separator),"\\/");
+				String[] array = img_path.split(":/");
+				for(int j=0;j<array.length;j++) {
+					if (j==array.length-1) {
+						imgInfo.setImg_path(array[j]);
+						imgList.set(i, imgInfo);
+					}
+				}
+			}
+		}
+    return imgList;
   }
   // IMAGE 조회 (FOLDER 내에서 파일명으로 조회 할 때)
   public List<FieldRepair_img> select_r_fdimg(String div, String reportno) {

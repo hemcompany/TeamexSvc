@@ -30,6 +30,7 @@ public class FieldRepairController {
   // API : /api/fieldRepair/select/list
   // 전체 조회를 이용한 API 기능
   @GetMapping("/select/list")
+  ///@CrossOrigin(origins = {"http://localhost:3000", "http://localhost", "http://rpt.teamexusa.com"}) WebConfig에서 적용
   public List<FieldRepair> selectList(@RequestParam(name="div", required=true) String div, 
 		  								@RequestParam(name="visit_fr") String visit_fr, 
 		  								@RequestParam(name="visit_to") String visit_to) {
@@ -64,7 +65,6 @@ public class FieldRepairController {
   // API : /api/fieldRepair/select/r_basic
   // Basic Info 조회용 API
   @GetMapping("/select/r_basic")
-  @CrossOrigin(origins = {"http://localhost:3000", "http://localhost"})
   public FieldRepair select_r_basic(@RequestParam(name="div", required=true) String div, 
                                     @RequestParam(name="reportno", required=true) String reportno) {
     return fieldRepairService.select_r_basic(div, reportno);
@@ -73,35 +73,32 @@ public class FieldRepairController {
   // API : /api/fieldRepair/select/r_detail
   // Detail Info 조회용 API
   @GetMapping("/select/r_detail")
-  @CrossOrigin(origins = {"http://localhost:3000", "http://localhost"})
   public  List<FieldRepair_d> select_r_detail(@RequestParam(name="div", required=true) String div, 
-                                     @RequestParam(name="reportno", required=true) String reportno) {
+                                              @RequestParam(name="reportno", required=true) String reportno) {
     return fieldRepairService.select_r_detail(div, reportno);
   }
 
   //API : /api/fieldRepair/select/r_fw
   // Future Work 조회용 API
   @GetMapping("/select/r_fw")
-  @CrossOrigin(origins = {"http://localhost:3000", "http://localhost"})
+  //@CrossOrigin(origins = {"http://localhost:3000", "http://localhost", "http://rpt.teamexusa.com"})
   public  List<FieldRepair_fw> select_r_fw(@RequestParam(name="div") String div, 
-                                 @RequestParam(name="reportno", required=true) String reportno) {
+                                           @RequestParam(name="reportno", required=true) String reportno) {
     return fieldRepairService.select_r_fw(div, reportno);
   }
   //API : /api/fieldRepair/select/r_img
   // IMAGE 조회용 API
   @GetMapping("/select/r_img")
-  @CrossOrigin(origins = {"http://localhost:3000", "http://localhost"})
   public  List<FieldRepair_img> select_r_img(@RequestParam(name="div") String div, 
                                  @RequestParam(name="reportno", required=true) String reportno) {
     return fieldRepairService.select_r_img(div, reportno);
   }
   
   //API : /api/fieldRepair/select/r_fdImg
-  // IMAGE 조회용 API
+  // IMAGE 조회용 API (폴더에서 바로 찾기)
   @GetMapping("/select/r_fdImg")
-  @CrossOrigin(origins = {"http://localhost:3000", "http://localhost"})
   public List<FieldRepair_img> select_r_fdImg(@RequestParam(name="div") String div, 
-                                 @RequestParam(name="reportno", required=true) String reportno) {
+                                              @RequestParam(name="reportno", required=true) String reportno) {
     return fieldRepairService.select_r_fdimg(div, reportno);
   }
 }

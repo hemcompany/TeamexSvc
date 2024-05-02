@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.teamex.svc.mapper.LoginMapper">
+  
+  <!-- id : Mapper 인터페이스에 사용할 메소드명 -->
+  <!-- resultType : Response Parameter에 반환할 변수 값의 대한 내용 -->
+  <!-- parameterType : Request Parameter에 들어갈 변수 값을 저장된 내용 -->
+
+  <!-- ## 로그인 처리 ## -->
+  <!-- ID 맞는지 확인 -->
+  <select id="checkId" parameterType="Map" resultType="User">
+    SELECT a.user_id       as user_id
+      FROM msuserms a
+     WHERE a.div = #{inputDiv}
+       AND upper(a.user_id) = upper(#{inputId})
+  </select>
+  
+  <!-- User Information -->
+  <select id="select_user_info" parameterType="Map" resultType="User">
+    SELECT a.div            as div,
+           a.user_id        as user_id,
+           a.status         as status,
+           a.password       as password,
+           a.lname          as lname,
+           a.fname          as fname,
+           a.mname          as mname,
+           a.e_mail         as e_mail,
+           a.tel            as tel,
+           a.user_grp_cd    as user_grp_cd,
+           a.profile        as profile,
+           a.priority_class as priority_class,
+           a.note           as note,
+           a.memo           as memo,
+           a.edi_fg         as edi_fg,
+           a.version        as version,
+           a.wkst_id        as wkst_id,
+           a.lscn           as lscn,
+           a.lang           as lang
+      FROM msuserms a
+     WHERE a.div = #{inputDiv}
+       AND upper(a.user_id) = upper(#{inputId})
+       AND upper(a.password) = upper(#{inputPass})
+  </select>
+</mapper>

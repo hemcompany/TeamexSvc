@@ -6,6 +6,7 @@ import Tab from '@mui/material/Tab';
 import dayjs from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"
 import axios from 'axios';
 //reporting tool : ActiveReportsJs viewer
 import { Viewer } from "@grapecity/activereports-react";
@@ -20,7 +21,7 @@ import {
 
 //TAB
 function CustomTabPanel(props) { 
-    const { children, value, index, ...other } = props;
+    const { children, value, index } = props;
   
     return (
       <div
@@ -28,7 +29,6 @@ function CustomTabPanel(props) {
         hidden={value !== index}
         id={`simple-tabpanel-${index}`}
         aria-labelledby={`simple-tab-${index}`}
-        {...other}
       >
         {value === index && (
           <Container  sx={{ p: 1}}>
@@ -64,13 +64,13 @@ const columns = [
   {
     field: 'report_sts',
     headerName: 'Status',
-    width: 80,
+    width: 70,
   },
   {
     field: 'visit_dt',
     headerName: 'Visit Date',
     type: Date,
-    width: 150,
+    width: 160,
   },
   {
     field: 'technician',
@@ -80,7 +80,7 @@ const columns = [
   {
     field: 'ev_car',
     headerName: 'Ev Car',
-    width: 110,
+    width: 150,
   },
   {
     field: 'cust_cd',
@@ -127,6 +127,8 @@ function CustomToolbar() {
 }
 
 export default function Board({ boardState, setBoardState }) {
+    const navigate = useNavigate();
+    //const [user, setUser] = useUserContext();  로그인
     const [value, setValue] = useState(0);
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -151,7 +153,7 @@ export default function Board({ boardState, setBoardState }) {
         event,   // MuiEvent<React.MouseEvent<HTMLElement>>
         details, // GridCallbackDetails
     ) => {
-        if ( params.field == 'reportno'){
+        if ( params.field === 'reportno'){
             callViewer();
             setReportno(params.value);
         }
@@ -163,19 +165,19 @@ export default function Board({ boardState, setBoardState }) {
     const [frDate, setFrDate] = useState(dayjs().add(-1, 'month'));
     const [toDate, setToDate] = useState(dayjs());
     
-    const fetchList = async () => {
+    const fetchList = async () => { 
       try {
           axios(FIELD_REPAIR_LIST_URL, {
               method: 'GET',
               headers: {
-                "Content-Type": "application/json;charset=UTF-8",
+                "Content-Type": "application/json;charset=UTF-8", 
                 "Accept": "application/json",
                 "Access-Control-Allow-Origin": "http://localhost:3000",
                 "Access-Control-Allow-Credentials":"true",},
               params: { 
                 div: "80",     // 로그인단 구현 후 로그인 div에서 가져오기
-                visit_fr: dayjs(frDate).format('YYYY-MM-DD'),
-                visit_to: dayjs(toDate).format('YYYY-MM-DD')
+                visit_fr: dayjs(frDate).format('MM/DD/YYYY'),
+                visit_to: dayjs(toDate).format('MM/DD/YYYY')
               },
             })
             .then((res) => {
@@ -190,8 +192,12 @@ export default function Board({ boardState, setBoardState }) {
     }
 
     useEffect(() => {
-      //setFrDate(dayjs().add(-1, 'month')); //조회 조건 visit dt from 1달전 오늘날짜 세팅
-      //setToDate(dayjs()); //조회 조건 visit dt to 오늘날짜 세팅
+      //로그인 체크 
+      if (sessionStorage.getItem("id")==="" || sessionStorage.getItem("id")=== null){
+        navigate("/login");
+      //} else {
+        //GetUserInfo();
+      }
       // API를 이용하여 조회
       fetchList();
     }, []);
@@ -219,21 +225,21 @@ export default function Board({ boardState, setBoardState }) {
                    p: 2,
                    width: '100%', height: '50px',
         }}>
-            <Box sx={{ color: 'white' }}>Field Repair</Box>
+          <Box sx={{ color: 'white' }}>Field Repair</Box>
         </Box>
         <Box sx={{ borderBottom: 1, borderColor: 'divider'}}>
-                <Tabs value={value} onChange={handleChange}>
-                    <Tab label="List" {...a11yProps(0)} />
-                    <Tab label="Report" {...a11yProps(1)} />
-                </Tabs>
+            <Tabs value={value} onChange={handleChange}>
+                <Tab label="List" {...a11yProps(0)} />
+                <Tab label="Report" {...a11yProps(1)} />
+            </Tabs>
         </Box>
 
         <CustomTabPanel value={value} index={0}>
-          <div style={{ height: '67vh', width: '100%' }}>
+          <Box sx={{ height: '66vh', width: '78vw'}}>
             <Box display="flex" sx={{ m: 1 }}>
               <DatePicker 
                   label="Visit Date From" 
-                  format="YYYY-MM-DD"
+                  format="MM/DD/YYYY"
                   defaultValue={frDate}
                   value={frDate}
                   sx={{ mr: 1}}
@@ -243,7 +249,7 @@ export default function Board({ boardState, setBoardState }) {
               ~ 
               <DatePicker 
                   label="Visit Date To" 
-                  format="YYYY-MM-DD" 
+                  format="MM/DD/YYYY" 
                   defaultValue={toDate}
                   value={toDate}
                   sx={{ ml: 1}}
@@ -273,14 +279,13 @@ export default function Board({ boardState, setBoardState }) {
                     toolbar: CustomToolbar,
                 }}
                 density='compact'
-                sx={{ '--DataGrid-overlayHeight': '300px' }}
                 onCellClick={handleEvent}
                 paginationModel={paginationModel}
                 onPaginationModelChange={setPaginationModel}
                 checkboxSelection
                 disableRowSelectionOnClick
             />
-          </div>
+          </Box>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1} >
           <div id="designer-host" style={{ height: '70vh', width: '100%' }} >

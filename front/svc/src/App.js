@@ -42,7 +42,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} /> 
           </Routes>
         </Router>
-        <Fab onClick={() => ThemeChange()} color="primary" aria-label="add" style={{ position: 'fixed', bottom: 16, right: 16 }}>
+        <Fab onClick={() => ThemeChange()} color="primary" aria-label="add" style={{ position: 'fixed', bottom: 16, left: 230 }}>
           {dark ? <MorningIcon /> : <NightIcon /> }
         </Fab>
       </ThemeProvider>

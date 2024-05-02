@@ -1,6 +1,7 @@
 package com.teamex.svc.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -15,16 +16,6 @@ import lombok.Setter;
 @Configuration
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
-
-    //private final JwtTokenInterceptor jwtTokenInterceptor;
-
-    //@Override
-    //public void addInterceptors(InterceptorRegistry registry) {
-    //    registry.addInterceptor(jwtTokenInterceptor)
-    //            .addPathPatterns("/**") // 모든 URL에 대해 JWT 토큰 검사를 적용합니다.
-    //            .excludePathPatterns("/user/login", "/login", "/main/rootPage"); // 로그인 페이지는 JWT 토큰 검사에서 제외합니다.
-    //}
-
     /**
      *  이 배열은 정적 리소스가 위치할 수 있는 경로를 나열하고 있다. 이 경로들은 addResourceHandlers 메서드에서 사용된다.
      */
@@ -41,12 +32,12 @@ public class WebConfig implements WebMvcConfigurer {
     /**
      * 뷰 컨트롤러를 추가할때 사용된다. 여기서는 루트 URL("/")에 접근했을 때 "/login"으로 리다이렉트하도록 설정하고 있다.
      */
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        //log.debug("[+] WebConfig Start !!! ");
-        registry.addRedirectViewController("/", "/fieldRepair");
-        //registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
-    }
+    //@Override
+    //public void addViewControllers(ViewControllerRegistry registry) {
+    //    //log.debug("[+] WebConfig Start !!! ");
+    //    registry.addRedirectViewController("/", "/login");
+    //    //registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
+    //}
 
     /**
      * 정적 리소스를 처리하는 핸들러를 추가하는데 사용된다.
@@ -57,11 +48,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
         /* 리포트 이미지 경로 지정 */
         registry.addResourceHandler("/RepairImage/**")
-		 .addResourceLocations("file:///P:/SOW/FR_IMG/");
+		 .addResourceLocations("file:///P:/");
     }
-    //public void addCorsMappings(CorsRegistry registry) {
-    //   registry
-    //            .addMapping("/api/**")
-    //            .allowedOrigins("http://localhost:3000");
-    //}
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000", "http://localhost", "http://rpt.teamexusa.com")
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedHeaders("*");
+    }
  }

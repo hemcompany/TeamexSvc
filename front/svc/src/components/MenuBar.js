@@ -11,14 +11,25 @@ import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import {useMenuContext} from "../provider/MenuProvider";
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import { useNavigate } from "react-router-dom"
 import logo from '../assets/logo.png';
 
 const drawerWidth = 220;
 export default function MenuBar() {
     const {menu, setMenu} = useMenuContext();
+    const navigate = useNavigate();
     const ChangeMenu = (menuName) => {
         setMenu(menuName);
     }
+    const handleLogout = () => {
+    	// 로그아웃 처리 로직을 구현합니다.
+    	sessionStorage.removeItem("div");
+    	sessionStorage.removeItem("id");
+        sessionStorage.removeItem("name");
+    	sessionStorage.removeItem("team");
+    	// 페이지 이동
+    	navigate("/login");
+  	};
     return (
         <>
 
@@ -38,10 +49,10 @@ export default function MenuBar() {
                     <img src={logo} alt="Logo" />
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center" padding={0.5}>
-                    <Typography variant='h7'>HEM JUNG</Typography>
+                    <Typography variant='h7'>{sessionStorage.getItem("name")}</Typography>
                 </Box>
                 <Box display="flex" justifyContent="center" alignItems="center" padding={0.5}>
-                    <Typography variant='h7'>IT TEAM</Typography>
+                    <Typography variant='h7'>Teamex Field Report</Typography>
                 </Box>
                 <Divider />
                 <List>
@@ -55,15 +66,7 @@ export default function MenuBar() {
                     </ListItem>
                     <Divider />
                     <ListItem disablePadding>
-                        <ListItemButton onClick={() => ChangeMenu('USER')}>
-                            <ListItemIcon>
-                                <InboxIcon/>
-                            </ListItemIcon>
-                            <ListItemText primary="User" />
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => handleLogout() }>
                             <ListItemIcon>
                                 <ExitToAppIcon/>
                             </ListItemIcon>
