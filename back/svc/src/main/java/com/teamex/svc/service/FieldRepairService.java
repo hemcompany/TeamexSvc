@@ -115,7 +115,10 @@ public class FieldRepairService {
 			for (int i=0, n=imgList.size(); i < n; i++) {
 				FieldRepair_img imgInfo = imgList.get(i);
 				String img_path = imgInfo.getImg_path();
+				//[2024.05.02] HEM WINDOW 경로 \\ 에서 URL 경로 /로 변경
 				img_path = img_path.replaceAll(Matcher.quoteReplacement(File.separator),"\\/");
+				//[2024.05.02] HEM E:/PUBLIC -> P:/로 인식되도록 수정
+				img_path = img_path.replace("E:/PUBLIC", "P:/");
 				String[] array = img_path.split(":/");
 				for(int j=0;j<array.length;j++) {
 					if (j==array.length-1) {
