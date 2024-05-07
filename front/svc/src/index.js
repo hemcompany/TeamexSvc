@@ -13,13 +13,11 @@ import {} from "./utils/arjs-license";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
     <MenuProvider>
       <UserProvider>
         <App />
       </UserProvider>
     </MenuProvider>
-  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
