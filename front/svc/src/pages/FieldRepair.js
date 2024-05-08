@@ -1,23 +1,25 @@
 import * as React from 'react';
-import { Box, Button, Container } from '@mui/material';
+
+import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
+import { Box, Button, Container } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import dayjs from 'dayjs';
+import {
+  DataGrid,
+  GridToolbarContainer,
+  GridToolbarColumnsButton,
+  GridToolbarFilterButton,
+  GridToolbarDensitySelector,
+  useGridApiRef,
+} from '@mui/x-data-grid';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
 import axios from 'axios';
 //reporting tool : ActiveReportsJs viewer
 import { Viewer } from "@grapecity/activereports-react";
-import {
-    DataGrid,
-    GridToolbarContainer,
-    GridToolbarColumnsButton,
-    GridToolbarFilterButton,
-    GridToolbarExport,
-    GridToolbarDensitySelector,
-} from '@mui/x-data-grid';
+import { Core, PdfExport } from "@grapecity/activereports";
 
 //TAB
 function CustomTabPanel(props) { 
@@ -115,20 +117,12 @@ function CustomToolbar() {
         <GridToolbarDensitySelector
           slotProps={{ tooltip: { title: 'Change density' } }}
         />
-        <Box sx={{ flexGrow: 1 }} />
-        <GridToolbarExport
-          slotProps={{
-            tooltip: { title: 'Export data' },
-            button: { variant: 'outlined' },
-          }}
-        />
       </GridToolbarContainer>
     );
 }
 
 export default function Board({ boardState, setBoardState }) {
     const navigate = useNavigate();
-    //const [user, setUser] = useUserContext();  로그인
     const [value, setValue] = useState(0);
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -138,8 +132,10 @@ export default function Board({ boardState, setBoardState }) {
         page: 0,
     });
 
-    //Click Report No : move to Tab2(Report page)
     const [reportno, setReportno] = useState(null);
+    const reportPath = "/reports/fieldRepair.rdlx-json";
+
+    //Click Report No at the List : move to Tab2(Report Viewer page)
     const viewerRef = React.useRef(null);
     const callViewer = async () => {
         try {
@@ -148,7 +144,7 @@ export default function Board({ boardState, setBoardState }) {
         } catch (err) {console.log(err)}
     };
 
-    const handleEvent: GridEventListener<'cellClick'> = (
+    const handleCellClick = (
         params,  // GridCellParams<any>
         event,   // MuiEvent<React.MouseEvent<HTMLElement>>
         details, // GridCallbackDetails
@@ -159,7 +155,7 @@ export default function Board({ boardState, setBoardState }) {
         }
     };
 
-    //List 조회
+    //# Tab1. List Retrieve
     const [boardList, setBoardList] = useState([]);
     const FIELD_REPAIR_LIST_URL = "/api/fieldRepair/select/list";
     const [frDate, setFrDate] = useState(dayjs().add(-1, 'month'));
@@ -175,7 +171,7 @@ export default function Board({ boardState, setBoardState }) {
                 "Access-Control-Allow-Origin": "http://localhost:3000",
                 "Access-Control-Allow-Credentials":"true",},
               params: { 
-                div: "80",     // 로그인단 구현 후 로그인 div에서 가져오기
+                div: sessionStorage.getItem("div"),
                 visit_fr: dayjs(frDate).format('MM/DD/YYYY'),
                 visit_to: dayjs(toDate).format('MM/DD/YYYY')
               },
@@ -191,32 +187,104 @@ export default function Board({ boardState, setBoardState }) {
       }
     }
 
+    // 화면 처음 렌더링 될 때 호출 되는 함수
     useEffect(() => {
       //로그인 체크 
       if (sessionStorage.getItem("id")==="" || sessionStorage.getItem("id")=== null){
         navigate("/login");
-      //} else {
-        //GetUserInfo();
       }
-      // API를 이용하여 조회
+      // API를 이용하여 List 조회
       fetchList();
     }, []);
 
-    //Report 조회
+    const exportsSettings = {   
+      pdf: {
+        printing: "none",
+        copying: false,
+        modifying: false,
+        annotating: false,
+        contentAccessibility: false,
+        documentAssembly: false,
+        pdfVersion: "1.7",
+        autoPrint: false,
+        filename: reportno,
+        title: reportno,
+        author: "Teamex",
+      },
+    };
+    //Report Pdf Export 세팅
+    function setExportSetting(param) {
+      return {
+        pdf: {
+          printing: "none",
+          copying: false,
+          modifying: false,
+          annotating: false,
+          contentAccessibility: false,
+          documentAssembly: false,
+          pdfVersion: "1.7",
+          autoPrint: false,
+          filename: param,
+          title: param,
+          author: "Teamex",
+        },
+      };
+    }
+    // LIST 에서 바로 REPORT EXPORT
+    const apiRef = useGridApiRef(null);
+    const exportReportByList = async () => {
+      if (!apiRef.current) return;
+      
+      const selectedRows = apiRef.current.getSelectedRows();
+      const selectedNo = Array.from(selectedRows.keys());
+      
+      const arrCount = selectedNo.length;
+      
+      for (let i=0; i< arrCount; i++){
+        //setReportno(selectedNo[i]);
+        const report = new Core.PageReport();
+        await report.load(reportPath,{
+          reportParameters: [
+                  {
+                      Name: "reportno",
+                      Value: selectedNo[i],
+                  },
+              ],
+          });
+        const doc = await report.run();
+        const result = await PdfExport.exportDocument(doc, setExportSetting(selectedNo[i]));
+        result.download(selectedNo[i]);
+      }
+    }
+
+    //# TAB2. Report 조회
+    
+    // REPORT 내보내기 가능 타입
+    const availableExports = ["pdf"]; //, "html", "tabular-data"
+    // 내보내기 버튼 사이드바로 (상단)
+    const panelsLayout = "sidebar";
+
     useEffect(() => {
-        try {
-          if (reportno== null) return;
-            viewerRef.current.Viewer.open(
-            "/reports/fieldRepair.rdlx-json", {
-                ReportParams: [
-                    {
-                        Name: "reportno",
-                        Value: reportno,
-                    },
-                ],
-            });
-        } catch(error) {}
-      }); 
+      try {
+        if (reportno== null) return;
+          if (!viewerRef.current) return;
+          viewerRef.current.Viewer.toolbar.updateLayout({
+            default: ["$navigation","$split","$refresh","$split","$zoom","$split"],
+            fullscreen: ["$navigation","$split","$refresh","$split","$zoom","$split"],
+		        mobile: ["$navigation","$split","$refresh","$split","$zoom","$split"]
+          });
+          viewerRef.current.Viewer.open(
+            reportPath, {
+              ReportParams: [
+                  {
+                      Name: "reportno",
+                      Value: reportno,
+                  },
+              ],
+          });
+      } catch(error) {}
+    },[reportno]); 
+
     return (
       <Box sx={{ width: '100%'}}>
         <Box sx={{bgcolor: 'primary.main',
@@ -257,13 +325,21 @@ export default function Board({ boardState, setBoardState }) {
                   slotProps={{ textField: { size: 'small' } }}
               />
               <Button 
-                  variant="outlined" 
-                  size="middle"
-                  sx={{ ml: 1}}
-                  onClick={() => {
-                    fetchList();
-                  }}>Search
-                </Button>
+                variant="outlined" 
+                size="middle"
+                sx={{ ml: 1}}
+                onClick={() => {
+                  fetchList();
+                }}>Search
+              </Button>
+              <Button 
+                variant="outlined" 
+                size="middle"
+                sx={{ ml: 1}}
+                onClick={() => {
+                  exportReportByList();
+                }}>Export
+              </Button>
             </Box>
             <DataGrid
                 rows={boardList}
@@ -279,17 +355,23 @@ export default function Board({ boardState, setBoardState }) {
                     toolbar: CustomToolbar,
                 }}
                 density='compact'
-                onCellClick={handleEvent}
+                onCellClick={handleCellClick}
                 paginationModel={paginationModel}
                 onPaginationModelChange={setPaginationModel}
                 checkboxSelection
-                disableRowSelectionOnClick
+                disableRowSelectionOnClick     //ROW 선택 시 체크박스 체크 되지 않도록(체크박스 클릭시만 체크)
+                apiRef={apiRef}
             />
           </Box>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1} >
           <div id="designer-host" style={{ height: '70vh', width: '100%' }} >
-            <Viewer ref={viewerRef} />
+            <Viewer 
+              ref={viewerRef} 
+              exportsSettings={setExportSetting(reportno)}
+              availableExports={availableExports}
+              panelsLayout={panelsLayout}
+            />
           </div>
         </CustomTabPanel>
       </Box>
