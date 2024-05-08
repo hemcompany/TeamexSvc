@@ -84,7 +84,18 @@ public class FieldRepairService {
 			reportno = "";
 		map.put("reportno", reportno);
 		
-    return fieldRepairMapper.select_r_detail(map); 
+		List<FieldRepair_d> detailList = fieldRepairMapper.select_r_detail(map);
+		//[2024.05.08] HEM action_detail 항목 report에서 표현 문제로 개행문자(\r\n) <br>로 바꿔줌
+		if (detailList != null) { 
+			for (int i=0, n=detailList.size(); i < n; i++) {
+				FieldRepair_d detailInfo = detailList.get(i);
+				String action_detail = detailInfo.getAction_detail();
+				action_detail = action_detail.replaceAll(System.getProperty("line.separator"), "<br>");
+				detailInfo.setAction_detail(action_detail);
+				detailList.set(i, detailInfo);
+			}
+		}
+    return detailList; 
   }
   
   // Future Work 조회

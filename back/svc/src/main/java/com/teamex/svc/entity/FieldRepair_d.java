@@ -3,8 +3,10 @@ package com.teamex.svc.entity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @JsonInclude
 public class FieldRepair_d {
     //Report Detail
