@@ -178,9 +178,10 @@
        LEFT OUTER JOIN mspartms c on c.div = a.div and c.part_no = a.part2_cd
        LEFT OUTER JOIN mspartms d on d.div = a.div and d.part_no = a.part3_cd
        LEFT OUTER JOIN fssowmsg e on e.div = a.div and e.transaction_no = a.reportno and e.wo_no = a.work_order
-       LEFT OUTER JOIN fstranel f on f.div = a.div and f.wo_no = a.work_order
+       LEFT OUTER JOIN fstranel f on f.div = a.div and f.wo_no = a.work_order and f.transaction_status <![CDATA[ <>  ]]> 'V'
      WHERE a.div = #{div}
        AND a.reportno = #{reportno}
+       AND a.report_sts <![CDATA[ <>  ]]> 'V'
      ORDER BY a.seq
   </select>
   

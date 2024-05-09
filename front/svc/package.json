@@ -6,6 +6,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@grapecity/activereports": "^4.2.2",
     "@grapecity/activereports-react": "^4.2.2",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",

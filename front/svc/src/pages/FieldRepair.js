@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import { Box, Button, Container } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import {
   DataGrid,
   GridToolbarContainer,
@@ -326,15 +328,17 @@ export default function Board({ boardState, setBoardState }) {
               />
               <Button 
                 variant="outlined" 
-                size="middle"
+                size="small"
                 sx={{ ml: 1}}
+                startIcon={<SearchOutlinedIcon />}
                 onClick={() => {
                   fetchList();
                 }}>Search
               </Button>
               <Button 
                 variant="outlined" 
-                size="middle"
+                size="small"
+                startIcon={<FileDownloadIcon />}
                 sx={{ ml: 1}}
                 onClick={() => {
                   exportReportByList();
