@@ -1,7 +1,10 @@
 import * as React from 'react';
-
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+// MUI
 import { Box, Button, Container } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -16,49 +19,11 @@ import {
   useGridApiRef,
 } from '@mui/x-data-grid';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"
-import axios from 'axios';
-//reporting tool : ActiveReportsJs viewer
+// Reporting tool : ActiveReportsJs viewer
 import { Viewer } from "@grapecity/activereports-react";
 import { Core, PdfExport } from "@grapecity/activereports";
 
-//TAB
-function CustomTabPanel(props) { 
-    const { children, value, index } = props;
-  
-    return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-      >
-        {value === index && (
-          <Container  sx={{ p: 1}}>
-            <Box>
-              {children}
-            </Box>
-          </Container>
-        )}
-      </div>
-    );
-}
-  
-CustomTabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.number.isRequired,
-    value: PropTypes.number.isRequired,
-};
-  
-function a11yProps(index) {
-    return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    };
-}
-
-//TAB1 - LIST
+//TAB1 - DATA GRID 세팅
 const columns = [
   { field: 'reportno', 
     headerName: 'Report NO.', 
@@ -97,19 +62,6 @@ const columns = [
     width: 110,
   },
 ];
- 
-//rows => boardList로 대체
-//const rows = [
-//  { id: 1, ReportNo: 'FR23060002A', Status: 'B', VisitDt: '2023-06-09', Technician: 'EVANS JOLY', EvCar: 'KEV602', CustCd: 'Electrify America' },
-//  { id: 2, ReportNo: 'FR23060003A', Status: 'C', VisitDt: '2023-06-20', Technician: 'KYUHYUNG LEE', EvCar: '', CustCd: 'Electrify America' },
-//  { id: 3, ReportNo: 'FR23060004A', Status: 'B', VisitDt: '2023-06-20', Technician: 'ERIC PEREZ', EvCar: 'KEV602', CustCd: 'Electrify America' },
-//  { id: 4, ReportNo: 'FR23060005A', Status: 'B', VisitDt: '2023-06-05', Technician: 'ERIC PEREZ, EVANS JOLY', EvCar: 'KEV602', CustCd: 'Electrify America' },
-//  { id: 5, ReportNo: 'FR23060006A', Status: 'B', VisitDt: '2023-06-06', Technician: 'ERIC', EvCar: 'KEV602', CustCd: 'Electrify America' },
-//  { id: 6, ReportNo: 'FR23060007A', Status: 'F', VisitDt: '2023-06-09', Technician: 'EVANS', EvCar: 'KEV602', CustCd: 'Electrify America' },
-//  { id: 7, ReportNo: 'FR23060008A', Status: 'F', VisitDt: '2023-06-06', Technician: 'ERIC', EvCar: 'KEV603', CustCd: 'Electrify America' },
-//  { id: 8, ReportNo: 'FR23060009A', Status: 'B', VisitDt: '2023-06-05', Technician: 'ERIC, EVANS', EvCar: 'KEV602', CustCd: 'Electrify America' },
-//  { id: 9, ReportNo: 'FR23060010A', Status: 'B', VisitDt: '2023-06-07', Technician: 'ERIC PEREZ, EVANS JOLY', EvCar: 'KEV602', CustCd: 'Electrify America' },
-//];
 
 function CustomToolbar() {
     return (
@@ -123,46 +75,67 @@ function CustomToolbar() {
     );
 }
 
-export default function Board({ boardState, setBoardState }) {
+export default function Board() {
     const navigate = useNavigate();
-    const [value, setValue] = useState(0);
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
     const [paginationModel, setPaginationModel] = React.useState({
         pageSize: 25,
         page: 0,
     });
 
-    const [reportno, setReportno] = useState(null);
-    const reportPath = "/reports/fieldRepair.rdlx-json";
+    //TAB
+    const [value, setValue] = useState(0);  //Tab Index값 저장
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+    function CustomTabPanel(props) { 
+      const { children, value, index } = props;
+      return (
+        <div
+          role="tabpanel"
+          hidden={value !== index}
+          id={`simple-tabpanel-${index}`}
+          aria-labelledby={`simple-tab-${index}`}
+        >
+          {value === index && (
+            <Container  sx={{ p: 1}}>
+              <Box>
+                {children}
+              </Box>
+            </Container>
+          )}
+        </div>
+      );
+    }
 
-    //Click Report No at the List : move to Tab2(Report Viewer page)
-    const viewerRef = React.useRef(null);
-    const callViewer = async () => {
-        try {
-            setValue(1);
-            a11yProps(1);
-        } catch (err) {console.log(err)}
+    CustomTabPanel.propTypes = {
+      children: PropTypes.node,
+      index: PropTypes.number.isRequired,
+      value: PropTypes.number.isRequired,
     };
 
-    const handleCellClick = (
-        params,  // GridCellParams<any>
-        event,   // MuiEvent<React.MouseEvent<HTMLElement>>
-        details, // GridCallbackDetails
-    ) => {
-        if ( params.field === 'reportno'){
-            callViewer();
-            setReportno(params.value);
+    function a11yProps(index) {
+      if(index == 0){
+        if (apiRef.current === null) {
+          apiRef.current = {};
         }
-    };
+      }
+      return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+      };
+    }
 
-    //# Tab1. List Retrieve
+    const [reportno, setReportno] = useState(null);   //선택된 REPORTNO 저장
+    const reportPath = "/reports/fieldRepair.rdlx-json";   //REPORT 양식 PATH
+    const apiRef = useGridApiRef();
+
+    //# Tab1. List
     const [boardList, setBoardList] = useState([]);
     const FIELD_REPAIR_LIST_URL = "/api/fieldRepair/select/list";
     const [frDate, setFrDate] = useState(dayjs().add(-1, 'month'));
     const [toDate, setToDate] = useState(dayjs());
     
+    // List Retrieve (call Backend API)
     const fetchList = async () => { 
       try {
           axios(FIELD_REPAIR_LIST_URL, {
@@ -189,6 +162,18 @@ export default function Board({ boardState, setBoardState }) {
       }
     }
 
+    //LIST에서 REPORT NO 클릭 : Tab2로 이동해서 REPORT 출력
+    const viewerRef = React.useRef(null);
+    const handleCellClick = (
+        params,  // GridCellParams<any>
+        event,   // MuiEvent<React.MouseEvent<HTMLElement>>
+        details, // GridCallbackDetails
+    ) => {
+        if ( params.field === 'reportno'){
+            setReportno(params.value);
+            setValue(1);
+        }
+    };
     // 화면 처음 렌더링 될 때 호출 되는 함수
     useEffect(() => {
       //로그인 체크 
@@ -233,17 +218,15 @@ export default function Board({ boardState, setBoardState }) {
       };
     }
     // LIST 에서 바로 REPORT EXPORT
-    const apiRef = useGridApiRef(null);
     const exportReportByList = async () => {
-      if (!apiRef.current) return;
-      
+      if (apiRef.current === null) {
+        apiRef.current = {};
+      }
       const selectedRows = apiRef.current.getSelectedRows();
       const selectedNo = Array.from(selectedRows.keys());
-      
       const arrCount = selectedNo.length;
-      
       for (let i=0; i< arrCount; i++){
-        //setReportno(selectedNo[i]);
+        setReportno(selectedNo[i]);
         const report = new Core.PageReport();
         await report.load(reportPath,{
           reportParameters: [
@@ -265,16 +248,17 @@ export default function Board({ boardState, setBoardState }) {
     const availableExports = ["pdf"]; //, "html", "tabular-data"
     // 내보내기 버튼 사이드바로 (상단)
     const panelsLayout = "sidebar";
+    const toolbarLayout = {
+      default: ["$navigation","$split","$refresh","$split","$zoom","$split"],
+      fullscreen: ["$navigation","$split","$refresh","$split","$zoom","$split"],
+      mobile: ["$navigation","$split","$refresh","$split","$zoom","$split"]
+    };
 
+    //Report Viewer 조회
     useEffect(() => {
       try {
         if (reportno== null) return;
           if (!viewerRef.current) return;
-          viewerRef.current.Viewer.toolbar.updateLayout({
-            default: ["$navigation","$split","$refresh","$split","$zoom","$split"],
-            fullscreen: ["$navigation","$split","$refresh","$split","$zoom","$split"],
-		        mobile: ["$navigation","$split","$refresh","$split","$zoom","$split"]
-          });
           viewerRef.current.Viewer.open(
             reportPath, {
               ReportParams: [
@@ -285,7 +269,7 @@ export default function Board({ boardState, setBoardState }) {
               ],
           });
       } catch(error) {}
-    },[reportno]); 
+    }); 
 
     return (
       <Box sx={{ width: '100%'}}>
@@ -375,6 +359,7 @@ export default function Board({ boardState, setBoardState }) {
               exportsSettings={setExportSetting(reportno)}
               availableExports={availableExports}
               panelsLayout={panelsLayout}
+              toolbarLayout={toolbarLayout}
             />
           </div>
         </CustomTabPanel>
