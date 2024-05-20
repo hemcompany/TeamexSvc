@@ -28,7 +28,7 @@ public class FieldRepairService {
   FileServerProperties fileServerProperties;
 
   /**
-   * 각 Mapper별의 응답값을 불려오고, 앞으로의 로직을 짤 때는 Controller단이 아닌
+   * 각 Mapper별의 응답값을 불려오고, 로직을 짤 때는 Controller단이 아닌
    * Service 단에서 별도의 로직과 알고리즘을 구현 하는 형태로 진행합니다.
    */
 

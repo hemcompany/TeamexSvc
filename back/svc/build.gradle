@@ -35,6 +35,9 @@ dependencies {
 	//implementation 'org.postgresql:postgresql'
 	//runtimeOnly 'org.postgresql:postgresql'
 	
+	//log
+	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+	
 	//WebMvcAutoConfiguration 에서 Resolver 연결에 사용
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.15.2'
 	

@@ -40,15 +40,13 @@
            (select fname || ' ' || lname from msuserms where div = #{div} and user_id = a.reviewd) as approved
       FROM sitevrhd a
      WHERE a.div = #{div}
+       AND a.report_sts <![CDATA[ <>  ]]> 'V'
      <if test='visit_fr != null and visit_fr != ""'>
        <![CDATA[ AND a.visit_dt >= to_date( #{visit_fr}, 'MM/DD/YYYY') ]]>
      </if>
      <if test='visit_to != null and visit_to != ""'>
        <![CDATA[ AND a.visit_dt <= to_date( #{visit_to}, 'MM/DD/YYYY') ]]>
      </if>
-     <if test='report_sts != null and report_sts != ""'>
-	   AND a.report_sts = #{report_sts}
-	 </if>
 	 <if test='reportno != null and reportno != ""'>
        AND a.reportno = #{reportno}
      </if>
@@ -125,9 +123,10 @@
            (select fname || ' ' || lname 
               from msuserms 
              where div = #{div} and user_id = a.reviewd) as approved
-     from sitevrhd a
-    where div=#{div}
-      and reportno=#{reportno}
+     FROM sitevrhd a
+    WHERE a.div=#{div}
+      AND a.reportno=#{reportno}
+      AND a.report_sts <![CDATA[ <>  ]]> 'V'
   </select>
 
   <!-- Refort Detail -->
