@@ -156,9 +156,11 @@ export default function Board() {
             })
             .catch((e) => {
               console.error(e);
+              alert(e);
             });
       } catch (err) {
           console.log(err);
+          alert(err);
       }
     }
 
@@ -169,10 +171,11 @@ export default function Board() {
         event,   // MuiEvent<React.MouseEvent<HTMLElement>>
         details, // GridCallbackDetails
     ) => {
-        if ( params.field === 'reportno'){
+      event.preventDefault();
+      if ( params.field === 'reportno'){
             setReportno(params.value);
             setValue(1);
-        }
+      }
     };
     // 화면 처음 렌더링 될 때 호출 되는 함수
     useEffect(() => {
@@ -184,21 +187,6 @@ export default function Board() {
       fetchList();
     }, []);
 
-    const exportsSettings = {   
-      pdf: {
-        printing: "none",
-        copying: false,
-        modifying: false,
-        annotating: false,
-        contentAccessibility: false,
-        documentAssembly: false,
-        pdfVersion: "1.7",
-        autoPrint: false,
-        filename: reportno,
-        title: reportno,
-        author: "Teamex",
-      },
-    };
     //Report Pdf Export 세팅
     function setExportSetting(param) {
       return {
