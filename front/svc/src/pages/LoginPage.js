@@ -37,7 +37,10 @@ function LoginPage() {
             // 작업 완료 되면 페이지 이동(새로고침)
             navigate("/");
         })
-        .catch();
+        .catch((e) => {
+            console.error(e);
+            alert(e);
+        });
     };
 
     return (
