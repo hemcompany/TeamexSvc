@@ -1,0 +1,114 @@
+<configuration scan="true" scanPeriod="60 seconds">
+    <property name="LOG_PATH" value="C:/BackEndLog"/>
+    <property name="LOG_FILE_NAME" value="Log"/>
+    <property name="CONSOLE_LOG_PATTERN" value="%green(%d{yyyy-MM-dd HH:mm:ss.SSS}) [%thread] %highlight(%5level) %cyan(%logger) - %msg%n" />
+    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %5level %logger - %msg%n" />
+    <!-- 로그 레벨 -->
+    <!--
+        1) ERROR : 오류 메시지 표시 
+        2) WARN  : 경고성 메시지 표시
+        3) INFO  : 정보성 메시지 표시
+        4) DEBUG : 디버깅하기 위한 메시지 표시
+        5) TRACE :  Debug보다 훨씬 상세한 메시지 표시
+    -->
+    <property name="LOG_LEVEL" value="info"/>
+    
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        
+        <file>${LOG_PATH}/Error-${LOG_FILE_NAME}.log</file>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/Error-${LOG_FILE_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <totalSizeCap>20GB</totalSizeCap>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+    
+    <appender name="SQL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${LOG_PATH}/SQL-${LOG_FILE_NAME}.log</file>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/SQL-${LOG_FILE_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <totalSizeCap>20GB</totalSizeCap>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+    
+    <!-- SQL Logger -->
+    <!--  
+    jdbc.sqlonly    : Logs only SQL
+    jdbc.sqltiming  : Logs the SQL, post-execution, including timing execution statistics
+    jdbc.audit      : Logs ALL JDBC calls except for ResultSets
+    jdbc.resultset  : all calls to ResultSet objects are logged
+    jdbc.connection : Logs connection open and close events
+    -->
+    <logger name="jdbc" level="OFF">
+        <appender-ref ref="SQL"/>
+    </logger>
+    <logger name="jdbc.connection" level="OFF">
+        <appender-ref ref="SQL"/>
+    </logger>
+    <logger name="jdbc.sqlonly" level="OFF">
+        <appender-ref ref="SQL"/>
+    </logger>
+    <logger name="jdbc.sqltiming" level="INFO" additivity="false">
+        <appender-ref ref="SQL"/>
+    </logger>
+    <logger name="jdbc.audit" level="OFF">
+        <appender-ref ref="SQL"/>
+    </logger>
+    <logger name="jdbc.resultset" level="OFF">
+        <appender-ref ref="SQL"/>
+    </logger>
+    <logger name="jdbc.resultsettable" level="OFF">
+        <appender-ref ref="SQL"/>
+    </logger>
+    
+    <springProfile name="local">
+        <logger name="com.teamex.svc" level="DEBUG" />
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="FILE" />
+            <appender-ref ref="SQL" />
+        </root>
+    </springProfile>
+    <springProfile name="dev|stg">
+        <logger name="com.teamex.svc" level="DEBUG" />
+        <root level="WARN">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="FILE" />
+            <appender-ref ref="SQL" />
+        </root>
+    </springProfile>
+    <springProfile name="prod">
+        <root level="WARN">
+            <appender-ref ref="CONSOLE" /> 
+            <appender-ref ref="FILE" />
+            <appender-ref ref="SQL" />
+        </root>
+    </springProfile>
+</configuration>
