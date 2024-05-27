@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -39,7 +39,7 @@ const columns = [
     field: 'visit_dt',
     headerName: 'Visit Date',
     type: Date,
-    width: 160,
+    width: 100,
   },
   {
     field: 'technician',
@@ -278,7 +278,7 @@ export default function Board() {
         </Box>
 
         <CustomTabPanel value={value} index={0}>
-          <Box sx={{ height: '66vh', width: '78vw'}}>
+          <Box sx={{ height: '68vh', width: '77vw'}}>
             <Box display="flex" sx={{ m: 1 }}>
               <DatePicker 
                   label="Visit Date From" 
