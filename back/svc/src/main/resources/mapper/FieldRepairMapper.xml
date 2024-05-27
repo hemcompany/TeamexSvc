@@ -14,7 +14,7 @@
            a.reportno,
            a.report_sts,
            a.tran_date,
-           to_char(a.visit_dt,'mm/dd/yyyy hh24:mi:ss') as visit_dt,
+           to_char(a.visit_dt,'mm/dd/yyyy') as visit_dt,
            a.technician,
            (select name from mscarsms where div = #{div} and car_id = a.ev_car) as ev_car,
            a.cust_cd,
