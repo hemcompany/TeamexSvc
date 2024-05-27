@@ -182,6 +182,7 @@ export default function Board() {
       //로그인 체크 
       if (sessionStorage.getItem("id")==="" || sessionStorage.getItem("id")=== null){
         navigate("/login");
+        return;
       }
       // API를 이용하여 List 조회
       fetchList();
