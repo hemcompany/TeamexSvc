@@ -171,7 +171,6 @@ export default function Board() {
         event,   // MuiEvent<React.MouseEvent<HTMLElement>>
         details, // GridCallbackDetails
     ) => {
-      event.preventDefault();
       if ( params.field === 'reportno'){
             setReportno(params.value);
             setValue(1);
