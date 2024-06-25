@@ -11,7 +11,8 @@ function EvaluationForm({reportinfo, fetchList}) {
     const EVALUATION_RESULT_URL = "/api/evaluation/save/result"
 
     
-    const [inputs, setInputs] = useState([]);           //평가 INPUT FIELD 정보 저장
+    const [inputs, setInputs] = useState([]);    //평가 INPUT FIELD 정보 저장
+    const [errors, setErrors] = useState({});    //평가 결과 0~2 사이인 경우 comment 필수 체크
     
     const Item = styled(Paper)(({ theme }) => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#f6f6f6',
@@ -115,6 +116,17 @@ function EvaluationForm({reportinfo, fetchList}) {
         setInputs(newInputs);
     };
     
+    const checkCmt = () => {
+        const newErrors = {};
+        inputs.forEach((input, index) => {
+            if(input.ev_result >= 0 && input.ev_result <= 2 && !input.ev_comment){
+                newErrors[index] = "Comment is required when result is between 0 and 2.";
+            }
+        });
+        setErrors(newErrors);
+        return Object.keys(newErrors).length ===0;
+    };
+
     //입력한 평가정보 DB 저장
     const handleSubmit = (e)  => {
         e.preventDefault(); // Prevent the default submit and page reload
@@ -132,7 +144,9 @@ function EvaluationForm({reportinfo, fetchList}) {
                 });
         };
 
-        saveItem();
+        if (checkCmt()) {
+            saveItem();
+        }
     };
     return(
         
@@ -145,7 +159,7 @@ function EvaluationForm({reportinfo, fetchList}) {
                 </Box>
                 <Box sx={{ position:'relative', m: 1, height: '45vh', flexWrap: 'wrap', overflow: 'auto', border:1, borderColor:'#e6e6e6'}} >
                 <List sx={{ width: '91%', minWidth: '91%', mr: 5}}>
-                {inputs && inputs.map((item) => (
+                {inputs && inputs.map((item, index) => (
                     <div key={item.id}>
                     <ListItem alignItems="flex-start">
                         <ListItemText
@@ -164,28 +178,23 @@ function EvaluationForm({reportinfo, fetchList}) {
                         />
                     </ListItem>
                     <ListItem alignItems="center">
-                        <ListItemText
-                            secondary={
-                                <React.Fragment>
-                                    <Rating value={item.ev_result} defaultValue={0} max={5} 
-                                            onChange={(e) => handleChange(e, item.id, 'ev_result')} />
-                                </React.Fragment>
-                            } />
-                        <ListItemText
-                            secondary={
-                                <React.Fragment>
-                                    <TextField value={item.ev_comment} 
-                                                onChange={(e) => handleCmtChange(e, item.id, 'ev_comment')}
-                                                label="Comment"
-                                                multiline
-                                                rows={2}
-                                                maxRows={3}
-                                                fullWidth
-                                                size="small"
-                                                inputProps={{style: {fontSize: 14}}}
-                                                InputLabelProps={{ shrink: true }}  />
-                                </React.Fragment>
-                            } />
+                        <React.Fragment>
+                            <Rating value={item.ev_result} defaultValue={0} max={5} 
+                                    onChange={(e) => handleChange(e, item.id, 'ev_result')} />
+
+                            <TextField value={item.ev_comment} 
+                                        onChange={(e) => handleCmtChange(e, item.id, 'ev_comment')}
+                                        error={errors[index]? true : false}
+                                        helperText={errors[index]}
+                                        label="Comment"
+                                        multiline
+                                        maxRows={2}
+                                        fullWidth
+                                        size="small"
+                                        inputProps={{style: {fontSize: 14}}}
+                                        InputLabelProps={{ shrink: true }}  
+                                        sx={{ml:3}}/>
+                        </React.Fragment>
                     </ListItem>
                     <Divider variant="inset" component="li" />
                     </div>
