@@ -32,7 +32,7 @@ function LoginPage() {
                 sessionStorage.setItem("div", userInfo.div); 
                 sessionStorage.setItem("id", userInfo.user_id);
                 sessionStorage.setItem("name", userInfo.lname + " " + userInfo.fname);
-                sessionStorage.setItem("team", userInfo.user_grp_cd);
+                sessionStorage.setItem("type", userInfo.priority_class);
             }
             // 작업 완료 되면 페이지 이동(새로고침)
             navigate("/");

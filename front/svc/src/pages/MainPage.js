@@ -3,10 +3,10 @@ import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import MenuBar from "../components/MenuBar";
 import FieldRepair from "../pages/FieldRepair";
+import Evaluation from "../pages/Evaluation";
 import Login from "../pages/LoginPage";
 import { useMenuContext } from "../provider/MenuProvider";
 import { useEffect } from "react";
-import User from "../components/User";
 
 function MainPage() {
     const {menu} = useMenuContext();
@@ -34,8 +34,8 @@ const MenuRender = (menu) => {
     switch (menu){
         case "FIELDREPAIR":
             return <FieldRepair/>
-        case "USER":
-            return <User/>
+        case "EVALUATION":
+            return <Evaluation/>
         default:
             return <Login/>
     }

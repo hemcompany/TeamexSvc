@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import TopMenu from '../components/TopMenu.js';
 // MUI
 import { Box, Button, Container } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
@@ -114,7 +115,7 @@ export default function Board() {
     };
 
     function a11yProps(index) {
-      if(index == 0){
+      if(index === 0){
         if (apiRef.current === null) {
           apiRef.current = {};
         }
@@ -261,14 +262,9 @@ export default function Board() {
 
     return (
       <Box sx={{ width: '100%'}}>
-        <Box sx={{bgcolor: 'primary.main',
-                   boxShadow: 1,
-                   borderRadius: 2,
-                   p: 2,
-                   width: '100%', height: '50px',
-        }}>
-          <Box sx={{ color: 'white' }}>Field Repair</Box>
-        </Box>
+
+        <TopMenu />
+
         <Box sx={{ borderBottom: 1, borderColor: 'divider'}}>
             <Tabs value={value} onChange={handleChange}>
                 <Tab label="List" {...a11yProps(0)} />

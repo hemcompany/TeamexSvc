@@ -22,12 +22,10 @@ export default function MenuBar() {
         setMenu(menuName);
     }
     const handleLogout = () => {
-    	// 로그아웃 처리 로직을 구현합니다.
     	sessionStorage.removeItem("div");
     	sessionStorage.removeItem("id");
         sessionStorage.removeItem("name");
     	sessionStorage.removeItem("team");
-    	// 페이지 이동
     	navigate("/login");
   	};
     return (
@@ -62,6 +60,14 @@ export default function MenuBar() {
                                 <InboxIcon/>
                             </ListItemIcon>
                             <ListItemText primary="Field Repair" />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton onClick={() => ChangeMenu('EVALUATION')}>
+                            <ListItemIcon>
+                                <InboxIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary="Evaluation" />
                         </ListItemButton>
                     </ListItem>
                     <Divider />
