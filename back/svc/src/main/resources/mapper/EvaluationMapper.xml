@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.teamex.svc.mapper.EvaluationMapper">
+
+<!-- ## Ealuation ## -->
+
+  <!-- Evaluation Report List --> 
+  <select id="selectList" parameterType="Map" resultType="Evaluation">
+    SELECT a.reportno          as id,
+           a.div               as div, 
+           a.reportno          as reportno, 
+           a.report_sts        as report_sts, 
+           to_char(a.visit_dt, 'MM/DD/YYYY') as visit_dt,
+           a.technician        as technician, 
+           a.cust_cd           as cust_cd, 
+           a.create_id         as create_id, 
+           nvl(b.ev_sts, 'B')  as ev_sts,
+           d.description       as ev_sts_nm,
+           case when nvl(e.cnt_e,0)>0 then 'true' else 'false' end      as ev_e,
+           case when nvl(e.cnt_o,0)>0 then 'true' else 'false' end      as ev_o,
+           case when nvl(e.cnt_p,0)>0 then 'true' else 'false' end      as ev_p
+      FROM sitevrhd a
+        left outer join siteevhd b on b.div = a.div and b.reportno = a.reportno
+        left outer join msuserms c on c.div = a.div and c.user_id = #{user_id}
+        left outer join mscodeel d on d.id = '842' and d.value = nvl(b.ev_sts, 'B')  <!-- EVALUATION STATUS CODE-->
+        left outer join (
+            select sa.div, sa.reportno, 
+                   count(case sa.ev_cls when 'E' then sa.ev_cls end) as cnt_e,
+                   count(case sa.ev_cls when 'O' then sa.ev_cls end) as cnt_o,
+                   count(case sa.ev_cls when 'P' then sa.ev_cls end) as cnt_p
+              from siteevdt sa
+                inner join sitevrhd sb on sb.div = sa.div 
+                         and sb.reportno = sa.reportno 
+                         and sb.report_sts in ('B','C')
+                         <if test='visit_fr != null and visit_fr != ""'>
+                         <![CDATA[ and sb.visit_dt >= to_date( #{visit_fr}, 'MM/DD/YYYY') ]]>
+                         </if>
+                         <if test='visit_to != null and visit_to != ""'>
+                         <![CDATA[ and sb.visit_dt <= to_date( #{visit_to}, 'MM/DD/YYYY') ]]>
+                         </if>
+                         <if test='user_type == "E"'>
+                          and sb.create_id = #{user_id}
+                         </if>
+             group by sa.div, sa.reportno) e on e.div = a.div and e.reportno = a.reportno
+     WHERE a.div = #{div}
+       AND a.report_sts in ('B', 'C')
+       <if test='visit_fr != null and visit_fr != ""'>
+       <![CDATA[ AND a.visit_dt >= to_date( #{visit_fr}, 'MM/DD/YYYY') ]]>
+       </if>
+       <if test='visit_to != null and visit_to != ""'>
+       <![CDATA[ AND a.visit_dt <= to_date( #{visit_to}, 'MM/DD/YYYY') ]]>
+       </if>
+       <if test='user_type == "E"'>
+       AND a.create_id = #{user_id}
+       </if>
+     ORDER BY TRAN_DATE DESC
+  </select>
+  
+  <!-- Evaluation Item List --> 
+  <select id="selectItems" parameterType="Map" resultType="Evaluation">
+    SELECT b.ev_code      as id,
+           a.div          as div,
+           a.reportno     as reportno,
+           a.technician   as technician,
+           b.ev_code, b.ev_category, b.ev_item, b.remark,
+           nvl(c.ev_sts,    'B')           as ev_sts,
+           f.description                   as ev_sts_nm,
+           nvl(d.ev_cls,    #{user_type})  as ev_cls, 
+           e.description                   as ev_cls_nm,
+           nvl(d.evaluator, #{user_id})    as evaluator,
+           nvl(d.ev_result, 0)             as ev_result,
+           d.ev_comment                    as ev_comment,
+           #{user_id}                      as user_id
+      FROM sitevrhd a
+        LEFT OUTER JOIN siteevms b on b.div = a.div and b.ev_type = 'FST' and b.ev_cls = #{user_type} and status = 'A'
+        LEFT OUTER JOIN siteevhd c on c.div = a.div and c.reportno = a.reportno
+        LEFT OUTER JOIN siteevdt d on d.div = a.div and d.reportno = a.reportno 
+                                      and d.ev_cls = b.ev_cls and d.evaluator = #{user_id} and d.ev_code = b.ev_code
+        LEFT OUTER JOIN mscodeel e on e.id = '843' and e.value = nvl(d.ev_cls, #{user_type})  <!-- EVALUATOR TYPE -->
+        LEFT OUTER JOIN mscodeel f on f.id = '842' and f.value = nvl(c.ev_sts, 'B')  <!-- EVALUATION STATUS CODE-->
+     WHERE a.div = #{div}
+       AND a.reportno = #{reportno}
+     ORDER BY a.div, a.reportno, b.ev_code
+  </select>
+  <!-- Evaluation Master Insert/Update -->
+  <insert id="upsertEvalHd" parameterType="Evaluation">
+    MERGE INTO siteevhd a
+    USING (
+      SELECT div,
+             reportno
+        FROM sitevrhd
+       WHERE div = #{div}
+         AND reportno = #{reportno}
+    ) n
+    ON ( a.div = n.div and a.reportno = n.reportno)
+    WHEN MATCHED THEN
+      UPDATE
+         SET a.ev_sts = 'P',
+             a.update_id = #{user_id},
+             a.update_dt = sysdate
+    WHEN NOT MATCHED THEN
+      INSERT ( div, reportno, ev_sts, create_id, create_dt )
+      VALUES ( n.div, n.reportno, 'P', #{user_id}, sysdate )
+  </insert>
+
+  <!-- Evaluation Master Status Change -->
+  <update id="updateEvalHdSts" parameterType="Evaluation">
+      UPDATE siteevhd
+         SET ev_sts = #{ev_sts} ,
+             update_id = #{user_id},
+             update_dt = sysdate
+       WHERE div = #{div} 
+         AND reportno = #{reportno}
+  </update>
+
+  <!-- Evaluation Master Delete -->
+  <delete id="deleteEvalHd">
+    DELETE FROM siteevhd 
+     WHERE div = #{div}
+       AND reportno = #{reportno}
+  </delete>
+
+  <!-- Evaluation Detail Insert/Update  -->
+  <insert id="upsertEvalDt" parameterType="Evaluation">
+    MERGE INTO siteevdt a
+    USING dual
+       ON ( a.div = #{div} and a.reportno = #{reportno} and a.ev_cls = #{ev_cls} and a.evaluator = #{evaluator} and a.ev_code = #{ev_code})
+    WHEN MATCHED THEN
+      UPDATE
+         SET a.ev_result =#{ev_result},
+             a.ev_comment = #{ev_comment, jdbcType = VARCHAR},
+             a.update_id =#{user_id},
+             a.update_dt = sysdate
+    WHEN NOT MATCHED THEN 
+      INSERT 
+        (a.div, a.reportno, a.ev_cls, a.evaluator, a.ev_code, a.ev_result, a.ev_comment, a.create_id, a.create_dt)
+      VALUES
+        (#{div}, #{reportno}, #{ev_cls}, #{evaluator}, #{ev_code}, #{ev_result}, #{ev_comment, jdbcType = VARCHAR}, #{user_id}, sysdate)
+  </insert>
+  
+  <!-- Evaluation Detail Update -->
+  <update id="updateEvalDt" parameterType="Evaluation">
+      UPADTE siteevdt
+         SET ev_result =#{ev_result},
+             ev_comment = #{ev_comment},
+             update_id =#{user_id},
+             update_dt = sysdate
+       WHERE div = #{div} 
+         AND reportno = #{reportno}
+         AND ev_cls = #{ev_cls} 
+         AND evaluator = #{evaluator}
+         AND ev_code = #{ev_code}
+  </update>
+
+</mapper>

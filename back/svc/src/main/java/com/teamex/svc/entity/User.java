@@ -24,7 +24,7 @@ public class User {
     String tel;
     String user_grp_cd;
     String profile;
-    String priority_class;
+    String priority_class;    //E : Engineer, O : Operator, P : Parts Management
     String note;
     String memo;
     String edi_fg;
