@@ -95,7 +95,7 @@ function EvaluationForm({reportinfo, fetchList}) {
     }, [reportinfo]);
 
     useDidMountEffect(() => {
-        //console.log(inputs);
+        setErrors({});
     }, [inputs]);
 
     const handleChange = (e, id, field) => {
