@@ -200,8 +200,8 @@ function EvaluationForm({reportinfo, fetchList}) {
                     </div>
                 ))}
                 </List>
-                    
                 </Box>
+                {inputs.length > 0 && (
                 <Box sx={{position:'relative', display: 'flex', flexGrow: 1, justifyContent: 'center'}} align="center">
                     <Button 
                         variant="outlined" 
@@ -211,6 +211,7 @@ function EvaluationForm({reportinfo, fetchList}) {
                     >Save
                     </Button>
                 </Box>
+                )}
             </form>
         </Paper>
     );

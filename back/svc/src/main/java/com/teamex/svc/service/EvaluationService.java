@@ -31,6 +31,8 @@ public class EvaluationService {
 		map.put("user_type", user_type);    //E : Engineer, O : Operator, P : Parts Management
 		map.put("visit_fr", visit_fr);
 		map.put("visit_to", visit_to);
+		
+		if (user_type.equals("") || user_type==null) return null;
 		return evaluationMapper.selectList(map);
 	}
 
