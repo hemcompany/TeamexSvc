@@ -10,7 +10,6 @@ function LoginPage() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const { div, id, password } = event.target.elements;
-        console.log('DIV: ', div.value, 'ID: ', id.value, 'Password: ', password.value);
         //await new Promise((r) => setTimeout(r, 1000));
         //로그인 처리
         axios.post(LOGIN_URL, {
@@ -19,14 +18,13 @@ function LoginPage() {
             inputPass:password.value,
         })
         .then((res) => {
-            //console.log("res.data.userId :: ", res.data.user_id);
             const userInfo = res.data;
             if (userInfo.user_id === undefined) {
                 // id 일치하지 않는 경우 모든 정보 없음'
-                alert("입력하신 id 가 일치하지 않습니다.");
+                alert("The ID you entered does not match");
             } else if (userInfo.div === null) {
                 // id는 있지만, pw 는 다른 경우 user_id = 아이디 , 다른정보는 null
-                alert("입력하신 비밀번호 가 일치하지 않습니다.");
+                alert("The password you entered does not match");
             } else if (userInfo.user_id.upper === id.value.upper) {
                 // id, pw 모두 일치 : 세션저장
                 sessionStorage.setItem("div", userInfo.div); 
