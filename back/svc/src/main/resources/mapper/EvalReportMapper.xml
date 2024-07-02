@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.teamex.svc.mapper.EvalReportMapper">
+
+<!-- ## Ealuation Report ## -->
+
+  <!-- Evaluation Summary  --> 
+  <select id="selectList1" parameterType="Map" resultType="EvalReport">
+    select c.div_tech      as technician, 
+           e.ev_cls        as ev_cls, 
+           f.description   as ev_cls_nm, 
+           e.ev_code       as ev_code, 
+           e.ev_item       as ev_item,
+           sum(d.ev_result)/count(*) as avg_result
+      from siteevhd a
+        left outer join sitevrhd b on b.div = a.div and b.reportno = a.reportno
+        inner join SITEVRHD$TECHNICIAN$VIEW c on c.div = b.div and c.reportno = a.reportno
+        left outer join siteevdt d on d.div = a.div and d.reportno = a.reportno
+        left outer join siteevms e on e.div = a.div and e.ev_code = d.ev_code
+        left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
+     where a.div = #{div}
+       and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
+     group by c.div_tech, e.ev_cls, f.description, e.ev_code, e.ev_item
+     order by c.div_tech, e.ev_code
+  </select>
+  <select id="selectList" parameterType="Map" resultType="EvalReport">
+  select aa.technician   as technician, 
+         aa.lev          as lev,
+         aa.ev_cls       as ev_cls,
+         aa.ev_cls_nm    as ev_cls_nm, 
+         aa.ev_code      as ev_code, 
+         aa.ev_item      as ev_item, 
+         aa.avg_result   as avg_result
+    from (select c.div_tech   as technician,
+                 1            as lev,
+                 ''           as ev_cls,
+                 ''           as ev_cls_nm,
+                 null         as ev_code,
+                 ''           as ev_item,
+                 sum(d.ev_result)/count(*) as avg_result
+            from siteevhd a
+              left outer join sitevrhd b on b.div = a.div and b.reportno = a.reportno
+              inner join SITEVRHD$TECHNICIAN$VIEW c on c.div = b.div and c.reportno = a.reportno
+              left outer join siteevdt d on d.div = a.div and d.reportno = a.reportno
+              left outer join siteevms e on e.div = a.div and e.ev_code = d.ev_code
+              left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
+           where a.div = #{div}
+             and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
+           group by c.div_tech
+     
+        union all
+          select c.div_tech      as technician,
+                 2               as lev,
+                 e.ev_cls        as ev_cls,
+                 f.description   as ev_cls_nm,
+                 null            as ev_code,
+                 ''              as ev_item,
+                 sum(d.ev_result)/count(*)     as avg_result
+            from siteevhd a
+              left outer join sitevrhd b on b.div = a.div and b.reportno = a.reportno
+              inner join SITEVRHD$TECHNICIAN$VIEW c on c.div = b.div and c.reportno = a.reportno
+              left outer join siteevdt d on d.div = a.div and d.reportno = a.reportno
+              left outer join siteevms e on e.div = a.div and e.ev_code = d.ev_code
+              left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
+           where a.div = #{div}
+             and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
+           group by c.div_tech, e.ev_cls, f.description
+           
+       union all
+          select c.div_tech      as technician, 
+                 3 as lev        as lev,
+                 e.ev_cls        as ev_cls, 
+                 f.description   as ev_cls_nm, 
+                 e.ev_code       as ev_code, 
+                 e.ev_item       as ev_item,
+                 sum(d.ev_result)/count(*) as avg_result
+            from siteevhd a
+              left outer join sitevrhd b on b.div = a.div and b.reportno = a.reportno
+              inner join SITEVRHD$TECHNICIAN$VIEW c on c.div = b.div and c.reportno = a.reportno
+              left outer join siteevdt d on d.div = a.div and d.reportno = a.reportno
+              left outer join siteevms e on e.div = a.div and e.ev_code = d.ev_code
+              left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
+           where a.div = #{div}
+             and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
+           group by c.div_tech, e.ev_cls, f.description, e.ev_code, e.ev_item ) aa
+      order by aa.technician, aa.lev, aa.ev_code
+   </select>
+  <!-- Evaluation Rowdata --> 
+  <select id="selectRowData" parameterType="Map" resultType="EvalReport">
+    select c.div_tech      as technician, 
+           b.reportno      as reportno,
+           to_char(b.visit_dt, 'MM/DD/YYYY')      as visit_dt,
+           e.ev_cls        as ev_cls,
+           f.description   as ev_cls_nm,
+           e.ev_code       as ev_code,
+           e.ev_item       as ev_item,
+           d.ev_result     as ev_result,
+           d.ev_comment    as ev_comment,
+           g.lname || ' ' || g.fname   as evaluator
+      from siteevhd a
+        left outer join sitevrhd b on b.div = a.div and b.reportno = a.reportno
+        inner join SITEVRHD$TECHNICIAN$VIEW c on c.div = b.div and c.reportno = a.reportno
+        left outer join siteevdt d on d.div = a.div and d.reportno = a.reportno
+        left outer join siteevms e on e.div = a.div and e.ev_code = d.ev_code
+        left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
+        left outer join msuserms g on g.div = a.div and g.user_id = d.evaluator
+     where a.div = #{div}
+       and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
+     order by c.div_tech, b.reportno, e.ev_code
+  </select>
+
+</mapper>
