@@ -32,6 +32,10 @@ const MenuRender = (menu) => {
             return "Field Repair";
         case "EVALUATION":
             return "Evaluation";
+        case "EVALREPORT":
+            return "Evaluation Report";
+        case "ALLOWANCE":
+                return "Allowance Status";
         default:
             return "Login";
     }

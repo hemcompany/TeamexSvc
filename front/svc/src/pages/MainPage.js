@@ -4,6 +4,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import MenuBar from "../components/MenuBar";
 import FieldRepair from "../pages/FieldRepair";
 import Evaluation from "../pages/Evaluation";
+import EvalReport from "../pages/EvalReport";
+import Allowance from "../pages/Allowance";
 import Login from "../pages/LoginPage";
 import { useMenuContext } from "../provider/MenuProvider";
 import { useEffect } from "react";
@@ -36,6 +38,10 @@ const MenuRender = (menu) => {
             return <FieldRepair/>
         case "EVALUATION":
             return <Evaluation/>
+        case "EVALREPORT":
+            return <EvalReport/>
+        case "ALLOWANCE":
+            return <Allowance/>
         default:
             return <Login/>
     }

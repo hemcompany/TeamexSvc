@@ -1,4 +1,9 @@
 import * as React from 'react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {useMenuContext} from "../provider/MenuProvider";
+import logo from '../assets/logo.png';
+// MUI
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -8,29 +13,34 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Collapse from '@mui/material/Collapse';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import {useMenuContext} from "../provider/MenuProvider";
+import Remove from '@mui/icons-material/Remove';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import { useNavigate } from "react-router-dom"
-import logo from '../assets/logo.png';
 
 const drawerWidth = 220;
 export default function MenuBar() {
     const {menu, setMenu} = useMenuContext();
+    const [open, setOpen] = useState(true);
+
     const navigate = useNavigate();
     const ChangeMenu = (menuName) => {
         setMenu(menuName);
-    }
+    };
+    const Expand = () => {
+        setOpen(!open);
+    };
     const handleLogout = () => {
     	sessionStorage.removeItem("div");
     	sessionStorage.removeItem("id");
         sessionStorage.removeItem("name");
-    	sessionStorage.removeItem("team");
+    	sessionStorage.removeItem("type");
     	navigate("/login");
   	};
     return (
         <>
-
             <Drawer 
                 sx={{
                     width: drawerWidth, 
@@ -53,7 +63,7 @@ export default function MenuBar() {
                     <Typography variant='h7'>Teamex Field Report</Typography>
                 </Box>
                 <Divider />
-                <List>
+                <List sx={{bgcolor: 'background.paper', fontSize: 2}}>
                     <ListItem disablePadding>
                         <ListItemButton onClick={() => ChangeMenu('FIELDREPAIR')}>
                             <ListItemIcon>
@@ -62,14 +72,34 @@ export default function MenuBar() {
                             <ListItemText primary="Field Repair" />
                         </ListItemButton>
                     </ListItem>
-                    <ListItem disablePadding>
-                        <ListItemButton onClick={() => ChangeMenu('EVALUATION')}>
-                            <ListItemIcon>
-                                <InboxIcon/>
-                            </ListItemIcon>
-                            <ListItemText primary="Evaluation" />
-                        </ListItemButton>
-                    </ListItem>
+                    
+
+                    <ListItemButton onClick={Expand}>
+                        <ListItemIcon>
+                            <InboxIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Evaluation" />
+                        {open ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <ListItemButton sx={{ pl: 4 }} onClick={() => ChangeMenu('EVALUATION')}>
+                                <ListItemIcon>
+                                    <Remove />
+                                </ListItemIcon>
+                                <ListItemText primary="Evaluation" />
+                            </ListItemButton>
+                        </List>
+                        <List component="div" disablePadding>
+                            <ListItemButton sx={{ pl: 4 }} onClick={() => ChangeMenu('EVALREPORT')}>
+                                <ListItemIcon>
+                                    <Remove />
+                                </ListItemIcon>
+                                <ListItemText primary="Report" />
+                            </ListItemButton>
+                        </List>
+                    </Collapse>
+                    
                     <Divider />
                     <ListItem disablePadding>
                         <ListItemButton onClick={() => handleLogout() }>
