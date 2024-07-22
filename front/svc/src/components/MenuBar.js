@@ -63,7 +63,7 @@ export default function MenuBar() {
                     <Typography variant='h7'>Teamex Field Report</Typography>
                 </Box>
                 <Divider />
-                <List sx={{bgcolor: 'background.paper', fontSize: 2}}>
+                <List sx={{bgcolor: 'background.paper'}}>
                     <ListItem disablePadding>
                         <ListItemButton onClick={() => ChangeMenu('FIELDREPAIR')}>
                             <ListItemIcon>
@@ -87,7 +87,9 @@ export default function MenuBar() {
                                 <ListItemIcon>
                                     <Remove />
                                 </ListItemIcon>
-                                <ListItemText primary="Evaluation" />
+                                <ListItemText 
+                                    primary="Evaluation" 
+                                    primaryTypographyProps={{fontSize: '13px', lineHeight: '13px'}} />
                             </ListItemButton>
                         </List>
                         <List component="div" disablePadding>
@@ -95,10 +97,21 @@ export default function MenuBar() {
                                 <ListItemIcon>
                                     <Remove />
                                 </ListItemIcon>
-                                <ListItemText primary="Report" />
+                                <ListItemText 
+                                    primary="Report" 
+                                    primaryTypographyProps={{fontSize: '13px', lineHeight: '13px'}}/>
                             </ListItemButton>
                         </List>
                     </Collapse>
+
+                    <ListItem disablePadding>
+                        <ListItemButton onClick={() => ChangeMenu('ALLOWANCE')}>
+                            <ListItemIcon>
+                                <InboxIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary="Allowance Status" />
+                        </ListItemButton>
+                    </ListItem>
                     
                     <Divider />
                     <ListItem disablePadding>
