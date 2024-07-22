@@ -19,9 +19,6 @@
          left outer join msuserms b on b.div = a.div and b.user_id = a.tech_id
       where a.div = #{div}
         and a.start_date between to_date(#{start_dt},'mm/dd/yyyy') and to_date(#{end_dt},'mm/dd/yyyy')
-        <if test='user_type != "A"'>
-        and a.tech_id = #{user_id}
-        </if>
       group by a.div, a.technician, a.tech_id
       order by a.div, a.technician
   </select>
@@ -61,9 +58,6 @@
         left outer join mssitems c on c.div = a.div and c.site_cd = a.site_cd
      where a.div = #{div}
        and a.start_date between to_date(#{start_dt},'mm/dd/yyyy') and to_date(#{end_dt},'mm/dd/yyyy')
-       <if test='user_type != "A"'>
-       and a.tech_id = #{user_id}
-       </if>
      order by a.technician, a.start_date
   </select>
 
