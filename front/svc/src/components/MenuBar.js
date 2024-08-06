@@ -3,34 +3,84 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {useMenuContext} from "../provider/MenuProvider";
 import logo from '../assets/logo.png';
+
 // MUI
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Collapse from '@mui/material/Collapse';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import Remove from '@mui/icons-material/Remove';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
+
+import { styled, alpha } from '@mui/material/styles';
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
+import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
+import LabelIcon from '@mui/icons-material/Label';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const drawerWidth = 220;
+const MUI_X_PRODUCTS = [
+    {
+      id: 'FIELDREPORT',
+      label: 'Field Report',
+      children: [],
+    },
+    {
+      id: 'EVAL',
+      label: 'Evaluation',
+      children: [
+        { id: 'EVALUATION', label: 'Evaluation' },
+        { id: 'EVALREPORT', label: 'Report' },
+      ],
+    },
+    {
+      id: 'ALLOW',
+      label: 'Allowance',
+      children: [
+        { id: 'ALLOWANCE', label: 'Allowance Status' },
+        { id: 'ALLOWANCEM', label: 'Allowance Status (Monthly)' },
+      ],
+    },
+    {
+      id: 'LOGOUT',
+      label: 'Log Out',
+    },
+  ];
+  
+  const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
+    color:
+      theme.palette.mode === 'light'
+        ? theme.palette.grey[800]
+        : theme.palette.grey[200],
+    [`& .${treeItemClasses.content}`]: {
+      borderRadius: theme.spacing(0.5),
+      padding: theme.spacing(0.5, 1),
+      margin: theme.spacing(0.2, 0),
+      [`& .${treeItemClasses.label}`]: {
+        fontSize: '0.8rem',
+        fontWeight: 500,
+      },
+    },
+    [`& .${treeItemClasses.iconContainer}`]: {
+      borderRadius: '50%',
+      backgroundColor:
+        theme.palette.mode === 'light'
+          ? alpha(theme.palette.primary.main, 0.25)
+          : theme.palette.primary.dark,
+      color: theme.palette.mode === 'dark' && theme.palette.primary.contrastText,
+      padding: theme.spacing(0, 1.2),
+    },
+    [`& .${treeItemClasses.groupTransition}`]: {
+      marginLeft: 15,
+      paddingLeft: 0,
+      borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
+    },
+  }));
+
 export default function MenuBar() {
     const {menu, setMenu} = useMenuContext();
-    const [open, setOpen] = useState(true);
 
     const navigate = useNavigate();
     const ChangeMenu = (menuName) => {
         setMenu(menuName);
-    };
-    const Expand = () => {
-        setOpen(!open);
     };
     const handleLogout = () => {
     	sessionStorage.removeItem("div");
@@ -39,6 +89,8 @@ export default function MenuBar() {
     	sessionStorage.removeItem("type");
     	navigate("/login");
   	};
+
+      
     return (
         <>
             <Drawer 
@@ -63,66 +115,27 @@ export default function MenuBar() {
                     <Typography variant='h7'>Teamex Field Report</Typography>
                 </Box>
                 <Divider />
-                <List sx={{bgcolor: 'background.paper'}}>
-                    <ListItem disablePadding>
-                        <ListItemButton onClick={() => ChangeMenu('FIELDREPAIR')}>
-                            <ListItemIcon>
-                                <InboxIcon/>
-                            </ListItemIcon>
-                            <ListItemText primary="Field Repair" />
-                        </ListItemButton>
-                    </ListItem>
-                    
-
-                    <ListItemButton onClick={Expand}>
-                        <ListItemIcon>
-                            <InboxIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Evaluation" />
-                        {open ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }} onClick={() => ChangeMenu('EVALUATION')}>
-                                <ListItemIcon>
-                                    <Remove />
-                                </ListItemIcon>
-                                <ListItemText 
-                                    primary="Evaluation" 
-                                    primaryTypographyProps={{fontSize: '13px', lineHeight: '13px'}} />
-                            </ListItemButton>
-                        </List>
-                        <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }} onClick={() => ChangeMenu('EVALREPORT')}>
-                                <ListItemIcon>
-                                    <Remove />
-                                </ListItemIcon>
-                                <ListItemText 
-                                    primary="Report" 
-                                    primaryTypographyProps={{fontSize: '13px', lineHeight: '13px'}}/>
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
-
-                    <ListItem disablePadding>
-                        <ListItemButton onClick={() => ChangeMenu('ALLOWANCE')}>
-                            <ListItemIcon>
-                                <InboxIcon/>
-                            </ListItemIcon>
-                            <ListItemText primary="Allowance Status" />
-                        </ListItemButton>
-                    </ListItem>
-                    
+                <Box display="fit" justifyContent="left" alignItems="left" pt={2}>
+                <SimpleTreeView>
+                    <CustomTreeItem 
+                        itemId="FIELDREPAIR" label="Field Repair" onClick={() => ChangeMenu('FIELDREPAIR')} />
+                    <CustomTreeItem itemId="EVAL" label="Evaluation">
+                        <CustomTreeItem 
+                            itemId="EVALUATION" label="Evaluation" onClick={() => ChangeMenu('EVALUATION')}/>
+                        <CustomTreeItem 
+                            itemId="EVALREPORT" label="Report" onClick={() => ChangeMenu('EVALREPORT')}/>
+                    </CustomTreeItem>
+                    <CustomTreeItem itemId="ALLOW" label="Allowance">
+                        <CustomTreeItem 
+                            itemId="ALLOWANCE" label="Allowance Status" onClick={() => ChangeMenu('ALLOWANCE')}/>
+                        <CustomTreeItem 
+                            itemId="ALLOWANCEM" label="Allowance Status (Monthly)" onClick={() => ChangeMenu('ALLOWANCEM')}/>
+                    </CustomTreeItem>
                     <Divider />
-                    <ListItem disablePadding>
-                        <ListItemButton onClick={() => handleLogout() }>
-                            <ListItemIcon>
-                                <ExitToAppIcon/>
-                            </ListItemIcon>
-                            <ListItemText primary="LogOut" />
-                        </ListItemButton>
-                    </ListItem>
-                </List>
+                    <CustomTreeItem 
+                        itemId="LOGOUT" label="Log Out" onClick={() => handleLogout()} slots={{icon: ExitToAppIcon}}/>
+                </SimpleTreeView>
+                </Box>
             </Drawer>
         </>
     );

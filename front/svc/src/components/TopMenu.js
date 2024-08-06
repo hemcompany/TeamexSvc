@@ -36,6 +36,8 @@ const MenuRender = (menu) => {
             return "Evaluation Report";
         case "ALLOWANCE":
                 return "Allowance Status";
+        case "ALLOWANCEM":
+            return "Allowance Status (Monthly)";
         default:
             return "Login";
     }

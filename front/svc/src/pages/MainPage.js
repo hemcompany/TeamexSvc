@@ -6,6 +6,7 @@ import FieldRepair from "../pages/FieldRepair";
 import Evaluation from "../pages/Evaluation";
 import EvalReport from "../pages/EvalReport";
 import Allowance from "../pages/Allowance";
+import AllowanceM from "../pages/AllowanceM";
 import Login from "../pages/LoginPage";
 import { useMenuContext } from "../provider/MenuProvider";
 import { useEffect } from "react";
@@ -42,6 +43,8 @@ const MenuRender = (menu) => {
             return <EvalReport/>
         case "ALLOWANCE":
             return <Allowance/>
+        case "ALLOWANCEM":
+            return <AllowanceM/>
         default:
             return <Login/>
     }
