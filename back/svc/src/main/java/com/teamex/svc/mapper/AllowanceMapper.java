@@ -13,10 +13,13 @@ import com.teamex.svc.entity.Allowance;
 public interface AllowanceMapper {
 	
 	// ## Allowance Status Retrieve
-	// Allowance Accumulation list
+	// Allowance list
 	List<Allowance> selectList(Map<String,Object> map);
 
-	// Evaluation Row Data
+	// Allowance Row Data
 	List<Allowance> selectRowData(Map<String,Object> map);
-
+	
+	// ## Allowance Monthly Accumulate Retrieve
+	// Allowance Monthly Accumulate Summary
+	List<Allowance> selectMList(Map<String,Object> map);
 }

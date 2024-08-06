@@ -44,6 +44,19 @@ public class AllowanceController {
 				@RequestParam(name="user_id") String user_id,
 				@RequestParam(name="start_dt") String start_dt, 
 				@RequestParam(name="end_dt") String end_dt) {
-    return allowanceService.selectRowData(div, user_type, user_id, start_dt, end_dt);
-  }
+		return allowanceService.selectRowData(div, user_type, user_id, start_dt, end_dt);
+	}
+	
+	// ## Allowance Monthly Accumulate Retrieve
+	// Allowance Monthly Accumulate Summary
+	// API : /api/allowance/select/r_m_summary
+	@GetMapping("/select/r_m_summary")
+	///@CrossOrigin(origins = {"http://localhost:3000", "http://localhost", "http://rpt.teamexusa.com"}) : Apply at the WebConfig
+	public List<Allowance> selectWList(@RequestParam(name="div", required=true) String div,
+				@RequestParam(name="user_type") String user_type,
+				@RequestParam(name="user_id") String user_id,
+				@RequestParam(name="w_year") String w_year, 
+				@RequestParam(name="w_month") String w_month) {
+		return allowanceService.selectMList(div, user_type, user_id, w_year, w_month);
+	}
 }

@@ -8,7 +8,7 @@ import lombok.Getter;
 @JsonInclude
 public class Allowance {
 	String id;
-	//Allowance Accumulation Status
+	//Allowance Status
 	String div;
 	String transaction_no;
 	String start_date;
@@ -27,6 +27,12 @@ public class Allowance {
 	double real_tot_work_hours;
 	String remark;
     
+	//Allowance Monthly Accumulate Status
+	String w_year;
+	String w_month;
+	String week_per_mon;
+	String end_date;
+	
     String user_id;
     String create_id; 
     String create_dt; 

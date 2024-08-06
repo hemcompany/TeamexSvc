@@ -4,7 +4,7 @@
 
 <!-- ## Allowance Status Report ## -->
 
-  <!-- Allowance Accumulation list  --> 
+  <!-- Allowance list  --> 
   <select id="selectList" parameterType="Map" resultType="Allowance">
      select a.div,
             a.technician,
@@ -61,4 +61,28 @@
      order by a.technician, a.start_date
   </select>
 
+  <!-- ## Allowance Monthly Accumulate Retrieve -->
+  <!-- Allowance Monthly Accumulation list  --> 
+  <select id="selectMList" parameterType="Map" resultType="Allowance">
+     select a.div,
+            a.technician,
+            a.w_year,
+            a.w_month,
+            a.week_per_mon,
+            to_char(to_date(a.start_date,'yyyymmdd'), 'mm/dd/yyyy') as start_date,
+            to_char(to_date(a.end_date,'yyyymmdd'),'mm/dd/yyyy') as end_date,
+            a.tech_user_id    as tech_id,
+            a.distance        as distance,
+            a.other_distance  as other_distance,
+            a.mov_distance    as mov_distance,
+            a.mov_hours       as mov_hours,
+            a.std_work_hours  as std_work_hours,
+            a.tot_work_hours  as tot_work_hours
+       from fsworkwk a
+         left outer join msuserms b on b.div = a.div and b.user_id = a.tech_user_id
+      where a.div = #{div}
+        and a.w_year = #{w_year}
+        and a.w_month = #{w_month}
+      order by a.div, a.technician, a.w_year, a.w_month, a.week_per_mon
+  </select>
 </mapper>

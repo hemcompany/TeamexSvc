@@ -16,7 +16,7 @@ public class AllowanceService {
 	AllowanceMapper allowanceMapper;
 
 	// ## Allowance Status Retrieve
-	// Allowance Accumulation list
+	// Allowance list
 	public List<Allowance> selectList(String div, String user_type, String user_id, String start_dt, String end_dt) {
 		Map<String,Object>map = new HashMap<String,Object>();
 		if(div == null)
@@ -48,5 +48,23 @@ public class AllowanceService {
 		//if !(user_type.equals("O") || user_type.equals("A")) return null;
 		
 		return allowanceMapper.selectRowData(map);
+	}
+	
+	// ## Allowance Monthly Accumulate Retrieve
+	// Allowance Monthly Accumulate Summary
+	public List<Allowance> selectMList(String div, String user_type, String user_id, String w_year, String w_month) {
+		Map<String,Object>map = new HashMap<String,Object>();
+		if(div == null)
+			map.put("div", "80");
+		else
+			map.put("div", div);
+		map.put("user_type", user_type);    //E : Engineer, O : Field Operation, P : Parts Management
+		map.put("user_id", user_id);
+		map.put("w_year", w_year);
+		map.put("w_month", w_month);
+		
+		//if !(user_type.equals("O") || user_type.equals("A")) return null;
+		
+		return allowanceMapper.selectMList(map);
 	}
 }
