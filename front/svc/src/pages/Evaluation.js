@@ -24,6 +24,11 @@ const columns = [
         width: 115,
     },
     {
+        field: 'fs_no', 
+        headerName: 'FS NO.', 
+        width: 115,
+    },
+    {
         field: 'report_sts',
         headerName: 'Status',
         width: 55,
@@ -139,7 +144,7 @@ export default function Evaluation() {
             div: sessionStorage.getItem("div"),
             reportno: params.row.reportno,
             user_id: sessionStorage.getItem("id"),
-            user_type: sessionStorage.getItem("type")
+            user_type: sessionStorage.getItem("type"),
         });
     };
 
@@ -169,7 +174,7 @@ export default function Evaluation() {
             div: sessionStorage.getItem("div"),
             reportno: reportno,
             user_id: sessionStorage.getItem("id"),
-            user_type: sessionStorage.getItem("type")
+            user_type: sessionStorage.getItem("type"),
         });
     }, [boardList]);
 

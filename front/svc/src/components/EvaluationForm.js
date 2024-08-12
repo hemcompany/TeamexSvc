@@ -20,45 +20,57 @@ function EvaluationForm({reportinfo, fetchList}) {
         padding: theme.spacing(1),
         textAlign: 'center',
         color: theme.palette.text.secondary,
+        fontSize: '9pt',
     }));
+    const Typo = styled(Typography)(({theme}) => ({
+        fontSize: '10pt',
+    }))
 
     function ReportHd({reportHd}){
         return (
             <>
                 <Grid container spacing={1}>
-                    <Grid item xs={3}>
-                        <Item variant="outlined">Report NO</Item>
+                    <Grid item xs={2.5}>
+                        <Item variant="outlined">Report NO.</Item>
                     </Grid>
-                    <Grid item xs={3} mt={1}>
-                        <Typography variant="button">
+                    <Grid item xs={4} mt={1}>
+                        <Typo variant="button">
                             {reportHd.reportno}
-                        </Typography>
+                        </Typo>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2.5}>
                         <Item variant="outlined">Eval Sts.</Item>
                     </Grid>
                     <Grid item xs={3} mt={1}>
-                        <Typography variant="button">
+                        <Typo variant="button">
                             {reportHd.ev_sts_nm}
-                        </Typography>
+                        </Typo>
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid item xs={2.5}>
                         <Item variant="outlined">Eval Type</Item>
                     </Grid>
-                    <Grid item xs={9} mt={1}>
-                        <Typography variant="button">
+                    <Grid item xs={4} mt={1}>
+                        <Typo variant="button">
                             {reportHd.ev_cls_nm}
-                        </Typography>
+                        </Typo>
+                    </Grid>
+                    <Grid item xs={2.5}>
+                        <Item variant="outlined">FS NO.</Item>
+                    </Grid>
+                    <Grid item xs={3} mt={1}>
+                        <Typo variant="button">
+                            {reportHd.fs_no}
+                        </Typo>
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid item xs={2.5}>
                         <Item variant="outlined">Technician(s)</Item>
                     </Grid>
-                    <Grid item xs={9} mt={1}>
-                        <Typography variant="button">
+                    <Grid item xs={9.5} mt={1}>
+                        <Typo variant="button">
                         {reportHd.technician}
-                        </Typography>
+                        </Typo>
                     </Grid>
                 </Grid>
             </>
