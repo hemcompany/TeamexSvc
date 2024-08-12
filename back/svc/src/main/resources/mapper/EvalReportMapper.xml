@@ -92,6 +92,7 @@
   <select id="selectRowData" parameterType="Map" resultType="EvalReport">
     select c.div_tech      as technician, 
            b.reportno      as reportno,
+           b.fs_no         as fs_no,
            to_char(b.visit_dt, 'MM/DD/YYYY')      as visit_dt,
            e.ev_cls        as ev_cls,
            f.description   as ev_cls_nm,

@@ -15,6 +15,7 @@ public class Evaluation {
 	String visit_dt;
 	String technician;
 	String cust_cd;
+	String fs_no;
 	boolean ev_e;
 	boolean ev_o;
 	boolean ev_p;

@@ -14,6 +14,7 @@ public class EvalReport {
 	String reportno;
 	String visit_dt;
 	String technician;
+	String fs_no;
 	//Evaluation Info
 	String ev_cls;  // E : Engineer, O : Operator, P : Parts Management
 	String ev_cls_nm;
