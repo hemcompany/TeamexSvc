@@ -39,9 +39,6 @@
                          <if test='visit_to != null and visit_to != ""'>
                          <![CDATA[ and sb.visit_dt <= to_date( #{visit_to}, 'MM/DD/YYYY') ]]>
                          </if>
-                         <if test='user_type == "E"'>
-                          and sb.create_id = #{user_id}
-                         </if>
              group by sa.div, sa.reportno) e on e.div = a.div and e.reportno = a.reportno
      WHERE a.div = #{div}
        AND a.report_sts in ('B', 'C')
@@ -50,9 +47,6 @@
        </if>
        <if test='visit_to != null and visit_to != ""'>
        <![CDATA[ AND a.visit_dt <= to_date( #{visit_to}, 'MM/DD/YYYY') ]]>
-       </if>
-       <if test='user_type == "E"'>
-       AND a.create_id = #{user_id}
        </if>
      ORDER BY TRAN_DATE DESC
   </select>
