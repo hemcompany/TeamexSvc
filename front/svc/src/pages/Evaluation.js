@@ -99,7 +99,7 @@ export default function Evaluation() {
     const [reportinfo, setReportinfo] = useState([]);   //평가위해 선택된 REPORT 정보
     
     const EVALUATION_LIST_URL = "/api/evaluation/select/list";
-    const [frDate, setFrDate] = useState(dayjs().add(-1, 'month'));
+    const [frDate, setFrDate] = useState(dayjs().add(-7, 'day'));
     const [toDate, setToDate] = useState(dayjs());
     const PAGE_SIZE = 25;
     
