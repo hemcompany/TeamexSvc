@@ -16,7 +16,7 @@ public interface EvalReportMapper {
 	// Evaluation Summary
 	List<EvalReport> selectList(Map<String,Object> map);
 
-	// Evaluation Row Data
-	List<EvalReport> selectRowData(Map<String,Object> map);
+	// Evaluation Raw Data
+	List<EvalReport> selectRawData(Map<String,Object> map);
 
 }

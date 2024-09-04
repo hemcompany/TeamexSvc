@@ -35,13 +35,13 @@ public class EvalReportController {
 		return evalReportService.selectList(div, user_type, visit_fr, visit_to);
 	}
 
-	// API : /api/evalReport/select/r_rowdata
-	@GetMapping("/select/r_rowdata")
+	// API : /api/evalReport/select/r_rawdata
+	@GetMapping("/select/r_rawdata")
 	///@CrossOrigin(origins = {"http://localhost:3000", "http://localhost", "http://rpt.teamexusa.com"}) : Apply at the WebConfig
 	public List<EvalReport> selectRowData(@RequestParam(name="div", required=true) String div, 
 				@RequestParam(name="user_type") String user_type,
 				@RequestParam(name="visit_fr") String visit_fr, 
 				@RequestParam(name="visit_to") String visit_to) {
-    return evalReportService.selectRowData(div, user_type, visit_fr, visit_to);
+    return evalReportService.selectRawData(div, user_type, visit_fr, visit_to);
   }
 }

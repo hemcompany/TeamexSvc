@@ -32,8 +32,8 @@ public class EvalReportService {
 		return evalReportMapper.selectList(map);
 	}
 
-	// Evaluation Ruow Data
-	public List<EvalReport> selectRowData(String div, String user_type, String visit_fr, String visit_to) {
+	// Evaluation Raw Data
+	public List<EvalReport> selectRawData(String div, String user_type, String visit_fr, String visit_to) {
 		Map<String,Object>map = new HashMap<String,Object>();
 		if(div == null)
 			map.put("div", "80");
@@ -45,6 +45,6 @@ public class EvalReportService {
 		
 		//if !(user_type.equals("O") || user_type.equals("A")) return null;
 		
-		return evalReportMapper.selectRowData(map);
+		return evalReportMapper.selectRawData(map);
 	}
 }

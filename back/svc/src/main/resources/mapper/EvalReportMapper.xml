@@ -16,7 +16,7 @@
         left outer join sitevrhd b on b.div = a.div and b.reportno = a.reportno
         inner join SITEVRHD$TECHNICIAN$VIEW c on c.div = b.div and c.reportno = a.reportno
         left outer join siteevdt d on d.div = a.div and d.reportno = a.reportno
-        left outer join siteevms e on e.div = a.div and e.ev_code = d.ev_code
+        left outer join siteevms e on e.div = a.div and e.ev_type = 'FST' and e.ev_code = d.ev_code
         left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
      where a.div = #{div}
        and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
@@ -43,7 +43,7 @@
               left outer join sitevrhd b on b.div = a.div and b.reportno = a.reportno
               inner join SITEVRHD$TECHNICIAN$VIEW c on c.div = b.div and c.reportno = a.reportno
               left outer join siteevdt d on d.div = a.div and d.reportno = a.reportno
-              left outer join siteevms e on e.div = a.div and e.ev_code = d.ev_code
+              left outer join siteevms e on e.div = a.div and e.ev_type = 'FST' and e.ev_code = d.ev_code
               left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
            where a.div = #{div}
              and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
@@ -62,7 +62,7 @@
               left outer join sitevrhd b on b.div = a.div and b.reportno = a.reportno
               inner join SITEVRHD$TECHNICIAN$VIEW c on c.div = b.div and c.reportno = a.reportno
               left outer join siteevdt d on d.div = a.div and d.reportno = a.reportno
-              left outer join siteevms e on e.div = a.div and e.ev_code = d.ev_code
+              left outer join siteevms e on e.div = a.div and e.ev_type = 'FST' and e.ev_code = d.ev_code
               left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
            where a.div = #{div}
              and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
@@ -81,15 +81,15 @@
               left outer join sitevrhd b on b.div = a.div and b.reportno = a.reportno
               inner join SITEVRHD$TECHNICIAN$VIEW c on c.div = b.div and c.reportno = a.reportno
               left outer join siteevdt d on d.div = a.div and d.reportno = a.reportno
-              left outer join siteevms e on e.div = a.div and e.ev_code = d.ev_code
+              left outer join siteevms e on e.div = a.div and e.ev_type = 'FST' and e.ev_code = d.ev_code
               left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
            where a.div = #{div}
              and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
            group by c.div_tech, e.ev_cls, f.description, f.sort_id, e.ev_code, e.ev_item ) aa
       order by aa.technician, aa.lev, aa.ev_cls_sort, aa.ev_code
    </select>
-  <!-- Evaluation Rowdata --> 
-  <select id="selectRowData" parameterType="Map" resultType="EvalReport">
+  <!-- Evaluation Rawdata --> 
+  <select id="selectRawData" parameterType="Map" resultType="EvalReport">
     select c.div_tech      as technician, 
            b.reportno      as reportno,
            b.fs_no         as fs_no,
@@ -105,7 +105,7 @@
         left outer join sitevrhd b on b.div = a.div and b.reportno = a.reportno
         inner join SITEVRHD$TECHNICIAN$VIEW c on c.div = b.div and c.reportno = a.reportno
         left outer join siteevdt d on d.div = a.div and d.reportno = a.reportno
-        left outer join siteevms e on e.div = a.div and e.ev_code = d.ev_code
+        left outer join siteevms e on e.div = a.div and e.ev_type = 'FST' and e.ev_code = d.ev_code
         left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
         left outer join msuserms g on g.div = a.div and g.user_id = d.evaluator
      where a.div = #{div}
