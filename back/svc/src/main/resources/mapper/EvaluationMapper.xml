@@ -37,7 +37,7 @@
                          <![CDATA[ and sb.visit_dt >= to_date( #{visit_fr}, 'MM/DD/YYYY') ]]>
                          </if>
                          <if test='visit_to != null and visit_to != ""'>
-                         <![CDATA[ and sb.visit_dt <= to_date( #{visit_to}, 'MM/DD/YYYY') ]]>
+                         <![CDATA[ and sb.visit_dt <= to_date( #{visit_to}, 'MM/DD/YYYY')+1 ]]>
                          </if>
              group by sa.div, sa.reportno) e on e.div = a.div and e.reportno = a.reportno
      WHERE a.div = #{div}
@@ -46,7 +46,7 @@
        <![CDATA[ AND a.visit_dt >= to_date( #{visit_fr}, 'MM/DD/YYYY') ]]>
        </if>
        <if test='visit_to != null and visit_to != ""'>
-       <![CDATA[ AND a.visit_dt <= to_date( #{visit_to}, 'MM/DD/YYYY') ]]>
+       <![CDATA[ AND a.visit_dt <= to_date( #{visit_to}, 'MM/DD/YYYY')+1 ]]>
        </if>
      ORDER BY TRAN_DATE DESC
   </select>

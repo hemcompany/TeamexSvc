@@ -19,7 +19,7 @@
         left outer join siteevms e on e.div = a.div and e.ev_type = 'FST' and e.ev_code = d.ev_code
         left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
      where a.div = #{div}
-       and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
+       and b.visit_dt between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')+1
      group by c.div_tech, e.ev_cls, f.description, e.ev_code, e.ev_item
      order by c.div_tech, e.ev_code
   </select>
@@ -46,7 +46,7 @@
               left outer join siteevms e on e.div = a.div and e.ev_type = 'FST' and e.ev_code = d.ev_code
               left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
            where a.div = #{div}
-             and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
+             and b.visit_dt between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')+1
            group by c.div_tech
      
         union all
@@ -65,7 +65,7 @@
               left outer join siteevms e on e.div = a.div and e.ev_type = 'FST' and e.ev_code = d.ev_code
               left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
            where a.div = #{div}
-             and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
+             and b.visit_dt between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')+1
            group by c.div_tech, e.ev_cls, f.description, f.sort_id
            
        union all
@@ -84,7 +84,7 @@
               left outer join siteevms e on e.div = a.div and e.ev_type = 'FST' and e.ev_code = d.ev_code
               left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
            where a.div = #{div}
-             and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
+             and b.visit_dt between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')+1
            group by c.div_tech, e.ev_cls, f.description, f.sort_id, e.ev_code, e.ev_item ) aa
       order by aa.technician, aa.lev, aa.ev_cls_sort, aa.ev_code
    </select>
@@ -109,7 +109,7 @@
         left outer join MSCODEEL f on f.id = '843' and f.value = e.ev_cls   <!--EVALUATOR CLS-->
         left outer join msuserms g on g.div = a.div and g.user_id = d.evaluator
      where a.div = #{div}
-       and b.tran_date between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')
+       and b.visit_dt between to_date(#{visit_fr},'MM/DD/YYYY') and to_date(#{visit_to},'MM/DD/YYYY')+1
      order by c.div_tech, b.reportno, e.ev_code
   </select>
 
