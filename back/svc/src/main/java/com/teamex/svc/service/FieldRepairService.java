@@ -90,7 +90,10 @@ public class FieldRepairService {
 			for (int i=0, n=detailList.size(); i < n; i++) {
 				FieldRepair_d detailInfo = detailList.get(i);
 				String action_detail = detailInfo.getAction_detail();
-				action_detail = action_detail.replaceAll(System.getProperty("line.separator"), "<br>");
+				//[2024.09.05] HEM NULL 일 경우 에러 처리
+				if(action_detail != null) {
+					action_detail = action_detail.replaceAll(System.getProperty("line.separator"), "<br>");
+				}
 				detailInfo.setAction_detail(action_detail);
 				detailList.set(i, detailInfo);
 			}
