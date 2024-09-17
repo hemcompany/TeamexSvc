@@ -16,8 +16,8 @@ public interface AllowanceMapper {
 	// Allowance list
 	List<Allowance> selectList(Map<String,Object> map);
 
-	// Allowance Row Data
-	List<Allowance> selectRowData(Map<String,Object> map);
+	// Allowance Raw Data
+	List<Allowance> selectRawData(Map<String,Object> map);
 	
 	// ## Allowance Monthly Accumulate Retrieve
 	// Allowance Monthly Accumulate Summary

@@ -29,22 +29,20 @@ public class AllowanceController {
 	@GetMapping("/select/r_summary")
 	///@CrossOrigin(origins = {"http://localhost:3000", "http://localhost", "http://rpt.teamexusa.com"}) : Apply at the WebConfig
 	public List<Allowance> selectList(@RequestParam(name="div", required=true) String div,
-				@RequestParam(name="user_type") String user_type,
 				@RequestParam(name="user_id") String user_id,
 				@RequestParam(name="start_dt") String start_dt, 
 				@RequestParam(name="end_dt") String end_dt) {
-		return allowanceService.selectList(div, user_type, user_id, start_dt, end_dt);
+		return allowanceService.selectList(div, user_id, start_dt, end_dt);
 	}
 
-	// API : /api/allowance/select/r_rowdata
-	@GetMapping("/select/r_rowdata")
+	// API : /api/allowance/select/r_rawdata
+	@GetMapping("/select/r_rawdata")
 	///@CrossOrigin(origins = {"http://localhost:3000", "http://localhost", "http://rpt.teamexusa.com"}) : Apply at the WebConfig
-	public List<Allowance> selectRowData(@RequestParam(name="div", required=true) String div, 
-				@RequestParam(name="user_type") String user_type,
+	public List<Allowance> selectRawData(@RequestParam(name="div", required=true) String div, 
 				@RequestParam(name="user_id") String user_id,
 				@RequestParam(name="start_dt") String start_dt, 
 				@RequestParam(name="end_dt") String end_dt) {
-		return allowanceService.selectRowData(div, user_type, user_id, start_dt, end_dt);
+		return allowanceService.selectRawData(div, user_id, start_dt, end_dt);
 	}
 	
 	// ## Allowance Monthly Accumulate Retrieve
@@ -53,10 +51,9 @@ public class AllowanceController {
 	@GetMapping("/select/r_m_summary")
 	///@CrossOrigin(origins = {"http://localhost:3000", "http://localhost", "http://rpt.teamexusa.com"}) : Apply at the WebConfig
 	public List<Allowance> selectWList(@RequestParam(name="div", required=true) String div,
-				@RequestParam(name="user_type") String user_type,
 				@RequestParam(name="user_id") String user_id,
 				@RequestParam(name="w_year") String w_year, 
 				@RequestParam(name="w_month") String w_month) {
-		return allowanceService.selectMList(div, user_type, user_id, w_year, w_month);
+		return allowanceService.selectMList(div, user_id, w_year, w_month);
 	}
 }

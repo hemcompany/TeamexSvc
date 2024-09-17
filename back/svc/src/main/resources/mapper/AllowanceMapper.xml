@@ -12,19 +12,19 @@
             sum(a.distance) as distance,
             sum(a.other_distance) as other_distance,
             sum(a.mov_distance) as mov_distance,
-            sum(a.mov_hours) as mov_hours,
+            round(sum(a.mov_distance)/45,2) as mov_hours,
             sum(a.std_work_hours) as std_work_hours,
-            sum(a.mov_hours) + sum(a.std_work_hours) as tot_work_hours
+            round(sum(a.mov_distance)/45,2) + sum(a.std_work_hours) as tot_work_hours
        from fsworkhr a
          left outer join msuserms b on b.div = a.div and b.user_id = a.tech_id
       where a.div = #{div}
-        and a.start_date between to_date(#{start_dt},'mm/dd/yyyy') and to_date(#{end_dt},'mm/dd/yyyy')
+        and a.start_date between to_date(#{start_dt},'mm/dd/yyyy') and to_date(#{end_dt},'mm/dd/yyyy')+1
       group by a.div, a.technician, a.tech_id
       order by a.div, a.technician
   </select>
   
-  <!-- Evaluation Rowdata --> 
-  <select id="selectRowData" parameterType="Map" resultType="Allowance">
+  <!-- Evaluation Rawdata --> 
+  <select id="selectRawData" parameterType="Map" resultType="Allowance">
     select a.div                     as div,
            a.transaction_no          as transaction_no,
            a.transaction_status      as transaction_status,
@@ -57,7 +57,7 @@
         left outer join msuserms b on b.div = a.div and b.user_id = a.tech_id
         left outer join mssitems c on c.div = a.div and c.site_cd = a.site_cd
      where a.div = #{div}
-       and a.start_date between to_date(#{start_dt},'mm/dd/yyyy') and to_date(#{end_dt},'mm/dd/yyyy')
+       and a.start_date between to_date(#{start_dt},'mm/dd/yyyy') and to_date(#{end_dt},'mm/dd/yyyy')+1
      order by a.technician, a.start_date
   </select>
 
