@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {useMenuContext} from "../provider/MenuProvider";
 import logo from '../assets/logo.png';
@@ -13,41 +12,13 @@ import Divider from '@mui/material/Divider';
 import { styled, alpha } from '@mui/material/styles';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
-import LabelIcon from '@mui/icons-material/Label';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const drawerWidth = 220;
-const MUI_X_PRODUCTS = [
-    {
-      id: 'FIELDREPORT',
-      label: 'Field Report',
-      children: [],
-    },
-    {
-      id: 'EVAL',
-      label: 'Evaluation',
-      children: [
-        { id: 'EVALUATION', label: 'Evaluation' },
-        { id: 'EVALREPORT', label: 'Report' },
-      ],
-    },
-    {
-      id: 'ALLOW',
-      label: 'Allowance',
-      children: [
-        { id: 'ALLOWANCE', label: 'Allowance Status' },
-        { id: 'ALLOWANCEM', label: 'Allowance Status (Monthly)' },
-      ],
-    },
-    {
-      id: 'LOGOUT',
-      label: 'Log Out',
-    },
-  ];
   
-  const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
-    color:
-      theme.palette.mode === 'light'
+const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
+  color:
+    theme.palette.mode === 'light'
         ? theme.palette.grey[800]
         : theme.palette.grey[200],
     [`& .${treeItemClasses.content}`]: {
@@ -73,7 +44,7 @@ const MUI_X_PRODUCTS = [
       paddingLeft: 0,
       borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
     },
-  }));
+}));
 
 export default function MenuBar() {
     const {menu, setMenu} = useMenuContext();
@@ -89,8 +60,7 @@ export default function MenuBar() {
     	sessionStorage.removeItem("type");
     	navigate("/login");
   	};
-
-      
+ 
     return (
         <>
             <Drawer 
@@ -116,20 +86,28 @@ export default function MenuBar() {
                 </Box>
                 <Divider />
                 <Box display="fit" justifyContent="left" alignItems="left" pt={2}>
-                <SimpleTreeView>
-                    <CustomTreeItem 
-                        itemId="FIELDREPAIR" label="Field Repair" onClick={() => ChangeMenu('FIELDREPAIR')} />
-                    <CustomTreeItem itemId="EVAL" label="Evaluation">
+                <SimpleTreeView
+                    defaultExpandedItems={['SERVICE']}
+                >
+                    <CustomTreeItem itemId="SERVICE" label="SERVICE">
                         <CustomTreeItem 
-                            itemId="EVALUATION" label="Evaluation" onClick={() => ChangeMenu('EVALUATION')}/>
-                        <CustomTreeItem 
-                            itemId="EVALREPORT" label="Report" onClick={() => ChangeMenu('EVALREPORT')}/>
-                    </CustomTreeItem>
-                    <CustomTreeItem itemId="ALLOW" label="Allowance">
-                        <CustomTreeItem 
-                            itemId="ALLOWANCE" label="Allowance Status" onClick={() => ChangeMenu('ALLOWANCE')}/>
-                        <CustomTreeItem 
-                            itemId="ALLOWANCEM" label="Allowance Status (Monthly)" onClick={() => ChangeMenu('ALLOWANCEM')}/>
+                            itemId="FIELDREPAIR" label="Field Repair" onClick={() => ChangeMenu('FIELDREPAIR')} />
+                        <CustomTreeItem itemId="EVAL" label="Evaluation">
+                            <CustomTreeItem 
+                                itemId="EVALUATION" label="Evaluation" onClick={() => ChangeMenu('EVALUATION')}/>
+                            <CustomTreeItem 
+                                itemId="EVALREPORT" label="Report" onClick={() => ChangeMenu('EVALREPORT')}/>
+                        </CustomTreeItem>
+                        <CustomTreeItem itemId="ALLOW" label="Allowance">
+                            <CustomTreeItem 
+                                itemId="ALLOWANCE" label="Allowance Status" onClick={() => ChangeMenu('ALLOWANCE')}/>
+                            <CustomTreeItem 
+                                itemId="ALLOWANCEM" label="Allowance Status (Monthly)" onClick={() => ChangeMenu('ALLOWANCEM')}/>
+                        </CustomTreeItem>
+                        <CustomTreeItem itemId="CONSOLIDATION" label="Consolidation Report">
+                            <CustomTreeItem 
+                                itemId="CONSEVC" label="EVC Consolidated Report" onClick={() => ChangeMenu('CONSEVC')}/>
+                        </CustomTreeItem>
                     </CustomTreeItem>
                     <Divider />
                     <CustomTreeItem 

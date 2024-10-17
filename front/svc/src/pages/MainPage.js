@@ -7,6 +7,8 @@ import Evaluation from "../pages/Evaluation";
 import EvalReport from "../pages/EvalReport";
 import Allowance from "../pages/Allowance";
 import AllowanceM from "../pages/AllowanceM";
+//import LogisticsS from "../pages/LogisticsS";
+import ConsEvc from "../pages/ConsEvc";
 import Login from "../pages/LoginPage";
 import { useMenuContext } from "../provider/MenuProvider";
 import { useEffect } from "react";
@@ -45,6 +47,10 @@ const MenuRender = (menu) => {
             return <Allowance/>
         case "ALLOWANCEM":
             return <AllowanceM/>
+        //case "LOGISTICSS":
+        //    return <LogisticsS/>
+        case "CONSEVC":
+            return <ConsEvc/>
         default:
             return <Login/>
     }

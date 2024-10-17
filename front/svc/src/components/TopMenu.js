@@ -38,6 +38,10 @@ const MenuRender = (menu) => {
                 return "Allowance Status";
         case "ALLOWANCEM":
             return "Allowance Status (Monthly)";
+        case "LOGISTICSS":
+            return "Order and Delivery Status";
+        case "CONSEVC":
+            return "EVC Consolidated Report";
         default:
             return "Login";
     }
