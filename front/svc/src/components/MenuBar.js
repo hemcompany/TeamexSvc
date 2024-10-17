@@ -60,6 +60,16 @@ export default function MenuBar() {
     	sessionStorage.removeItem("type");
     	navigate("/login");
   	};
+
+    let consolidationTree;
+    if(sessionStorage.getItem("id")=="DHCHOI" || sessionStorage.getItem("id")=="DEV") {
+        consolidationTree = (
+            <CustomTreeItem itemId="CONSOLIDATION" label="Consolidation Report">
+                <CustomTreeItem 
+                    itemId="CONSEVC" label="EVC Consolidated Report" onClick={() => ChangeMenu('CONSEVC')}/>
+            </CustomTreeItem>
+        );
+    }
  
     return (
         <>
@@ -104,10 +114,7 @@ export default function MenuBar() {
                             <CustomTreeItem 
                                 itemId="ALLOWANCEM" label="Allowance Status (Monthly)" onClick={() => ChangeMenu('ALLOWANCEM')}/>
                         </CustomTreeItem>
-                        <CustomTreeItem itemId="CONSOLIDATION" label="Consolidation Report">
-                            <CustomTreeItem 
-                                itemId="CONSEVC" label="EVC Consolidated Report" onClick={() => ChangeMenu('CONSEVC')}/>
-                        </CustomTreeItem>
+                        {consolidationTree}
                     </CustomTreeItem>
                     <Divider />
                     <CustomTreeItem 

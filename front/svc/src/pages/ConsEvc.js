@@ -176,7 +176,7 @@ export default function Board() {
     //# List
     const [boardList, setBoardList] = useState([]);
     const LOGISTICS_STATUS_LIST_URL = "/api/consolidation/select/r_evc";
-    const [frDate, setFrDate] = useState(dayjs().add(-1, 'month'));
+    const [frDate, setFrDate] = useState(dayjs().startOf('month'));
     const [toDate, setToDate] = useState(dayjs());
     const [loadingYn, setLoadingYn] = useState(false);
     const memoizedColumns = useMemo(() => columns, [columns]);
