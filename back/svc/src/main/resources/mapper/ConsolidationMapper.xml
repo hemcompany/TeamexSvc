@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.teamex.svc.mapper.ConsolidationMapper">
+
+<!-- ## Consolidation Report ## -->
+
+  <!-- EVC Consolidation Report  --> 
+  <select id="selectEVC" parameterType="Map" resultType="Consolidation_EVC">
+    select a.transaction_no || b.seq || c.transaction_no || c.seq || f.reportno || f.seq   as id,
+           p.edi_fg                     as CPO,
+           a.fiscal_period              as case_fiscal_period,
+           a.transaction_date           as case_transaction_date,
+           a.transaction_no             as case_number, 
+           a.transaction_status         as case_status,
+           a.site_cd                    as site_cd,
+           b.station_id                 as station_id,
+           b.seq                        as case_sequence,
+           b.product_cd                 as product_cd,
+           b.model_no                   as model_no,
+           b.gen_type                   as gen_type,
+           a.site_name                  as site_name,
+           a.address1 || a.address2     as address,
+           a.city                       as city,
+           a.state_cd                   as state_cd,
+           a.zip_cd                     as zip_cd,
+           a.country_cd                 as country_cd,
+           decode(p.e_mail,'Y','Y','N') as teamex_coverage,
+           a.commissioned_date          as commissioned_date,
+           decode(a.commissioned_date, null, null, 
+                round(svc.no_biz_hours(decode(substr(a.transaction_no,11,1),'A','EA','V','EVGO','AG'),a.commissioned_date,sysdate)/24/365,1)) as station_aging,
+           a.elam_no                    as elam_no,
+           d.transaction_type           as work_type,
+           a.elam_date                  as case_date,
+           to_char(a.elam_date,'mm')    as case_month,
+           to_char(a.elam_date,'yyyy')  as case_year,
+           a.issuedby                   as issuedby,
+           a.create_id                  as create_id, 
+           o.fname || ' ' || o.lname    as creator,
+           a.create_date                as create_date,
+           b.update_id                  as update_id,
+           b.update_date                as update_date,
+           a.response_date              as response_date,
+           b.confirm_id                 as confirm_id,
+           b.confirm_date               as confirm_date,
+           a.warranty_yn                as warranty_yn,
+           a.cycle                      as cycle,
+           a.priority                   as priority,
+           b.symptom                    as symptom,
+           b.teamviewer                 as teamviewer,
+           b.exp_reason                 as exp_reason,
+           b.instruction                as instruction,
+           b.close_fg                   as close_fg,
+           b.exp_reason_cd              as exp_reason_cd,
+           e.visit_dt                   as visit_dt,
+           decode(g.sow, null, f.action_detail, g.sow)   as work_done,
+           b.use_part1                  as use_part1,
+           b.use_part1_qty              as use_part1_qty,
+           b.use_part2                  as use_part2,
+           b.use_part2_qty              as use_part2_qty,
+           b.use_part3                  as use_part3,
+           b.use_part3_qty              as use_part3_qty,
+           b.symptom_cd                 as symptom_cd,
+           b.repair_cd                  as repair_cd,
+           b.warranty_cd                as warranty_cd,
+           b.visit_yn                   as visit_yn,
+           b.repaired_by                as tech_company,
+           a.phone                      as phone,
+           b.support                    as support,
+           b.pending_issue              as pending_issue,
+           b.root_cause                 as root_cause,
+           svc.no_biz_hours(decode(substr(a.transaction_no,11,1),'A','EA','V','EVGO','AG'),d.start_date,d.complete_date) AS RTAT,
+           d.transaction_no             as fs_no,
+           d.transaction_type           as work_order_type,
+           d.transaction_status         as fs_status,
+           d.transaction_date           as fs_creation_date,
+           d.fiscal_period              as fs_fiscal_period,
+           d.client_cd                  as client_cd,
+           d.cust_cd                    as cust_cd,
+           b.work_order                 as work_order,
+           d.available_date             as plan_date,
+           d.start_date                 as dispatch_date,
+           d.technician                 as technician,
+           d.numberoftech               as tech_count,
+           d.car1_id                    as car1_id,
+           d.car2_id                    as car2_id,
+           e.reportno                   as fr_no,
+           e.report_sts                 as fr_status,
+           e.tran_date                  as tran_date,
+           e.ev_car                     as ev_car,
+           e.bill_to_cust               as bill_to_cust,
+           e.state                      as state,
+           e.zip                        as zip,
+           round( (nvl((e.wt_co1 - e.wt_ci1),0) 
+                 + nvl((e.wt_co2 - e.wt_ci2),0) 
+                 + nvl((e.wt_co3 - e.wt_ci3),0) 
+                 + nvl((e.wt_co4 - e.wt_ci4),0)  
+                 + nvl((e.wt_co5 - e.wt_ci5),0) ) *24 ,2) as total_workhour,
+           'workhour_range'             as workhour_range,
+           e.wt_ci1                     as check_in_1,
+           e.wt_co1                     as check_out_1,
+           e.wt_ci2                     as check_in_2,
+           e.wt_co2                     as check_out_2,
+           e.wt_ci3                     as check_in_3,
+           e.wt_co3                     as check_out_3,
+           e.wt_ci4                     as check_in_4,
+           e.wt_co4                     as check_out_4,
+           e.wt_ci5                     as check_in_5,
+           e.wt_co5                     as check_out_5,
+           e.hotel_amt                  as hotel_amt,
+           e.mileage                    as mileage,
+           e.rental_amt                 as rental_amt,
+           e.others_amt                 as others_amt,
+           e.fiscal_period              as billing_fiscal_period,
+           e.create_dt                  as create_dt,
+           null                         as date_from,
+           null                         as date_to,
+           e.cust_cd                    as cust_name,
+           ''                           as client_name,
+           e.mileage                    as total_mileage_fee,
+           0                            as total_labor_fee, 
+           e.hotel_amt                  as total_hotel_fee,
+           e.rental_amt                 as total_rental,
+           0                            as others,
+           e.others_amt                 as total_others
+      from svc.cctraneh a
+        left outer join svc.cctranel b on b.div = a.div and b.transaction_no = a.transaction_no
+        left outer join svc.fstranel c on c.div = b.div and c.case_no = b.transaction_no and nvl(c.case_seq,c.seq) = b.seq
+        left outer join svc.fstraneh d on d.div = c.div and d.transaction_no = c.transaction_no
+        left outer join svc.sitevrhd e on e.div = d.div and e.fs_no = d.transaction_no
+        left outer join svc.sitevrdt f on f.div = e.div and f.reportno = e.reportno and f.seq = c.seq
+        left outer join svc.fssowmsg g on g.div = b.div and g.transaction_no = b.transaction_no and g.wo_no = b.work_order
+        left outer join svc.msuserms o on o.div = a.div and o.user_id = a.create_id
+        left outer join svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A'
+     where a.div = #{div}
+       and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
+     order by a.transaction_date desc, a.transaction_no desc, b.seq
+  </select>
+
+</mapper>
