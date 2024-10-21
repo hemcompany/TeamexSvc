@@ -55,7 +55,7 @@
            a.confirm_date            as confirm_date
       from fsworkhr a
         left outer join msuserms b on b.div = a.div and b.user_id = a.tech_id
-        left outer join mssitems c on c.div = a.div and c.site_cd = a.site_cd
+        left outer join mssitems c on c.div = a.div and c.site_cd = a.site_cd and c.status = 'A'
      where a.div = #{div}
        and a.start_date between to_date(#{start_dt},'mm/dd/yyyy') and to_date(#{end_dt},'mm/dd/yyyy')+1
      order by a.technician, a.start_date
