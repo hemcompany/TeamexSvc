@@ -62,14 +62,14 @@ export default function MenuBar() {
   	};
 
     let consolidationTree;
-    if(sessionStorage.getItem("id")=="DHCHOI" || sessionStorage.getItem("id")=="DEV") {
+    //if(sessionStorage.getItem("id")==="DHCHOI" || sessionStorage.getItem("id")==="DEV") {
         consolidationTree = (
             <CustomTreeItem itemId="CONSOLIDATION" label="Consolidation Report">
                 <CustomTreeItem 
                     itemId="CONSEVC" label="EVC Consolidated Report" onClick={() => ChangeMenu('CONSEVC')}/>
             </CustomTreeItem>
         );
-    }
+    //}
  
     return (
         <>
