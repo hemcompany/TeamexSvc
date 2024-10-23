@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 import TopMenu from '../components/TopMenu.js';
@@ -47,7 +47,7 @@ function AllowanceM() {
       }
 
     //Retrieve Report Viewer
-    const viewReport = () => {
+    const viewReport = useCallback(() => {
         try {
             if (!viewerRef.current) return;
             viewerRef.current.Viewer.open(
@@ -61,17 +61,8 @@ function AllowanceM() {
                 ],
             });
         } catch(error) {}
-    }
-    // REPORT EXPORT by Button
-    const exportReport = async () => {
-        if (!viewerRef.current) return;
-            
-        viewerRef.current.Viewer.export('pdf', setExportSetting("Allowance(Monthly)"), {cancel: cancelCallback })
-            .then(result => result.download('Allowance(Monthly)'));
-    }
-    var cancelCallback = function(){
-        return false; // continue export. Return true to cancel export process
-    }
+    }, [wYearMon] );
+
     useEffect(() => {
         //Check login
         if (sessionStorage.getItem("id")==="" || sessionStorage.getItem("id")=== null){
@@ -80,7 +71,7 @@ function AllowanceM() {
         }
         // Retrieve List by API
         viewReport();
-    }, []);
+    }, [navigate, viewReport]);
     
     return (
         <Box sx={{ width: '100%' }}>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 import axios from 'axios';
@@ -23,7 +23,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 const columns = [
   { field: 'cpo', headerName: 'CPO', width: 50, align: 'center', },
   { field: 'case_fiscal_period', headerName: 'Case Fiscal Period', width: 140, align: 'center', },
-  { field: 'case_transaction_date', headerName: 'Case Transaction Date', width: 180, type: 'dateTime', valueGetter: (value) => value && new Date(value), },
+  { field: 'case_transaction_date', headerName: 'Case Transaction Date', width: 185, type: 'dateTime', valueGetter: (value) => value && new Date(value), },
   { field: 'case_number', headerName: 'Case Number', width: 130, },
   { field: 'case_status', headerName: 'Case Status', width: 100, align: 'center', },
   { field: 'site_cd', headerName: 'Site CD.', width: 100, },
@@ -179,11 +179,9 @@ export default function Board() {
     const [frDate, setFrDate] = useState(dayjs().startOf('month'));
     const [toDate, setToDate] = useState(dayjs());
     const [loadingYn, setLoadingYn] = useState(false);
-    const memoizedColumns = useMemo(() => columns, [columns]);
-    const memoizedRows = useMemo(() => boardList, [boardList]);
 
     // List Retrieve (call Backend API)
-    const fetchList = async () => { 
+    const fetchList = useCallback(async () => { 
       try {
           setLoadingYn(true);
           axios(LOGISTICS_STATUS_LIST_URL, {
@@ -214,7 +212,7 @@ export default function Board() {
           console.log(err);
           alert(err);
       }
-    }
+    }, [frDate, toDate]);
 
     // 화면 처음 렌더링 될 때 호출 되는 함수
     useEffect(() => {
@@ -225,7 +223,7 @@ export default function Board() {
       }
       // API를 이용하여 List 조회
       fetchList();
-    }, []);
+    }, [navigate, fetchList]);
 
     return (
         <Box sx={{ width: '100%' }}>
@@ -262,8 +260,8 @@ export default function Board() {
             </Box>
             <Box sx={{ height: '77vh', width: '78vw', m: 1, mt: 2}}>
                 <DataGrid
-                    rows={memoizedRows}
-                    columns={memoizedColumns}
+                    rows={boardList}
+                    columns={columns}
                     initialState={{
                       pagination: {
                           paginationModel: {
