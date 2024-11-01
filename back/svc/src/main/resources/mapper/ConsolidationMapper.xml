@@ -68,7 +68,7 @@
            b.support                    as support,
            b.pending_issue              as pending_issue,
            b.root_cause                 as root_cause,
-           svc.no_biz_hours(decode(substr(a.transaction_no,11,1),'A','EA','V','EVGO','AG'),d.start_date,d.complete_date) AS RTAT,
+           round(svc.no_biz_hours(decode(substr(a.transaction_no,11,1),'A','EA','V','EVGO','AG'),a.elam_date, e.visit_dt) / 24 , 2) AS RTAT,
            d.transaction_no             as fs_no,
            d.transaction_type           as work_order_type,
            d.transaction_status         as fs_status,
@@ -90,12 +90,37 @@
            e.bill_to_cust               as bill_to_cust,
            e.state                      as state,
            e.zip                        as zip,
-           round( (nvl((e.wt_co1 - e.wt_ci1),0) 
-                 + nvl((e.wt_co2 - e.wt_ci2),0) 
-                 + nvl((e.wt_co3 - e.wt_ci3),0) 
-                 + nvl((e.wt_co4 - e.wt_ci4),0)  
-                 + nvl((e.wt_co5 - e.wt_ci5),0) ) *24 ,2) as total_workhour,
-           'workhour_range'             as workhour_range,
+           round((nvl((e.wt_co1 - e.wt_ci1),0) 
+                + nvl((e.wt_co2 - e.wt_ci2),0) 
+                + nvl((e.wt_co3 - e.wt_ci3),0) 
+                + nvl((e.wt_co4 - e.wt_ci4),0)  
+                + nvl((e.wt_co5 - e.wt_ci5),0)) *24,2) as total_workhour,
+           case when 
+              (( nvl((e.wt_co1 - e.wt_ci1),0) 
+               + nvl((e.wt_co2 - e.wt_ci2),0) 
+               + nvl((e.wt_co3 - e.wt_ci3),0) 
+               + nvl((e.wt_co4 - e.wt_ci4),0)  
+               + nvl((e.wt_co5 - e.wt_ci5),0)) *24) <![CDATA[ <= ]]> 1 then '~1 hr'
+             when ((  nvl((e.wt_co1 - e.wt_ci1),0) 
+               + nvl((e.wt_co2 - e.wt_ci2),0) 
+               + nvl((e.wt_co3 - e.wt_ci3),0) 
+               + nvl((e.wt_co4 - e.wt_ci4),0)  
+               + nvl((e.wt_co5 - e.wt_ci5),0)) *24) <![CDATA[ <= ]]> 2 then '1~2 hrs'
+             when ((  nvl((e.wt_co1 - e.wt_ci1),0) 
+               + nvl((e.wt_co2 - e.wt_ci2),0) 
+               + nvl((e.wt_co3 - e.wt_ci3),0) 
+               + nvl((e.wt_co4 - e.wt_ci4),0)  
+               + nvl((e.wt_co5 - e.wt_ci5),0)) *24) <![CDATA[ <= ]]> 3 then '2~3 hrs' 
+             when ((  nvl((e.wt_co1 - e.wt_ci1),0) 
+               + nvl((e.wt_co2 - e.wt_ci2),0) 
+               + nvl((e.wt_co3 - e.wt_ci3),0) 
+               + nvl((e.wt_co4 - e.wt_ci4),0)  
+               + nvl((e.wt_co5 - e.wt_ci5),0)) *24) <![CDATA[ <= ]]> 4 then '3~4 hrs' 
+             when ((  nvl((e.wt_co1 - e.wt_ci1),0) 
+               + nvl((e.wt_co2 - e.wt_ci2),0) 
+               + nvl((e.wt_co3 - e.wt_ci3),0) 
+               + nvl((e.wt_co4 - e.wt_ci4),0)  
+               + nvl((e.wt_co5 - e.wt_ci5),0)) *24) <![CDATA[ > ]]> 4 then '4 hrs~'  end as workhour_range,
            e.wt_ci1                     as check_in_1,
            e.wt_co1                     as check_out_1,
            e.wt_ci2                     as check_in_2,
