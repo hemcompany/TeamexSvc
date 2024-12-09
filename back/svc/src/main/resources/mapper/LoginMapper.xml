@@ -41,4 +41,56 @@
        AND upper(a.user_id) = upper(#{inputId})
        AND upper(a.password) = upper(#{inputPass})
   </select>
+  
+  <!-- Menu List -->
+  <select id="select_menu_list" parameterType="Map" resultType="Menu">
+    SELECT A.USER_ID, A.DIV, 
+           A.PROGRAM_ID,
+           A.MENU_ID, 
+           B.MENU_NAME      AS MENU_NAME, 
+           B.LVL            AS LVL, 
+           B.PARENT_MENU    AS PARENT_MENU,
+           B.WINDOW_YN      AS WINDOW_YN,
+           B.WINDOW_NAME    AS WINDOW_NAME,
+           A.AUTH_RETRIEVE  AS AUTH_RETRIEVE, 
+           A.AUTH_UPDATE    AS AUTH_UPDATE, 
+           A.AUTH_CONFIRM   AS AUTH_CONFIRM, 
+           A.AUTH_ETC_1     AS AUTH_ETC_1, 
+           A.AUTH_ETC_2     AS AUTH_ETC_2, 
+           A.AUTH_ETC_3     AS AUTH_ETC_3,
+           B.SORT           AS SORT
+      FROM MSAUTHUM A
+        LEFT OUTER JOIN MSMENUMS B ON B.PROGRAM_ID = A.PROGRAM_ID AND B.MENU_ID = A.MENU_ID
+     WHERE A.USER_ID = upper(#{id})
+       AND A.DIV = #{div}
+       AND A.PROGRAM_ID = 'SVC_WEB'
+     UNION ALL
+    SELECT upper(#{id})    AS USER_ID,
+           #{div}          AS DIV, 
+           D.PROGRAM_ID,
+           D.MENU_ID, 
+           D.MENU_NAME     AS MENU_NAME, 
+           D.LVL           AS LVL, 
+           D.PARENT_MENU   AS PARENT_MENU, 
+           D.WINDOW_YN     AS WINDOW_YN,
+           D.WINDOW_NAME   AS WINDOW_NAME,
+           'Y'             AS AUTH_RETRIEVE, 
+           'Y'             AS AUTH_UPDATE, 
+           'Y'             AS AUTH_CONFIRM, 
+           'Y'             AS AUTH_ETC_1, 
+           'Y'             AS AUTH_ETC_2, 
+           'Y'             AS AUTH_ETC_3,
+           D.SORT          AS SORT
+       FROM MSMENUMS D
+      WHERE (D.PROGRAM_ID, D.MENU_ID) IN 
+        (SELECT B.PROGRAM_ID, B.PARENT_MENU
+           FROM MSAUTHUM A
+             LEFT OUTER JOIN MSMENUMS B ON B.PROGRAM_ID = A.PROGRAM_ID AND B.MENU_ID = A.MENU_ID
+          WHERE A.USER_ID = upper(#{id})
+            AND A.DIV = #{div}
+            AND A.PROGRAM_ID = 'SVC_WEB'
+          GROUP BY B.PROGRAM_ID, B.PARENT_MENU )
+     ORDER BY USER_ID, DIV, SORT
+  </select>
+  
 </mapper>
