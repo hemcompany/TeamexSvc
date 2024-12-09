@@ -1,5 +1,7 @@
 import * as React from 'react';
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 import {useMenuContext} from "../provider/MenuProvider";
 import logo from '../assets/logo.png';
 
@@ -8,11 +10,11 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 import { styled, alpha } from '@mui/material/styles';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const drawerWidth = 220;
   
@@ -47,11 +49,19 @@ const CustomTreeItem = styled(TreeItem)(({ theme }) => ({
 }));
 
 export default function MenuBar() {
-    const {menu, setMenu} = useMenuContext();
+    const setMenu = useMenuContext().setMenu;
+    const setMenuName = useMenuContext().setMenuName;
+    const setWindowName = useMenuContext().setWindowName;
+    const [menuList, setMenuList] = useState([]);
 
     const navigate = useNavigate();
-    const ChangeMenu = (menuName) => {
-        setMenu(menuName);
+    const ChangeMenu = (selMenu, selMenuName, selWindowName, window_yn) => {
+        if (window_yn==="Y") {
+            //console.log("Menu Bar : ChangeMenu");
+            setMenu(selMenu);
+            setMenuName(selMenuName);
+            setWindowName(selWindowName);
+        }
     };
     const handleLogout = () => {
     	sessionStorage.removeItem("div");
@@ -61,16 +71,83 @@ export default function MenuBar() {
     	navigate("/login");
   	};
 
-    let consolidationTree;
-    //if(sessionStorage.getItem("id")==="DHCHOI" || sessionStorage.getItem("id")==="DEV") {
-        consolidationTree = (
-            <CustomTreeItem itemId="CONSOLIDATION" label="Consolidation Report">
-                <CustomTreeItem 
-                    itemId="CONSEVC" label="EVC Consolidated Report" onClick={() => ChangeMenu('CONSEVC')}/>
+    const getMenuList = async () => { 
+        const MENU_LIST_URL = "/api/login/getMenuList";
+        try {
+            axios(MENU_LIST_URL, {
+                method: 'GET',
+                headers: {
+                  "Content-Type": "application/json;charset=UTF-8", 
+                  "Accept": "application/json",
+                  "Access-Control-Allow-Origin": "http://localhost:3000",
+                  "Access-Control-Allow-Credentials":"true",},
+                params: { 
+                    id:sessionStorage.getItem("id"), 
+                    div: sessionStorage.getItem("div"),
+                },
+            })
+            .then((res) => {
+                const menuTree = setMenuTree(res.data);
+                setMenuList(menuTree);
+            })
+            .catch((e) => {
+                console.error(e);
+                alert(e);
+            });
+        } catch (err) {
+            console.log(err);
+            alert(err);
+        }
+    }
+
+    // 화면 처음 렌더링 될 때 호출 되는 함수
+    useEffect(() => {
+        //console.log("MenuBar 1");
+        //로그인 체크 
+        if (sessionStorage.getItem("id")==="" || sessionStorage.getItem("id")=== null){
+          navigate("/login");
+          return;
+        }
+        // API를 이용하여 Menu List 조회
+        getMenuList();
+        //수정필요
+        ChangeMenu('FIELDREPAIR', 'Field Repair', 'FieldRepair', 'Y');
+    }, []);
+
+    // 사용자 권한 별 메뉴 트리 구성
+    const setMenuTree = (data) => {
+        const map = {};
+        const tree = [];
+
+        //데이터를 맵으로 변환
+        data.forEach((item) => {
+            map[item.menu_id] = {...item, children: [] };
+        });
+        //부모 - 자식 관계 설정
+        data.forEach((item) => {
+            if(item.parent_menu) {
+                map[item.parent_menu].children.push(map[item.menu_id]);
+            } else {
+                tree.push(map[item.menu_id]);
+            }
+        });
+        return tree;
+    }
+
+    const i = 0;
+    const renderMenuList = (nodes) =>
+        nodes.map((node) => (
+            <CustomTreeItem
+                key = {node.menu_id}
+                itemId = {node.menu_id}
+                label = {node.menu_name}
+                onClick={() => ChangeMenu(node.menu_id, node.menu_name, node.window_name, node.window_yn)}
+            >
+                {node.children.length > 0  && renderMenuList(node.children)}
             </CustomTreeItem>
-        );
-    //}
- 
+        ));
+    
+    
     return (
         <>
             <Drawer 
@@ -96,30 +173,12 @@ export default function MenuBar() {
                 </Box>
                 <Divider />
                 <Box display="fit" justifyContent="left" alignItems="left" pt={2}>
-                <SimpleTreeView
-                    defaultExpandedItems={['SERVICE']}
-                >
-                    <CustomTreeItem itemId="SERVICE" label="SERVICE">
+                    <SimpleTreeView defaultExpandedItems={["SERVICE","PROD","SALES"]}>
+                        {renderMenuList(menuList)}
+                        <Divider />
                         <CustomTreeItem 
-                            itemId="FIELDREPAIR" label="Field Repair" onClick={() => ChangeMenu('FIELDREPAIR')} />
-                        <CustomTreeItem itemId="EVAL" label="Evaluation">
-                            <CustomTreeItem 
-                                itemId="EVALUATION" label="Evaluation" onClick={() => ChangeMenu('EVALUATION')}/>
-                            <CustomTreeItem 
-                                itemId="EVALREPORT" label="Report" onClick={() => ChangeMenu('EVALREPORT')}/>
-                        </CustomTreeItem>
-                        <CustomTreeItem itemId="ALLOW" label="Allowance">
-                            <CustomTreeItem 
-                                itemId="ALLOWANCE" label="Allowance Status" onClick={() => ChangeMenu('ALLOWANCE')}/>
-                            <CustomTreeItem 
-                                itemId="ALLOWANCEM" label="Allowance Status (Monthly)" onClick={() => ChangeMenu('ALLOWANCEM')}/>
-                        </CustomTreeItem>
-                        {consolidationTree}
-                    </CustomTreeItem>
-                    <Divider />
-                    <CustomTreeItem 
-                        itemId="LOGOUT" label="Log Out" onClick={() => handleLogout()} slots={{icon: ExitToAppIcon}}/>
-                </SimpleTreeView>
+                            itemId="LOGOUT" label="Log Out" onClick={() => handleLogout()} slots={{icon: ExitToAppIcon}}/>
+                    </SimpleTreeView>
                 </Box>
             </Drawer>
         </>

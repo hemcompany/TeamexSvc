@@ -1,24 +1,42 @@
 import * as React from "react";
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import MenuBar from "../components/MenuBar";
-import FieldRepair from "../pages/FieldRepair";
-import Evaluation from "../pages/Evaluation";
-import EvalReport from "../pages/EvalReport";
-import Allowance from "../pages/Allowance";
-import AllowanceM from "../pages/AllowanceM";
-//import LogisticsS from "../pages/LogisticsS";
-import ConsEvc from "../pages/ConsEvc";
-import Login from "../pages/LoginPage";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { useMenuContext } from "../provider/MenuProvider";
-import { useEffect } from "react";
+import MenuBar from "../components/MenuBar";
+import TopMenu from "../components/TopMenu";
 
 function MainPage() {
-    const {menu} = useMenuContext();
+    const windowName = useMenuContext().windowName;
+    const [ScreenComponent, setScreenComponent] = useState(null);
+    const navigate = useNavigate();
+    const ChangeComponent = () => {
+        return ScreenComponent? <ScreenComponent /> : <div>Loading...</div>;
+    };
+
     useEffect(() => {
-
-    }, [menu]);
-
+        //console.log("Main 1 ");
+        //Check login
+        if (sessionStorage.getItem("id")==="" || sessionStorage.getItem("id")=== null){
+            navigate("/login");
+            return;
+        }
+    }, []);
+    
+    useEffect(() => {
+        //console.log("Main 2 " + windowName);
+        if (windowName) {
+            import( `./${windowName}`)
+                .then((module) => setScreenComponent(() => module.default))
+                .catch((err) => {
+                    console.error('Error loading screen', err);
+                    setScreenComponent(()=>()=><></>);
+                });
+        }
+    }, [windowName]);
+    
     return (
         <>
             <Box sx={{display: 'flex'}}>
@@ -26,34 +44,12 @@ function MainPage() {
                 <MenuBar />
                 <Box component="main"
                     sx={{ flexGrow: 1, bgcolor: 'background.default', p: 1 }}>
-                    {
-                        MenuRender(menu)
-                    }
+                    <TopMenu />
+                    <ChangeComponent />
                 </Box>
             </Box>
-        </>
+        </> 
     );
-}
-
-const MenuRender = (menu) => {
-    switch (menu){
-        case "FIELDREPAIR":
-            return <FieldRepair/>
-        case "EVALUATION":
-            return <Evaluation/>
-        case "EVALREPORT":
-            return <EvalReport/>
-        case "ALLOWANCE":
-            return <Allowance/>
-        case "ALLOWANCEM":
-            return <AllowanceM/>
-        //case "LOGISTICSS":
-        //    return <LogisticsS/>
-        case "CONSEVC":
-            return <ConsEvc/>
-        default:
-            return <Login/>
-    }
 }
 
 export default MainPage;

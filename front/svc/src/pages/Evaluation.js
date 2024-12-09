@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 import axios from 'axios';
-import TopMenu from '../components/TopMenu.js';
 import EvaluationForm from '../components/EvaluationForm.js';
 // MUI
 import { Box, Button } from '@mui/material';
@@ -150,6 +149,7 @@ export default function Evaluation() {
 
     // 화면 처음 렌더링 될 때 호출 되는 함수
     useEffect(() => {
+        //console.log("EV 1");
         //로그인 체크 
         if (sessionStorage.getItem("id")==="" || sessionStorage.getItem("id")=== null){
             navigate("/login");
@@ -161,6 +161,7 @@ export default function Evaluation() {
 
     // Report List 조회 완료 시 호출 되는 함수 : 첫번째 혹은 이전에 선택한 reportno 평가정보 조회
     useEffect(() => {
+        //console.log("EV 2");
         var reportno= "";
         if (reportinfo.reportno && reportinfo.reportno !== "") {
             reportno = reportinfo.reportno;
@@ -181,7 +182,7 @@ export default function Evaluation() {
     return (
         <Box sx={{ width: '100%' }}>
             
-            <TopMenu />
+            
 
             <Box sx={{ height: '76vh', width: '78vw', mt: 2 }}>
                 <Box display="flex" sx={{ m: 1 }}>

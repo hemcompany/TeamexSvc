@@ -4,20 +4,12 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-// [24.03.25] HEM ADD
-import { UserProvider } from './provider/UserProvider';
-import { MenuProvider } from './provider/MenuProvider';
-
 // [24.04.30] HEM ADD REPORT LICENSE
 import {} from "./utils/arjs-license";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <MenuProvider>
-      <UserProvider>
-        <App />
-      </UserProvider>
-    </MenuProvider>
+    <App />
 );
 
 // If you want to start measuring performance in your app, pass a function

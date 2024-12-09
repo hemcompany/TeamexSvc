@@ -4,10 +4,10 @@ import { useMenuContext } from "../provider/MenuProvider";
 import { useEffect } from "react";
 
 function TopMenu() {
-    const {menu} = useMenuContext();
+    const menuName = useMenuContext().menuName;
     useEffect(() => {
-
-    }, [menu]);
+        //console.log("Top1")
+    }, [menuName]);
 
     return (
         <>
@@ -20,31 +20,10 @@ function TopMenu() {
                 width: '100%', height: '50px',
             }}
         >
-            <Box sx={{ color: 'white' }}>{MenuRender(menu)}</Box>
+            <Box sx={{ color: 'white' }}>{menuName}</Box>
         </Box>
         </>
     );
-}
-
-const MenuRender = (menu) => {
-    switch (menu){
-        case "FIELDREPAIR":
-            return "Field Repair";
-        case "EVALUATION":
-            return "Evaluation";
-        case "EVALREPORT":
-            return "Evaluation Report";
-        case "ALLOWANCE":
-                return "Allowance Status";
-        case "ALLOWANCEM":
-            return "Allowance Status (Monthly)";
-        case "LOGISTICSS":
-            return "Order and Delivery Status";
-        case "CONSEVC":
-            return "EVC Consolidated Report";
-        default:
-            return "Login";
-    }
 }
 
 export default TopMenu;

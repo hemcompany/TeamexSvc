@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import TopMenu from '../components/TopMenu.js';
 // MUI
 import { Box, Button, Container } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
@@ -179,6 +178,7 @@ export default function Board() {
     };
     // 화면 처음 렌더링 될 때 호출 되는 함수
     useEffect(() => {
+        //console.log("FR 1");
       //로그인 체크 
       if (sessionStorage.getItem("id")==="" || sessionStorage.getItem("id")=== null){
         navigate("/login");
@@ -258,12 +258,10 @@ export default function Board() {
               ],
           });
       } catch(error) {}
-    }); 
+    },[reportno]); 
 
     return (
       <Box sx={{ width: '100%'}}>
-
-        <TopMenu />
 
         <Box sx={{ borderBottom: 1, borderColor: 'divider'}}>
             <Tabs value={value} onChange={handleChange}>

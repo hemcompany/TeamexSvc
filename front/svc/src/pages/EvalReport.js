@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
-import TopMenu from '../components/TopMenu.js';
 // MUI
 import { Box, Button } from '@mui/material';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
@@ -86,7 +85,6 @@ function EvalReport() {
     
     return (
         <Box sx={{ width: '100%' }}>
-            <TopMenu />
             <Box display="flex" sx={{ m: 1, mt: 2 }}>
               <DatePicker 
                   label="Visit Date From" 
