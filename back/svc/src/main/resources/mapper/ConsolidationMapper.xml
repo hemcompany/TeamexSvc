@@ -25,9 +25,9 @@
            a.zip_cd                     as zip_cd,
            a.country_cd                 as country_cd,
            decode(p.e_mail,'Y','Y','N') as teamex_coverage,
-           a.commissioned_date          as commissioned_date,
-           decode(a.commissioned_date, null, null, 
-                round(to_date(to_char(sysdate ,'mm/dd/yyyy'),'mm/dd/yyyy')- a.commissioned_date, 0)) as station_aging,
+           nvl(a.commissioned_date, q.upload_date)          as commissioned_date,
+           decode(nvl(a.commissioned_date, q.upload_date), null, null, 
+                round(to_date(to_char(sysdate ,'mm/dd/yyyy'),'mm/dd/yyyy')- nvl(a.commissioned_date, q.upload_date), 0)) as station_aging,
            a.elam_no                    as elam_no,
            d.transaction_type           as work_type,
            a.elam_date                  as case_date,
@@ -156,6 +156,7 @@
         left outer join svc.fssowmsg g on g.div = b.div and g.transaction_no = b.transaction_no and g.wo_no = b.work_order
         left outer join svc.msuserms o on o.div = a.div and o.user_id = a.create_id
         left outer join svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A'
+        left outer join svc.qttraneh q on q.div = a.div and q.site_cd = a.site_cd and q.transaction_status in ('B','C')
      where a.div = #{div}
        and a.transaction_status not in ('V')
        and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
@@ -167,8 +168,8 @@
     select a.transaction_no || b.seq || c.transaction_no || c.seq || f.reportno || f.seq || 'part1'  as id,
            b.use_part1                  as use_part,
            b.use_part1_qty              as use_part_qty,
-           q.part_name                  as part_name,
-           q.part_desc                  as part_desc,
+           r.part_name                  as part_name,
+           r.part_desc                  as part_desc,
            p.edi_fg                     as CPO,
            a.fiscal_period              as case_fiscal_period,
            a.transaction_date           as case_transaction_date,
@@ -187,9 +188,9 @@
            a.zip_cd                     as zip_cd,
            a.country_cd                 as country_cd,
            decode(p.e_mail,'Y','Y','N') as teamex_coverage,
-           a.commissioned_date          as commissioned_date,
-           decode(a.commissioned_date, null, null, 
-                round(to_date(to_char(sysdate ,'mm/dd/yyyy'),'mm/dd/yyyy')- a.commissioned_date, 0)) as station_aging,
+           nvl(a.commissioned_date, q.upload_date)          as commissioned_date,
+           decode(nvl(a.commissioned_date, q.upload_date), null, null, 
+                round(to_date(to_char(sysdate ,'mm/dd/yyyy'),'mm/dd/yyyy')- nvl(a.commissioned_date, q.upload_date), 0)) as station_aging,
            a.elam_no                    as elam_no,
            d.transaction_type           as work_type,
            a.elam_date                  as case_date,
@@ -312,7 +313,8 @@
         left outer join svc.fssowmsg g on g.div = b.div and g.transaction_no = b.transaction_no and g.wo_no = b.work_order
         left outer join svc.msuserms o on o.div = a.div and o.user_id = a.create_id
         left outer join svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A'
-        left outer join svc.mspartms q on q.div = a.div and q.part_no = b.use_part1
+        left outer join svc.qttraneh q on q.div = a.div and q.site_cd = a.site_cd and q.transaction_status in ('B','C')
+        left outer join svc.mspartms r on r.div = a.div and r.part_no = b.use_part1
      where a.div = #{div}
        and a.transaction_status not in ('V')
        and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
