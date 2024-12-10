@@ -120,4 +120,11 @@ public class Consolidation_EVC {
     double total_rental;
     double others;
     double total_others;
+    // EVC Part Usage
+    String part_category;
+    String use_part;
+    int    use_part_qty;
+    String part_name;
+    String part_desc;
+
 }

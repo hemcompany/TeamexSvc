@@ -18,19 +18,33 @@ public class ConsolidationService {
 
 	// ## Consolidation Report Retrieve
 	// EVC Consolidation Report
-	public List<Consolidation_EVC> selectEVC(String div, String user_type, String date_fr, String date_to) {
+	public List<Consolidation_EVC> selectEVC(String div, String date_fr, String date_to) {
 		Map<String,Object>map = new HashMap<String,Object>();
 		if(div == null)
 			map.put("div", "80");
 		else
 			map.put("div", div);
-		map.put("user_type", user_type);    //E : Engineer, O : Operator, P : Parts Management
 		map.put("date_fr", date_fr);
 		map.put("date_to", date_to);
 		
 		//if !user_type.equals("A") return null;
 		
 		return consolidationMapper.selectEVC(map);
+	}
+	
+	// EVC Part Usage Report
+	public List<Consolidation_EVC> selectEVCPart(String div, String date_fr, String date_to) {
+		Map<String,Object>map = new HashMap<String,Object>();
+		if(div == null)
+			map.put("div", "80");
+		else
+			map.put("div", div);
+		map.put("date_fr", date_fr);
+		map.put("date_to", date_to);
+		
+		//if !user_type.equals("A") return null;
+		
+		return consolidationMapper.selectEVCPart(map);
 	}
 	
 	// ## Compare WH (SWH vs AWH) Report Retrieve

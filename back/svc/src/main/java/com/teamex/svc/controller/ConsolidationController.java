@@ -27,10 +27,19 @@ public class ConsolidationController {
 	@GetMapping("/select/r_evc")
 	///@CrossOrigin(origins = {"http://localhost:3000", "http://localhost", "http://rpt.teamexusa.com"}) : Apply at the WebConfig
 	public List<Consolidation_EVC> selectList(@RequestParam(name="div", required=true) String div,
-				@RequestParam(name="user_type", required=true) String user_type,
 				@RequestParam(name="date_fr") String date_fr, 
 				@RequestParam(name="date_to") String date_to) {
-		return consolidationService.selectEVC(div, user_type, date_fr, date_to);
+		return consolidationService.selectEVC(div, date_fr, date_to);
+	}
+	
+	// EVC Part Usage Report
+	// API : /api/consolidation/select/r_evcPart
+	@GetMapping("/select/r_evcPart")
+	///@CrossOrigin(origins = {"http://localhost:3000", "http://localhost", "http://rpt.teamexusa.com"}) : Apply at the WebConfig
+	public List<Consolidation_EVC> selectEVCPart(@RequestParam(name="div", required=true) String div,
+				@RequestParam(name="date_fr") String date_fr, 
+				@RequestParam(name="date_to") String date_to) {
+		return consolidationService.selectEVCPart(div, date_fr, date_to);
 	}
 	
 	// ## Compare WH (SWH vs AWH) Report Retrieve

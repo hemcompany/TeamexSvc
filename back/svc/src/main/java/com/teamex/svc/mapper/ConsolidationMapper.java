@@ -16,6 +16,8 @@ public interface ConsolidationMapper {
 	// ## Consolidation Report Retrieve
 	// EVC Consolidation Report
 	List<Consolidation_EVC> selectEVC(Map<String,Object> map);
+	// EVC Part Usage Report
+	List<Consolidation_EVC> selectEVCPart(Map<String,Object> map);
 	// ## Compare WH (SWH vs AWH) Report Retrieve
 	// Visit Data for Grid
 	List<Consolidation_CompWH> selectVisitData(Map<String,Object> map);
