@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import dayjs from 'dayjs';
 import useDidMountEffect from '../utils/useDidMountEffect';
 
@@ -7,6 +7,7 @@ import useDidMountEffect from '../utils/useDidMountEffect';
 import { Viewer } from "@grapecity/activereports-react";
 
 function ConsEffReport({frDate, toDate, search}) {
+    console.log("EffReport1");
     //# TAB1. Report 조회
     //REPORT 양식 PATH
     const reportPath = "/reports/compareWH.rdlx-json";   
@@ -19,22 +20,28 @@ function ConsEffReport({frDate, toDate, search}) {
         fullscreen: ["$navigation","$split","$refresh","$split","$zoom","$split"],
         mobile: ["$navigation","$split","$refresh","$split","$zoom","$split"]
     };
-
     const viewerRef = React.useRef(null);
-
     //Report Viewer 조회
     useEffect(() => {
         try {
             if (frDate== null) return;
             if (!viewerRef.current) return;
-            viewerRef.current.Viewer.open(
-                reportPath, {
-                    ReportParams: [
-                        { Name: "div", Value: sessionStorage.getItem("div") },
-                        { Name: "date_fr", Value: dayjs(frDate).format('MM/DD/YYYY'),},
-                        { Name: "date_to", Value: dayjs(toDate).format('MM/DD/YYYY'), },
-                    ],
-            });
+
+            const viewer = viewerRef.current;
+            if (viewer) {
+                viewer.open(
+                    reportPath, {
+                        ReportParams: [
+                            { Name: "div", Value: sessionStorage.getItem("div") },
+                            { Name: "date_fr", Value: dayjs(frDate).format('MM/DD/YYYY'),},
+                            { Name: "date_to", Value: dayjs(toDate).format('MM/DD/YYYY'), },
+                        ],
+                });
+            }
+
+            return () => {
+                if (viewer && viewer.dispose === "function") viewer.dispose(); // 리소스 정리
+            };
         } catch(error) {}
     },[search]); 
 

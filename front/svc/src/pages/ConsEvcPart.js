@@ -20,6 +20,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 //DATA GRID 세팅
 const columns = [
+  { field: 'use_part', headerName: 'Use Part1', width: 130, },
+  { field: 'use_part_qty', headerName: 'Use Part1 Qty', width: 110, type: Number, align: 'right', },
+  { field: 'part_name', headerName: 'Part Name', width: 150, },
+  { field: 'part_desc', headerName: 'Part Description', width: 200, },
   { field: 'cpo', headerName: 'CPO', width: 50, align: 'center', },
   { field: 'case_fiscal_period', headerName: 'Case Fiscal Period', width: 140, align: 'center', },
   { field: 'case_transaction_date', headerName: 'Case Transaction Date', width: 185, type: 'dateTime', valueGetter: (value) => value && new Date(value), },
@@ -65,12 +69,6 @@ const columns = [
   { field: 'exp_reason_cd', headerName: 'Exp Reason Code', width: 140, },
   { field: 'visit_dt', headerName: 'Visit Date', width: 180, type: 'dateTime', valueGetter: (value) => value && new Date(value), },
   { field: 'work_done', headerName: 'Work Done', width: 300, },
-  { field: 'use_part1', headerName: 'Use Part1', width: 130, },
-  { field: 'use_part1_qty', headerName: 'Use Part1 Qty', width: 110, type: Number, align: 'right', },
-  { field: 'use_part2', headerName: 'Use Part2', width: 130, },
-  { field: 'use_part2_qty', headerName: 'Use Part2 Qty', width: 110, type: Number, align: 'right', },
-  { field: 'use_part3', headerName: 'Use Part3', width: 130, },
-  { field: 'use_part3_qty', headerName: 'Use Part3 Qty', width: 110, type: Number, align: 'right', },
   { field: 'symptom_cd', headerName: 'Symptom Code', width: 120, },
   { field: 'repair_cd', headerName: 'Repair Code', width: 100, },
   { field: 'warranty_cd', headerName: 'Warranty Code', width: 120, align: 'center', },
@@ -156,7 +154,7 @@ function CustomToolbar() {
           {...buttonBaseProps}
           onClick={() => handleExport({ 
             getRowsToExport: getFilteredRows,
-            fileName: 'EVC Consolidation Report',
+            fileName: 'EVC Part Usage Report',
           })}
         >
           Export Filtered rows
@@ -165,7 +163,7 @@ function CustomToolbar() {
     );
 }
 
-export default function ConsEvc() {
+export default function ConsEvcPart() {
     const navigate = useNavigate();
     const [paginationModel, setPaginationModel] = React.useState({
         pageSize: 25,
@@ -174,7 +172,7 @@ export default function ConsEvc() {
 
     //# List
     const [boardList, setBoardList] = useState([]);
-    const CONSOLIDATION_LIST_URL = "/api/consolidation/select/r_evc";
+    const CONSOLIDATION_LIST_URL = "/api/consolidation/select/r_evcPart";
     const [frDate, setFrDate] = useState(dayjs().startOf('month'));
     const [toDate, setToDate] = useState(dayjs());
     const [loadingYn, setLoadingYn] = useState(false);

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from 'axios';
 import dayjs from 'dayjs';
-import useDidMountEffect from '../utils/useDidMountEffect';
+
 // MUI
 import { Button } from '@mui/material';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
@@ -25,16 +25,17 @@ function ConsEffGrid({frDate, toDate, search}) {
         page: 0,
     });
     const [loadingYn, setLoadingYn] = useState(false);
-    const getFilteredRows = ({ apiRef }) => gridExpandedSortedRowIdsSelector(apiRef);
 
-    function CustomToolbar() {
+    console.log("EffGrid1");
+    const CustomToolbar = () => {
         const apiRef = useGridApiContext();
+        const getFilteredRows = ({ apiRef }) => gridExpandedSortedRowIdsSelector(apiRef);
         const handleExport = (options) => apiRef.current.exportDataAsCsv(options);
 
         const buttonBaseProps = {
-        color: 'primary',
-        size: 'small',
-        startIcon: <FileDownloadOutlinedIcon />,
+            color: 'primary',
+            size: 'small',
+            startIcon: <FileDownloadOutlinedIcon />,
         };
 
         return (
@@ -108,7 +109,7 @@ function ConsEffGrid({frDate, toDate, search}) {
     ];
     
     // List Retrieve (call Backend API)
-    const fetchList = async () => { 
+    const fetchList = useCallback(async () => { 
         try {
             setLoadingYn(true);
             axios(VISIT_DATA_LIST_URL, {
@@ -138,13 +139,13 @@ function ConsEffGrid({frDate, toDate, search}) {
             console.log(err);
             alert(err);
         }
-    };
+    },[]);
 
     // 화면 처음 렌더링 될 때 호출 되는 함수
     useEffect(() => {
         // API를 이용하여 List 조회
         fetchList();
-    }, [search]);
+    }, [fetchList]);
 
     return(
         
