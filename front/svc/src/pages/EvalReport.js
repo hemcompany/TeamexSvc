@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 // MUI
@@ -47,21 +47,25 @@ function EvalReport() {
       }
 
     //Retrieve Report Viewer
-    const viewReport = () => {
+    const viewReport = useCallback(() => {
         try {
             if (!viewerRef.current) return;
-            viewerRef.current.Viewer.open(
-                reportPath, {
-                ReportParams: [
-                    {Name: "div",Value: sessionStorage.getItem("div"),},
-                    {Name: "user_type",Value: sessionStorage.getItem("type"),},
-                    {Name: "user_id",Value: sessionStorage.getItem("id"),},
-                    {Name: "visit_fr",Value: dayjs(frDate).format('MM/DD/YYYY'),},
-                    {Name: "visit_to",Value: dayjs(toDate).format('MM/DD/YYYY'),},
-                ],
-            });
+            const viewer = viewerRef.current;
+            if (viewer) {
+                viewer.open(
+                    reportPath, {
+                    ReportParams: [
+                        {Name: "div",Value: sessionStorage.getItem("div"),},
+                        {Name: "user_type",Value: sessionStorage.getItem("type"),},
+                        {Name: "user_id",Value: sessionStorage.getItem("id"),},
+                        {Name: "visit_fr",Value: dayjs(frDate).format('MM/DD/YYYY'),},
+                        {Name: "visit_to",Value: dayjs(toDate).format('MM/DD/YYYY'),},
+                    ],
+                });
+                viewer.panelsLayout = {panelsLayout};
+            }
         } catch(error) {}
-    }
+    }, [frDate, toDate]);
 
     // REPORT EXPORT by Button
     const exportReport = async () => {
@@ -81,7 +85,7 @@ function EvalReport() {
         }
         // Retrieve List by API
         viewReport();
-    }, []);
+    }, [navigate, viewReport]);
     
     return (
         <Box sx={{ width: '100%' }}>
@@ -130,7 +134,6 @@ function EvalReport() {
                 ref={viewerRef}
                 exportsSettings={setExportSetting("Evaluation")}
                 availableExports={availableExports}
-                panelsLayout={panelsLayout}
                 toolbarLayout={toolbarLayout}
                 />
             </div>

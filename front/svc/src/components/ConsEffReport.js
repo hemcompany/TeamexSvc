@@ -7,7 +7,7 @@ import useDidMountEffect from '../utils/useDidMountEffect';
 import { Viewer } from "@grapecity/activereports-react";
 
 function ConsEffReport({frDate, toDate, search}) {
-    console.log("EffReport1");
+    //console.log("EffReport1");
     //# TAB1. Report 조회
     //REPORT 양식 PATH
     const reportPath = "/reports/compareWH.rdlx-json";   

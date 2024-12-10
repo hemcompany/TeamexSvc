@@ -26,7 +26,7 @@ function ConsEffGrid({frDate, toDate, search}) {
     });
     const [loadingYn, setLoadingYn] = useState(false);
 
-    console.log("EffGrid1");
+    //console.log("EffGrid1");
     const CustomToolbar = () => {
         const apiRef = useGridApiContext();
         const getFilteredRows = ({ apiRef }) => gridExpandedSortedRowIdsSelector(apiRef);

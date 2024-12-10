@@ -49,16 +49,20 @@ function AllowanceM() {
     const viewReport = useCallback(() => {
         try {
             if (!viewerRef.current) return;
-            viewerRef.current.Viewer.open(
-                reportPath, {
-                ReportParams: [
-                    {Name: "div",Value: sessionStorage.getItem("div"),},
-                    {Name: "user_type",Value: sessionStorage.getItem("type"),},
-                    {Name: "user_id",Value: sessionStorage.getItem("id"),},
-                    {Name: "w_year",Value: dayjs(wYearMon).format('YYYY'),},
-                    {Name: "w_month",Value: dayjs(wYearMon).format('MM'),},
-                ],
-            });
+            const viewer = viewerRef.current;
+            if (viewer) {
+                viewer.open(
+                    reportPath, {
+                    ReportParams: [
+                        {Name: "div",Value: sessionStorage.getItem("div"),},
+                        {Name: "user_type",Value: sessionStorage.getItem("type"),},
+                        {Name: "user_id",Value: sessionStorage.getItem("id"),},
+                        {Name: "w_year",Value: dayjs(wYearMon).format('YYYY'),},
+                        {Name: "w_month",Value: dayjs(wYearMon).format('MM'),},
+                    ],
+                });
+                viewer.panelsLayout = {panelsLayout};
+            }
         } catch(error) {}
     }, [wYearMon] );
 
@@ -100,7 +104,6 @@ function AllowanceM() {
                 ref={viewerRef}
                 exportsSettings={setExportSetting("Allowance(Monthly)")}
                 availableExports={availableExports}
-                panelsLayout={panelsLayout}
                 toolbarLayout={toolbarLayout}
                 />
             </div>

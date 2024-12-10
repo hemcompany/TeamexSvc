@@ -245,19 +245,23 @@ export default function Board() {
 
     //Report Viewer 조회
     useEffect(() => {
-      try {
-        if (reportno== null) return;
-          if (!viewerRef.current) return;
-          viewerRef.current.Viewer.open(
-            reportPath, {
-              ReportParams: [
-                  {
-                      Name: "reportno",
-                      Value: reportno,
-                  },
-              ],
-          });
-      } catch(error) {}
+        try {
+            if (reportno== null) return;
+            if (!viewerRef.current) return;
+            const viewer = viewerRef.current;
+            if (viewer) {
+                viewer.open(
+                    reportPath, {
+                    ReportParams: [
+                        {
+                            Name: "reportno",
+                            Value: reportno,
+                        },
+                    ],
+                });
+                viewer.panelsLayout = {panelsLayout};
+            }
+        } catch(error) {}
     },[reportno]); 
 
     return (
@@ -340,7 +344,6 @@ export default function Board() {
               ref={viewerRef} 
               exportsSettings={setExportSetting(reportno)}
               availableExports={availableExports}
-              panelsLayout={panelsLayout}
               toolbarLayout={toolbarLayout}
             />
           </div>

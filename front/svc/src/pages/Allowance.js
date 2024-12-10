@@ -50,16 +50,21 @@ function Allowance() {
     const viewReport = useCallback(() => {
         try {
             if (!viewerRef.current) return;
-            viewerRef.current.Viewer.open(
-                reportPath, {
-                ReportParams: [
-                    {Name: "div",Value: sessionStorage.getItem("div"),},
-                    {Name: "user_type",Value: sessionStorage.getItem("type"),},
-                    {Name: "user_id",Value: sessionStorage.getItem("id"),},
-                    {Name: "start_dt",Value: dayjs(frDate).format('MM/DD/YYYY'),},
-                    {Name: "end_dt",Value: dayjs(toDate).format('MM/DD/YYYY'),},
-                ],
-            });
+            const viewer = viewerRef.current;
+            if (viewer) {
+                viewer.open(
+                    reportPath, {
+                    ReportParams: [
+                        {Name: "div",Value: sessionStorage.getItem("div"),},
+                        {Name: "user_type",Value: sessionStorage.getItem("type"),},
+                        {Name: "user_id",Value: sessionStorage.getItem("id"),},
+                        {Name: "start_dt",Value: dayjs(frDate).format('MM/DD/YYYY'),},
+                        {Name: "end_dt",Value: dayjs(toDate).format('MM/DD/YYYY'),},
+                    ],
+                });
+                viewer.panelsLayout = {panelsLayout};
+            }
+
         } catch(error) {}
     }, [frDate, toDate]);
     
@@ -108,11 +113,10 @@ function Allowance() {
             <Box>
               <div id="designer-host" style={{ height: '75vh', width: '100%' }} >
                 <Viewer 
-                ref={viewerRef}
-                exportsSettings={setExportSetting("Allowance")}
-                availableExports={availableExports}
-                panelsLayout={panelsLayout}
-                toolbarLayout={toolbarLayout}
+                    ref={viewerRef}
+                    exportsSettings={setExportSetting("Allowance")}
+                    availableExports={availableExports}
+                    toolbarLayout={toolbarLayout}
                 />
             </div>
             </Box>

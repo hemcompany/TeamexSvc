@@ -20,8 +20,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 //DATA GRID 세팅
 const columns = [
-  { field: 'use_part', headerName: 'Use Part1', width: 130, },
-  { field: 'use_part_qty', headerName: 'Use Part1 Qty', width: 110, type: Number, align: 'right', },
+  { field: 'use_part', headerName: 'Use Part', width: 130, },
+  { field: 'use_part_qty', headerName: 'Use Part Qty', width: 110, type: Number, align: 'right', },
   { field: 'part_name', headerName: 'Part Name', width: 150, },
   { field: 'part_desc', headerName: 'Part Description', width: 200, },
   { field: 'cpo', headerName: 'CPO', width: 50, align: 'center', },
