@@ -165,8 +165,8 @@
   <!-- EVC Part Usage Report  --> 
   <select id="selectEVCPart" parameterType="Map" resultType="Consolidation_EVC">
     select a.transaction_no || b.seq || c.transaction_no || c.seq || f.reportno || f.seq || 'part1'  as id,
-           b.use_part1                  as use_part1,
-           b.use_part1_qty              as use_part1_qty,
+           b.use_part1                  as use_part,
+           b.use_part1_qty              as use_part_qty,
            q.part_name                  as part_name,
            q.part_desc                  as part_desc,
            p.edi_fg                     as CPO,
