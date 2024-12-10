@@ -39,7 +39,7 @@ function App() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <ThemeProvider theme={theme}>
                 <MenuProvider>
-                    <Router>
+                    <Router future={{v7_startTransition: true, v7_relativeSplatPath: true,}}>
                         <Routes>
                             <Route path="/" element={<MainPage />} />
                             <Route path="/login" element={<LoginPage />} />
