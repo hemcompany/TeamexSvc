@@ -26,8 +26,9 @@
            a.country_cd                 as country_cd,
            decode(p.e_mail,'Y','Y','N') as teamex_coverage,
            nvl(a.commissioned_date, q.upload_date)          as commissioned_date,
-           decode(nvl(a.commissioned_date, q.upload_date), null, null, 
-                round(to_date(to_char(sysdate ,'mm/dd/yyyy'),'mm/dd/yyyy')- nvl(a.commissioned_date, q.upload_date), 0)) as station_aging,
+           f_get_station_aging (to_date(#{date_fr},'mm/dd/yyyy'), 
+                                to_date(#{date_to},'mm/dd/yyyy'), 
+                                nvl(a.commissioned_date, q.upload_date))  as station_aging,
            a.elam_no                    as elam_no,
            d.transaction_type           as work_type,
            a.elam_date                  as case_date,
@@ -165,9 +166,9 @@
   
   <!-- EVC Part Usage Report  --> 
   <select id="selectEVCPart" parameterType="Map" resultType="Consolidation_EVC">
-    select a.transaction_no || b.seq || c.transaction_no || c.seq || f.reportno || f.seq || 'part1'  as id,
-           b.use_part1                  as use_part,
-           b.use_part1_qty              as use_part_qty,
+    select a.transaction_no || b.seq || c.transaction_no || c.seq || f.reportno || f.seq || b1.r_seq  as id,
+           b1.use_part                  as use_part,
+           b1.use_part_qty              as use_part_qty,
            r.part_name                  as part_name,
            r.part_desc                  as part_desc,
            p.edi_fg                     as CPO,
@@ -189,8 +190,9 @@
            a.country_cd                 as country_cd,
            decode(p.e_mail,'Y','Y','N') as teamex_coverage,
            nvl(a.commissioned_date, q.upload_date)          as commissioned_date,
-           decode(nvl(a.commissioned_date, q.upload_date), null, null, 
-                round(to_date(to_char(sysdate ,'mm/dd/yyyy'),'mm/dd/yyyy')- nvl(a.commissioned_date, q.upload_date), 0)) as station_aging,
+           f_get_station_aging (to_date(#{date_fr},'mm/dd/yyyy'), 
+                                to_date(#{date_to},'mm/dd/yyyy'), 
+                                nvl(a.commissioned_date, q.upload_date))  as station_aging,
            a.elam_no                    as elam_no,
            d.transaction_type           as work_type,
            a.elam_date                  as case_date,
@@ -306,15 +308,31 @@
            e.others_amt                 as total_others
       from svc.cctraneh a
         left outer join svc.cctranel b on b.div = a.div and b.transaction_no = a.transaction_no
-        left outer join svc.fstranel c on c.div = b.div and c.case_no = b.transaction_no and nvl(c.case_seq,c.seq) = b.seq
-        left outer join svc.fstraneh d on d.div = c.div and d.transaction_no = c.transaction_no
-        left outer join svc.sitevrhd e on e.div = d.div and e.fs_no = d.transaction_no
-        left outer join svc.sitevrdt f on f.div = e.div and f.reportno = e.reportno and f.seq = c.seq
-        left outer join svc.fssowmsg g on g.div = b.div and g.transaction_no = b.transaction_no and g.wo_no = b.work_order
-        left outer join svc.msuserms o on o.div = a.div and o.user_id = a.create_id
-        left outer join svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A'
-        left outer join svc.qttraneh q on q.div = a.div and q.site_cd = a.site_cd and q.transaction_status in ('B','C')
-        left outer join svc.mspartms r on r.div = a.div and r.part_no = b.use_part1
+        left outer join 
+            (select div, transaction_no, seq, r_seq, use_part, use_part_qty
+               from (select div, transaction_no, seq, 
+                            use_part1                  as use_part1,
+                            use_part1_qty              as use_part1_qty,
+                            use_part2                  as use_part2,
+                            use_part2_qty              as use_part2_qty,
+                            use_part3                  as use_part3,
+                            use_part3_qty              as use_part3_qty
+                       from svc.cctranel a
+                      where div = #{div}
+                        and transaction_status  not in ('V')
+                        and transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
+               ) UNPIVOT ((use_part, use_part_qty) FOR r_seq in 
+                         ((use_part1, use_part1_qty) as 1, (use_part2, use_part2_qty) as 2, (use_part3, use_part3_qty) as 3))
+        ) b1 on b1.div = b.div and b1.transaction_no = b.transaction_no and b1.seq = b.seq
+        left outer join svc.fstranel c on c.div = b.div  and c.case_no = b.transaction_no and nvl(c.case_seq,c.seq) = b.seq
+        left outer join svc.fstraneh d on d.div = c.div  and d.transaction_no = c.transaction_no
+        left outer join svc.sitevrhd e on e.div = d.div  and e.fs_no = d.transaction_no
+        left outer join svc.sitevrdt f on f.div = e.div  and f.reportno = e.reportno and f.seq = c.seq
+        left outer join svc.fssowmsg g on g.div = b.div  and g.transaction_no = b.transaction_no and g.wo_no = b.work_order
+        left outer join svc.msuserms o on o.div = a.div  and o.user_id = a.create_id
+        left outer join svc.mssitems p on p.div = a.div  and p.site_cd = a.site_cd and p.status = 'A'
+        left outer join svc.qttraneh q on q.div = a.div  and q.site_cd = a.site_cd and q.transaction_status in ('B','C')
+        left outer join svc.mspartms r on r.div = b1.div and r.part_no = b1.use_part
      where a.div = #{div}
        and a.transaction_status not in ('V')
        and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
