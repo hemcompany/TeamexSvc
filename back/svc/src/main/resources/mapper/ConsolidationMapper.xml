@@ -26,9 +26,9 @@
            a.country_cd                 as country_cd,
            decode(p.e_mail,'Y','Y','N') as teamex_coverage,
            nvl(a.commissioned_date, q.upload_date)          as commissioned_date,
-           f_get_station_aging (to_date(#{date_fr},'mm/dd/yyyy'), 
-                                to_date(#{date_to},'mm/dd/yyyy'), 
-                                nvl(a.commissioned_date, q.upload_date))  as station_aging,
+           svc.f_get_station_aging (to_date(#{date_fr},'mm/dd/yyyy'), 
+                                    to_date(#{date_to},'mm/dd/yyyy'), 
+                                    nvl(a.commissioned_date, q.upload_date))  as station_aging,
            a.elam_no                    as elam_no,
            d.transaction_type           as work_type,
            a.elam_date                  as case_date,
@@ -150,7 +150,7 @@
            e.others_amt                 as total_others
       from svc.cctraneh a
         left outer join svc.cctranel b on b.div = a.div and b.transaction_no = a.transaction_no
-        left outer join svc.fstranel c on c.div = b.div and c.case_no = b.transaction_no and nvl(c.case_seq,c.seq) = b.seq
+        left outer join svc.fstranel c on c.div = b.div and c.case_no = b.transaction_no and c.case_seq = b.seq
         left outer join svc.fstraneh d on d.div = c.div and d.transaction_no = c.transaction_no
         left outer join svc.sitevrhd e on e.div = d.div and e.fs_no = d.transaction_no
         left outer join svc.sitevrdt f on f.div = e.div and f.reportno = e.reportno and f.seq = c.seq
@@ -190,9 +190,9 @@
            a.country_cd                 as country_cd,
            decode(p.e_mail,'Y','Y','N') as teamex_coverage,
            nvl(a.commissioned_date, q.upload_date)          as commissioned_date,
-           f_get_station_aging (to_date(#{date_fr},'mm/dd/yyyy'), 
-                                to_date(#{date_to},'mm/dd/yyyy'), 
-                                nvl(a.commissioned_date, q.upload_date))  as station_aging,
+           svc.f_get_station_aging (to_date(#{date_fr},'mm/dd/yyyy'), 
+                                    to_date(#{date_to},'mm/dd/yyyy'), 
+                                    nvl(a.commissioned_date, q.upload_date))  as station_aging,
            a.elam_no                    as elam_no,
            d.transaction_type           as work_type,
            a.elam_date                  as case_date,
@@ -324,7 +324,7 @@
                ) UNPIVOT ((use_part, use_part_qty) FOR r_seq in 
                          ((use_part1, use_part1_qty) as 1, (use_part2, use_part2_qty) as 2, (use_part3, use_part3_qty) as 3))
         ) b1 on b1.div = b.div and b1.transaction_no = b.transaction_no and b1.seq = b.seq
-        left outer join svc.fstranel c on c.div = b.div  and c.case_no = b.transaction_no and nvl(c.case_seq,c.seq) = b.seq
+        left outer join svc.fstranel c on c.div = b.div  and c.case_no = b.transaction_no and c.case_seq = b.seq
         left outer join svc.fstraneh d on d.div = c.div  and d.transaction_no = c.transaction_no
         left outer join svc.sitevrhd e on e.div = d.div  and e.fs_no = d.transaction_no
         left outer join svc.sitevrdt f on f.div = e.div  and f.reportno = e.reportno and f.seq = c.seq
@@ -341,115 +341,174 @@
   
   <!-- Compare WH (SWH vs AWH) Report : Visit Data --> 
   <select id="selectVisitData" parameterType="Map" resultType="Consolidation_CompWH">
-    select a.transaction_no || b.seq || c.transaction_no || c.seq || f.reportno || f.seq   as id,
-           e.work_type                  as sow_type,
-           b.warranty_cd                as warranty_yn,
-           b.gen_type                   as gen_type,
-           a.site_cd                    as site_cd,
-           b.station_id                 as station_id,
-           a.site_name                  as site_name,
-           a.address1 || a.address2     as address,
-           a.city                       as city,
-           a.state_cd                   as state_cd,
-           a.zip_cd                     as zip_cd,
-           ''                           as teamex_office,
-           a.elam_no                    as elam_case,
-           a.transaction_no             as mfr_case, 
-           trim(regexp_substr(regexp_substr(b.sow, '[^-]+'), '[^\]+', 1,6))  as code,
-           ''                           as new_code,
-           q.doc_name                   as description,
-           nvl(c.std_work_hours,0)                as swh_in_dec,
-           F_DEC_TO_HHMM(nvl(c.std_work_hours,0)) as swh_in_time,
-           b.check_in                   as check_in,
-           b.check_out                  as check_out,
-           GREATEST(round(nvl(b.check_out - b.check_in, 0) *24,2) -0.25, 0) as awh_in_dec,
-           F_DEC_TO_HHMM( GREATEST(round(nvl(b.check_out - b.check_in, 0) *24,2) -0.25, 0) ) as awh_in_time,
-           decode ( GREATEST(round(nvl(b.check_out - b.check_in, 0) *24,2) -0.25, 0) , 0, 0, 
-              round( nvl(c.std_work_hours,0) / GREATEST(round(nvl(b.check_out - b.check_in, 0) *24,2) -0.25, 0) ) * 100 ,2) as efficiency,
-           a.priority                   as priority_level,
-           a.transaction_date           as case_opened_date,
+    select a.transaction_no || a.seq || d.reportno || d.seq || e.transaction_no || e.seq   as id,
+           a.transaction_type            as SOW_type,
+           e.warranty_cd                 as warranty_yn,
+           a.gen_type                    as gen_type,
+           a.site_cd                     as site_cd,
+           a.station_id                  as station_id,
+           b.site_name                   as site_name,
+           b.address1 || b.address2      as address,
+           b.city                        as city,
+           b.state_cd                    as state_cd,
+           b.zip_cd                      as zip_cd,
+           ''                            as teamex_office,
+           f.elam_no                     as elam_case,
+           a.case_no                     as MFR_case, 
+           trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))  as code,
+           ''  as new_code,
+           q.doc_name                    as description,
+           nvl(q.hours, a.std_work_hours) as swh_in_dec,
+           svc.f_dec_to_hhmm(nvl(q.hours, a.std_work_hours)) as swh_in_time,
+           c.wt_ci1                      as check_in_1,
+           c.wt_co1                      as check_out_1,
+           c.wt_ci2                      as check_in_2,
+           c.wt_co2                      as check_out_2,
+           c.wt_ci3                      as check_in_2,
+           c.wt_co3                      as check_out_3,
+           c.wt_ci4                      as check_in_3,
+           c.wt_co4                      as check_out_4,
+           c.wt_ci5                      as check_in_5,
+           c.wt_co5                      as check_out_5,
+           GREATEST( round((nvl((c.wt_co1 - c.wt_ci1),0) 
+                          + nvl((c.wt_co2 - c.wt_ci2),0) 
+                          + nvl((c.wt_co3 - c.wt_ci3),0) 
+                          + nvl((c.wt_co4 - c.wt_ci4),0)  
+                          + nvl((c.wt_co5 - c.wt_ci5),0)) *24,2) -0.25, 0) as awh_in_dec,
+           svc.f_dec_to_hhmm( round(GREATEST( (( nvl((c.wt_co1 - c.wt_ci1),0) 
+                                               + nvl((c.wt_co2 - c.wt_ci2),0) 
+                                               + nvl((c.wt_co3 - c.wt_ci3),0) 
+                                               + nvl((c.wt_co4 - c.wt_ci4),0)  
+                                               + nvl((c.wt_co5 - c.wt_ci5),0)) *24) -0.25, 0) ,2) ) as awh_in_time,
+           decode(nvl(q.hours, a.std_work_hours), 0, 0,
+               round(( GREATEST( ((nvl((c.wt_co1 - c.wt_ci1),0) 
+                                 + nvl((c.wt_co2 - c.wt_ci2),0) 
+                                 + nvl((c.wt_co3 - c.wt_ci3),0) 
+                                 + nvl((c.wt_co4 - c.wt_ci4),0)  
+                                 + nvl((c.wt_co5 - c.wt_ci5),0)) *24) -0.25, 0))
+                                          / nvl(q.hours, a.std_work_hours) * 100 ) ) as efficiency,
+           f.priority                   as priority_level,
+           e.transaction_date           as case_opened_date,
            o.fname || ' ' || o.lname    as case_owner,
-           ''  as issue,
-           recomm_part1 || decode(recomm_part2, null, '', ',' || recomm_part2) || decode(recomm_part3, null, '',  ',' || recomm_part3)  as Recommended_parts,
-           c.order_no                   as so_no,
-           ''                           as RMA,
-           a.elam_date                  as date_wo_released,
-           b.work_order                 as work_order,
-           d.transaction_no             as fs_no,
-           d.technician                 as assigned_to,
-           b.visit_dt                   as est_start_date,
-           e.visit_dt                   as date_of_visit,
-           case when b.visit_dt= null then 0 
-                when a.elam_date = null then 0
-                else (to_date(to_char(b.visit_dt,'mm/dd/yyyy'),'mm/dd/yyyy') - to_date(to_char(a.elam_date,'mm/dd/yyyy'),'mm/dd/yyyy')) end as SLA,
-           b.close_fg                   as dispatch_status,
-           b.pending_issue              as pending_issue,
-           '' as reason_of_cancellation,
-           '' as date_wo_cancel,
-           e.reportno                   as fr_no
-      from svc.cctraneh a
-        left outer join svc.cctranel b on b.div = a.div and b.transaction_no = a.transaction_no
-        left outer join svc.fstranel c on c.div = b.div and c.case_no = b.transaction_no and nvl(c.case_seq,c.seq) = b.seq
-        left outer join svc.fstraneh d on d.div = c.div and d.transaction_no = c.transaction_no
-        left outer join svc.sitevrhd e on e.div = d.div and e.fs_no = d.transaction_no
-        left outer join svc.sitevrdt f on f.div = e.div and f.reportno = e.reportno and f.seq = c.seq
-        left outer join svc.fssowmsg g on g.div = b.div and g.transaction_no = b.transaction_no and g.wo_no = b.work_order
-        left outer join svc.msuserms o on o.div = a.div and o.user_id = a.create_id
-        inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A' and p.edi_fg = 'A'
-        left outer join svc.msstdwhr q on q.div = a.div and q.doc_code = trim(regexp_substr(regexp_substr(b.sow, '[^-]+'), '[^\]+', 1,6))
+           d.visit_reason               as issue,
+           d.part1_cd || decode(d.part2_cd, null, '', ',' || d.part2_cd) || decode(d.part3_cd, null, '',  ',' || d.part3_cd)  as Recommended_parts,
+           a.order_no                   as so_no,
+           g.cust_po_no                 as RMA,
+           a.wo_date                    as date_wo_released,
+           a.wo_no                      as work_order,
+           d.work_order                 as work_order2,
+           a.transaction_no             as fs_no,
+           b.technician                 as assigned_to,
+           c.technician                 as assigned_fr,
+           b.start_date                 as est_start_date,
+           c.visit_dt                   as date_of_visit,
+           case when c.visit_dt= null then 0 
+                when b.start_date = null then 0
+                else (to_date(to_char(c.visit_dt,'mm/dd/yyyy'),'mm/dd/yyyy') - to_date(to_char(b.start_date,'mm/dd/yyyy'),'mm/dd/yyyy')) end as SLA, -- est_start_Date - date_wo_released
+           e.close_fg                   as dispatch_status,
+           e.pending_issue              as pending_issue,
+           c.reportno                   as fr_no
+       from svc.fstranel a
+         left outer join svc.fstraneh b on b.div = a.div and b.transaction_no = a.transaction_no
+         left outer join svc.sitevrhd c on c.div = a.div and c.fs_no = a.transaction_no
+         left outer join svc.sitevrdt d on d.div = c.div and d.reportno = c.reportno and d.seq = a.seq
+         left outer join svc.cctranel e on e.div = a.div and e.transaction_no = a.case_no and e.seq = a.case_seq
+         left outer join svc.cctraneh f on f.div = a.div and f.transaction_no = a.case_no
+         left outer join svc.sotraneh g on g.div = a.div and g.transaction_type = 'RT' and g.transaction_no = a.order_no
+         left outer join svc.msuserms o on o.div = a.div and o.user_id = a.owner_id
+         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A' and p.edi_fg = 'A'
+         left outer join svc.msstdwhr q on q.div = a.div and q.doc_code = trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))
      where a.div = #{div}
-       and a.transaction_status not in ('V')
+       and a.transaction_status not in ('B','V')
        and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
-       
-     order by a.transaction_no, b.seq
+       and a.transaction_type = 'COM'
+     order by a.transaction_date, a.transaction_no, a.seq
   </select>
   
   <!-- Compare WH (SWH vs AWH) Report : Efficiency of SOW --> 
   <select id="selectEffOfSOW" parameterType="Map" resultType="Consolidation_CompWH">
-    select trim(regexp_substr(regexp_substr(b.sow, '[^-]+'), '[^\]+', 1,6))  as code,
-           ''                              as new_code,
+    select '1'                             as lev,
+           trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))  as code,
            q.doc_name                      as description,
-           d.technician                    as assigned_to,
+           ''                              as assigned_to,
            count(*)                        as count_assigned_tech,
-           nvl(c.std_work_hours,q.hours)   as swh_in_dec,
-           round(sum(GREATEST( (nvl(b.check_out - b.check_in, 0) *24) -0.25, 0)),2) / count(*) as avg_awh_in_dec,
-           (round(sum(GREATEST( (nvl(b.check_out - b.check_in, 0) *24) -0.25, 0)),2) / count(*)) / nvl(c.std_work_hours,q.hours)   as avg_efficiency
-      from svc.cctraneh a
-        left outer join svc.cctranel b on b.div = a.div and b.transaction_no = a.transaction_no
-        left outer join svc.fstranel c on c.div = b.div and c.case_no = b.transaction_no and nvl(c.case_seq,c.seq) = b.seq
-        left outer join svc.fstraneh d on d.div = c.div and d.transaction_no = c.transaction_no
-        inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A' and p.edi_fg = 'A'
-        left outer join svc.msstdwhr q on q.div = a.div and q.doc_code = trim(regexp_substr(regexp_substr(b.sow, '[^-]+'), '[^\]+', 1,6))
+           decode(nvl(q.hours, a.std_work_hours), 0, 0,
+                  round( (sum(GREATEST( ((nvl((c.wt_co1 - c.wt_ci1),0) 
+                                        + nvl((c.wt_co2 - c.wt_ci2),0) 
+                                        + nvl((c.wt_co3 - c.wt_ci3),0) 
+                                        + nvl((c.wt_co4 - c.wt_ci4),0)  
+                                        + nvl((c.wt_co5 - c.wt_ci5),0)) *24) -0.25, 0)) / count(*))
+                          / nvl(q.hours, a.std_work_hours) ,2) 
+            ) as avg_efficiency
+       from svc.fstranel a
+         left outer join svc.fstraneh b on b.div = a.div and b.transaction_no = a.transaction_no
+         left outer join svc.sitevrhd c on c.div = a.div and c.fs_no = a.transaction_no
+         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A' and p.edi_fg = 'A'
+         left outer join svc.msstdwhr q on q.div = a.div and q.doc_code = trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))
      where a.div = #{div}
-       and a.transaction_status not in ('V')
+       and a.transaction_status not in ('B','V')
        and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
-     group by trim(regexp_substr(regexp_substr(b.sow, '[^-]+'), '[^\]+', 1,6)), q.doc_name, q.hours, d.technician, c.std_work_hours
-     order by trim(regexp_substr(regexp_substr(b.sow, '[^-]+'), '[^\]+', 1,6)), d.technician
-    
+       and a.transaction_type = 'COM'
+     group by trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6)), q.doc_name, nvl(q.hours, a.std_work_hours)
+    union all
+    select '2'                             as lev,
+           trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))  as code,
+           q.doc_name                      as description,
+           b.technician                    as assigned_to,
+           count(*)                        as count_assigned_tech,
+           decode(nvl(q.hours, a.std_work_hours), 0, 0,
+                  round( (sum(GREATEST( ((nvl((c.wt_co1 - c.wt_ci1),0) 
+                                        + nvl((c.wt_co2 - c.wt_ci2),0) 
+                                        + nvl((c.wt_co3 - c.wt_ci3),0) 
+                                        + nvl((c.wt_co4 - c.wt_ci4),0)  
+                                        + nvl((c.wt_co5 - c.wt_ci5),0)) *24) -0.25, 0)) / count(*))
+                          / nvl(q.hours, a.std_work_hours) ,2) 
+            ) as avg_efficiency
+       from svc.fstranel a
+         left outer join svc.fstraneh b on b.div = a.div and b.transaction_no = a.transaction_no
+         left outer join svc.sitevrhd c on c.div = a.div and c.fs_no = a.transaction_no
+         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A' and p.edi_fg = 'A'
+         left outer join svc.msstdwhr q on q.div = a.div and q.doc_code = trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))
+     where a.div = #{div}
+       and a.transaction_status not in ('B','V')
+       and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
+       and a.transaction_type = 'COM'
+     group by trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6)), q.doc_name, nvl(q.hours, a.std_work_hours), b.technician 
+     order by code, lev, assigned_to
   </select>
   
   <!-- Compare WH (SWH vs AWH) Report : PV Analysis -->
   <select id="selectPvAnalysis" parameterType="Map" resultType="Consolidation_CompWH">
-    select trim(regexp_substr(regexp_substr(b.sow, '[^-]+'), '[^\]+', 1,6))  as code,
-           ''                              as new_code,
+    select trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))  as code,
            q.doc_name                      as description,
-           d.technician                    as assigned_to,
+           b.technician                    as assigned_to,
            count(*)                        as count_assigned_tech,
-           nvl(c.std_work_hours,q.hours)   as swh_in_dec,
-           round(sum(GREATEST( (nvl(b.check_out - b.check_in, 0) *24) -0.25, 0)),2) / count(*) as avg_awh_in_dec,
-           count(d.technician)             as count_wo,
-           (round(sum(GREATEST( (nvl(b.check_out - b.check_in, 0) *24) -0.25, 0)),2) / count(*)) / nvl(c.std_work_hours,q.hours) as efficiency
-      from svc.cctraneh a
-        left outer join svc.cctranel b on b.div = a.div and b.transaction_no = a.transaction_no
-        left outer join svc.fstranel c on c.div = b.div and c.case_no = b.transaction_no and nvl(c.case_seq,c.seq) = b.seq
-        left outer join svc.fstraneh d on d.div = c.div and d.transaction_no = c.transaction_no
-        inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A' and p.edi_fg = 'A'
-        left outer join svc.msstdwhr q on q.div = a.div and q.doc_code = trim(regexp_substr(regexp_substr(b.sow, '[^-]+'), '[^\]+', 1,6))
+           nvl(q.hours, a.std_work_hours)  as swh_in_dec,
+           round( sum(GREATEST( ((nvl((c.wt_co1 - c.wt_ci1),0) 
+                                + nvl((c.wt_co2 - c.wt_ci2),0) 
+                                + nvl((c.wt_co3 - c.wt_ci3),0) 
+                                + nvl((c.wt_co4 - c.wt_ci4),0)  
+                                + nvl((c.wt_co5 - c.wt_ci5),0)) *24) -0.25, 0)) / count(*) , 2) as avg_awh_in_dec,
+           count(b.technician)             as count_wo,
+           decode(nvl(q.hours, a.std_work_hours), 0, 0,
+                  round( (sum(GREATEST( ((nvl((c.wt_co1 - c.wt_ci1),0) 
+                                        + nvl((c.wt_co2 - c.wt_ci2),0) 
+                                        + nvl((c.wt_co3 - c.wt_ci3),0) 
+                                        + nvl((c.wt_co4 - c.wt_ci4),0)  
+                                        + nvl((c.wt_co5 - c.wt_ci5),0)) *24) -0.25, 0)) / count(*))
+                          / nvl(q.hours, a.std_work_hours) ,2) 
+            ) as avg_efficiency
+       from svc.fstranel a
+         left outer join svc.fstraneh b on b.div = a.div and b.transaction_no = a.transaction_no
+         left outer join svc.sitevrhd c on c.div = a.div and c.fs_no = a.transaction_no
+         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A' and p.edi_fg = 'A'
+         left outer join svc.msstdwhr q on q.div = a.div and q.doc_code = trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))
      where a.div = #{div}
-       and a.transaction_status not in ('V')
+       and a.transaction_status not in ('B','V')
        and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
-     group by trim(regexp_substr(regexp_substr(b.sow, '[^-]+'), '[^\]+', 1,6)), q.doc_name, q.hours, d.technician, c.std_work_hours
-     order by trim(regexp_substr(regexp_substr(b.sow, '[^-]+'), '[^\]+', 1,6)), d.technician
+       and a.transaction_type = 'COM'
+     group by trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6)), q.doc_name, nvl(q.hours, a.std_work_hours), b.technician 
+     order by trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6)), b.technician
   </select>
 
 </mapper>

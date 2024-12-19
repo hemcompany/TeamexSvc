@@ -28,8 +28,16 @@ public class Consolidation_CompWH {
 	String description;
 	float  swh_in_dec;
 	String swh_in_time;
-	String check_in;
-	String check_out;
+	String check_in_1;
+	String check_out_1;
+	String check_in_2;
+	String check_out_2;
+	String check_in_3;
+	String check_out_3;
+	String check_in_4;
+	String check_out_4;
+	String check_in_5;
+	String check_out_5;
     float  awh_in_dec;
     float  avg_awh_in_dec;
     String awh_in_time;
