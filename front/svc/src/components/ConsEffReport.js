@@ -10,7 +10,7 @@ function ConsEffReport({frDate, toDate, search}) {
     //console.log("EffReport1");
     //# TAB1. Report 조회
     //REPORT 양식 PATH
-    const reportPath = "/reports/compareWH.rdlx-json";   
+    const reportPath = "/reports/compareWH.rdlx-json";
     // REPORT 내보내기 가능 타입
     const availableExports = ["pdf"]; //, "html", "tabular-data"
     // 내보내기 버튼 사이드바로 (상단)
@@ -38,7 +38,7 @@ function ConsEffReport({frDate, toDate, search}) {
                         ],
                 });
             }
-
+            
             return () => {
                 if (viewer && viewer.dispose === "function") viewer.dispose(); // 리소스 정리
             };
@@ -70,8 +70,8 @@ function ConsEffReport({frDate, toDate, search}) {
             <Viewer 
                 ref={viewerRef}
                 availableExports={availableExports}
-                panelsLayout={panelsLayout}
                 toolbarLayout={toolbarLayout}
+                panelsLayout={panelsLayout}
                 exportsSettings={setExportSetting()}
             />
         </div>
