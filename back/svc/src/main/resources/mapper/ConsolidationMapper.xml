@@ -342,9 +342,9 @@
   <!-- Compare WH (SWH vs AWH) Report : Visit Data --> 
   <select id="selectVisitData" parameterType="Map" resultType="Consolidation_CompWH">
     select a.transaction_no || a.seq || d.reportno || d.seq || e.transaction_no || e.seq   as id,
-           a.transaction_type            as SOW_type,
-           e.warranty_cd                 as warranty_yn,
-           a.gen_type                    as gen_type,
+           a.transaction_type            as sow_type,
+           case when e.transaction_date > h.close_date then 'N' else 'Y' end  as warranty_yn,
+           h.loc_no                      as gen_type,
            a.site_cd                     as site_cd,
            a.station_id                  as station_id,
            b.site_name                   as site_name,
@@ -391,9 +391,9 @@
            e.transaction_date           as case_opened_date,
            o.fname || ' ' || o.lname    as case_owner,
            d.visit_reason               as issue,
-           d.part1_cd || decode(d.part2_cd, null, '', ',' || d.part2_cd) || decode(d.part3_cd, null, '',  ',' || d.part3_cd)  as Recommended_parts,
+           d.part1_cd || decode(d.part2_cd, null, '', ',' || d.part2_cd) || decode(d.part3_cd, null, '',  ',' || d.part3_cd)  as recommended_parts,
            a.order_no                   as so_no,
-           g.cust_po_no                 as RMA,
+           g.ra_no                      as RMA,
            a.wo_date                    as date_wo_released,
            a.wo_no                      as work_order,
            d.work_order                 as work_order2,
@@ -402,9 +402,9 @@
            c.technician                 as assigned_fr,
            b.start_date                 as est_start_date,
            c.visit_dt                   as date_of_visit,
-           case when c.visit_dt= null then 0 
-                when b.start_date = null then 0
-                else (to_date(to_char(c.visit_dt,'mm/dd/yyyy'),'mm/dd/yyyy') - to_date(to_char(b.start_date,'mm/dd/yyyy'),'mm/dd/yyyy')) end as SLA, -- est_start_Date - date_wo_released
+           case when b.start_date= null then 0 
+                when a.wo_date = null then 0
+                else (to_date(to_char(b.start_date,'mm/dd/yyyy'),'mm/dd/yyyy') - to_date(to_char(a.wo_date,'mm/dd/yyyy'),'mm/dd/yyyy')) end as rtat,
            e.close_fg                   as dispatch_status,
            e.pending_issue              as pending_issue,
            c.reportno                   as fr_no
@@ -414,14 +414,14 @@
          left outer join svc.sitevrdt d on d.div = c.div and d.reportno = c.reportno and d.seq = a.seq
          left outer join svc.cctranel e on e.div = a.div and e.transaction_no = a.case_no and e.seq = a.case_seq
          left outer join svc.cctraneh f on f.div = a.div and f.transaction_no = a.case_no
-         left outer join svc.sotraneh g on g.div = a.div and g.transaction_type = 'RT' and g.transaction_no = a.order_no
-         left outer join svc.msuserms o on o.div = a.div and o.user_id = a.owner_id
-         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A' and p.edi_fg = 'A'
+         left outer join svc.sotraneh g on g.div = a.div and g.transaction_type = 'RT' and g.transaction_status not in ('V') and g.transaction_no = a.order_no
+         left outer join svc.qttranel h on h.div = a.div and h.transaction_type = 'QT' and h.transaction_status not in ('V') and h.site_cd = a.site_cd and h.lot_id = a.station_id 
+         left outer join svc.msuserms o on o.div = f.div and o.user_id = f.create_id
+         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status in ('I', 'A') and p.edi_fg = 'A'
          left outer join svc.msstdwhr q on q.div = a.div and q.doc_code = trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))
      where a.div = #{div}
        and a.transaction_status not in ('B','V')
        and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
-       and a.transaction_type = 'COM'
      order by a.transaction_date, a.transaction_no, a.seq
   </select>
   
@@ -443,12 +443,11 @@
        from svc.fstranel a
          left outer join svc.fstraneh b on b.div = a.div and b.transaction_no = a.transaction_no
          left outer join svc.sitevrhd c on c.div = a.div and c.fs_no = a.transaction_no
-         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A' and p.edi_fg = 'A'
+         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status in ('I', 'A') and p.edi_fg = 'A'
          left outer join svc.msstdwhr q on q.div = a.div and q.doc_code = trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))
      where a.div = #{div}
        and a.transaction_status not in ('B','V')
        and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
-       and a.transaction_type = 'COM'
      group by trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6)), q.doc_name, nvl(q.hours, a.std_work_hours)
     union all
     select '2'                             as lev,
@@ -467,12 +466,11 @@
        from svc.fstranel a
          left outer join svc.fstraneh b on b.div = a.div and b.transaction_no = a.transaction_no
          left outer join svc.sitevrhd c on c.div = a.div and c.fs_no = a.transaction_no
-         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A' and p.edi_fg = 'A'
+         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status in ('I', 'A') and p.edi_fg = 'A'
          left outer join svc.msstdwhr q on q.div = a.div and q.doc_code = trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))
      where a.div = #{div}
        and a.transaction_status not in ('B','V')
        and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
-       and a.transaction_type = 'COM'
      group by trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6)), q.doc_name, nvl(q.hours, a.std_work_hours), b.technician 
      order by code, lev, assigned_to
   </select>
@@ -501,12 +499,11 @@
        from svc.fstranel a
          left outer join svc.fstraneh b on b.div = a.div and b.transaction_no = a.transaction_no
          left outer join svc.sitevrhd c on c.div = a.div and c.fs_no = a.transaction_no
-         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A' and p.edi_fg = 'A'
+         inner join      svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status in ('I', 'A') and p.edi_fg = 'A'
          left outer join svc.msstdwhr q on q.div = a.div and q.doc_code = trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6))
      where a.div = #{div}
        and a.transaction_status not in ('B','V')
        and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
-       and a.transaction_type = 'COM'
      group by trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6)), q.doc_name, nvl(q.hours, a.std_work_hours), b.technician 
      order by trim(regexp_substr(regexp_substr(a.sow_file, '[^-]+'), '[^\]+', 1,6)), b.technician
   </select>

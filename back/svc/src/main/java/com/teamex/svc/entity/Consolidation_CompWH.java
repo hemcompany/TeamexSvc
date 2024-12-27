@@ -61,7 +61,7 @@ public class Consolidation_CompWH {
     String assigned_to;
     String est_start_date;
     String date_of_visit;
-    int    sla; 
+    int    rtat; 
     String dispatch_status;
     String pending_issue;
     String reason_of_cancellation;

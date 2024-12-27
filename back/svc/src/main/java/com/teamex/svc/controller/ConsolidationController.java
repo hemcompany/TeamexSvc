@@ -68,7 +68,7 @@ public class ConsolidationController {
 	@GetMapping("/select/pvAnalysis")
 	///@CrossOrigin(origins = {"http://localhost:3000", "http://localhost", "http://rpt.teamexusa.com"}) : Apply at the WebConfig
 	public List<Consolidation_CompWH> selectPvAnalysis(@RequestParam(name="div", required=true) String div,
-				@RequestParam(name="date_fr") String date_fr, 
+				@RequestParam(name="date_fr") String date_fr,
 				@RequestParam(name="date_to") String date_to) {
 		return consolidationService.selectPvAnalysis(div, date_fr, date_to);
 	}
