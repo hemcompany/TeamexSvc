@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
@@ -15,11 +15,15 @@ import ConsEffReport from  '../components/ConsEffReport';
 import ConsEffGrid from  '../components/ConsEffGrid';
 
 export default function ConsEff() {
+    //console.log("ConsEff");
     const navigate = useNavigate();
+    //선택된 조회기간 저장
+    const frDate = useRef(dayjs().add(-1,'month').startOf('month'));
+    const toDate = useRef(dayjs().add(-1,'month').endOf('month'));
+    const [search, setSearch] = useState(0); //조회버튼
 
     //TAB
-    const [value, setValue] = useState(0);  //Tab Index값 저장
-    const [search, setSearch] = useState(0); //조회버튼
+    const [value, setValue] = useState(0);  //Tab Index값 저장\
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -54,9 +58,6 @@ export default function ConsEff() {
             'aria-controls': `simple-tabpanel-${index}`,
         };
     };
-    //선택된 조회기간 저장
-    const [frDate, setFrDate] = useState(dayjs().add(-1,'month').startOf('month'));
-    const [toDate, setToDate] = useState(dayjs().add(-1,'month').endOf('month'));
     
     //Report / Grid 조회
     const fetchList = () => { 
@@ -66,13 +67,12 @@ export default function ConsEff() {
 
     // 화면 처음 렌더링 될 때 호출 되는 함수
     useEffect(() => {
+        //console.log("ConsEff : useEffect");
         //로그인 체크 
         if (sessionStorage.getItem("id")==="" || sessionStorage.getItem("id")=== null){
             navigate("/login");
-        return;
+            return;
         }
-        // Report/Grid 조회
-        fetchList();
     }, []);
     
     return (
@@ -81,21 +81,19 @@ export default function ConsEff() {
             <DatePicker 
                 label="Visit Date From" 
                 format="MM/DD/YYYY"
-                defaultValue={frDate}
-                value={frDate}
+                defaultValue={frDate.current}
+                onChange={(newValue) => {frDate.current = newValue;}}
                 sx={{ mr: 1}}
-                onChange={setFrDate}
-                slotProps={{ textField: { size: 'small' } }}
+                slotProps={{ textField: { size: 'small', inputRef: frDate.current } }}
             />
             ~ 
             <DatePicker 
                 label="Visit Date To" 
-                format="MM/DD/YYYY" 
-                defaultValue={toDate}
-                value={toDate}
+                format="MM/DD/YYYY"
+                defaultValue={toDate.current}
+                onChange={(newValue) => {toDate.current = newValue;}}
                 sx={{ ml: 1}}
-                onChange={setToDate}
-                slotProps={{ textField: { size: 'small' } }}
+                slotProps={{ textField: { size: 'small', inputRef: toDate.current } }}
             />
             <Button 
                 variant="outlined" 

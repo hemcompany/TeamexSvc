@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import axios from 'axios';
 import dayjs from 'dayjs';
 
@@ -16,7 +16,11 @@ import {
     useGridApiContext,
   } from '@mui/x-data-grid';
 
-function ConsEffGrid({frDate, toDate, search}) {
+function ConsEffGrid(props) {
+    
+    const propFrDate = useRef(null);
+    const propToDate = useRef(null);
+
     //# Tab2. List
     const [visitList, setVisitList] = useState([]);
     const VISIT_DATA_LIST_URL = "/api/consolidation/select/visitData";
@@ -26,7 +30,8 @@ function ConsEffGrid({frDate, toDate, search}) {
     });
     const [loadingYn, setLoadingYn] = useState(false);
 
-    //console.log("EffGrid1");
+    //console.log("ConsEffGrid : " + props.search);
+    
     const CustomToolbar = () => {
         const apiRef = useGridApiContext();
         const getFilteredRows = ({ apiRef }) => gridExpandedSortedRowIdsSelector(apiRef);
@@ -56,7 +61,7 @@ function ConsEffGrid({frDate, toDate, search}) {
             </Button>
           </GridToolbarContainer>
         );
-    }
+    };
 
     //TAB2 - DATA GRID 세팅
     const columns = [
@@ -94,21 +99,21 @@ function ConsEffGrid({frDate, toDate, search}) {
         { field: 'priority_level', headerName: 'Priority\nLevel', width: 100, },
         { field: 'case_opened_date', headerName: 'Case Opened\nDate', width: 100, type: 'date', valueGetter: (value) => value && new Date(value), },
         { field: 'case_owner', headerName: 'Case Owner', width: 170, },
-        { field: 'issue', headerName: 'Issue', width: 150, },
+        { field: 'issue', headerName: 'Issue', width: 200, },
         { field: 'recommended_parts', headerName: 'Recommended parts', width: 150, },
-        { field: 'so_no', headerName: 'SO', width: 110, },
+        { field: 'so_no', headerName: 'SO', width: 140, },
         { field: 'rma', headerName: 'RMA', width: 120, },
         { field: 'need_parts', headerName: 'Need\nParts?\n(Y/N)', width: 90, },
         { field: 'status_of_parts', headerName: 'Status of\nParts', width: 90, },
         { field: 'tracking_number', headerName: 'Tracking\nNumber', width: 90, type: Number, align: 'right', },
         { field: 'eta_of_parts', headerName: 'ETA of\nParts', width: 90, },
-        { field: 'date_wo_released', headerName: 'Date WO\nreleased\n(MM/DD/YYYY)', width: 150, type: 'date', valueGetter: (value) => value && new Date(value), align: 'center', },
+        { field: 'date_wo_released', headerName: 'Date WO\nreleased\n(MM/DD/YYYY)', width: 130, type: 'date', valueGetter: (value) => value && new Date(value), align: 'center', },
         { field: 'work_order', headerName: 'WO', width: 100, },
         { field: 'fs_no', headerName: 'FS Number', width: 120, },
         { field: 'assigned_to', headerName: 'Assigned to', width: 180,  },
         { field: 'est_start_date', headerName: 'EST\nStart date\n(MM/DD/YYYY)', width: 120, type: 'date', valueGetter: (value) => value && new Date(value), align: 'center', },
         { field: 'date_of_visit', headerName: 'Date of\nvisit\n(MM/DD/YYYY)', width: 120, type: 'date', valueGetter: (value) => value && new Date(value), align: 'center',  },
-        { field: 'sla', headerName: 'SLA', width: 70, type: Number, align: 'right', },
+        { field: 'rtat', headerName: 'RTAT', width: 70, type: Number, align: 'right', },
         { field: 'dispatch_status', headerName: 'Dispatch\nStatus', width: 90, align: 'center', },
         { field: 'pending_issue', headerName: 'Notes / Pending  Issue', width: 200, },
         { field: 'reason_of_cancellation', headerName: 'Reason of cancellation', width: 100, },
@@ -129,8 +134,8 @@ function ConsEffGrid({frDate, toDate, search}) {
                     "Access-Control-Allow-Credentials":"true",},
                 params: { 
                     div: sessionStorage.getItem("div"),
-                    date_fr: dayjs(frDate).format('MM/DD/YYYY'),
-                    date_to: dayjs(toDate).format('MM/DD/YYYY')
+                    date_fr: propFrDate.current,
+                    date_to: propToDate.current
                 },
             })
             .then((res) => {
@@ -151,12 +156,14 @@ function ConsEffGrid({frDate, toDate, search}) {
 
     // 화면 처음 렌더링 될 때 호출 되는 함수
     useEffect(() => {
+        //console.log("ConsEffGrid : effect");
+        propFrDate.current = dayjs(props.frDate.current).format('MM/DD/YYYY');
+        propToDate.current = dayjs(props.toDate.current).format('MM/DD/YYYY');
         // API를 이용하여 List 조회
         fetchList();
-    }, [fetchList]);
+    }, [props.search]);
 
     return(
-        
         <DataGrid
             rows={visitList}
             columns={columns}
