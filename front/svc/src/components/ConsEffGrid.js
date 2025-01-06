@@ -17,21 +17,16 @@ import {
   } from '@mui/x-data-grid';
 
 function ConsEffGrid(props) {
-    
-    const propFrDate = useRef(null);
-    const propToDate = useRef(null);
-
     //# Tab2. List
-    const [visitList, setVisitList] = useState([]);
-    const VISIT_DATA_LIST_URL = "/api/consolidation/select/visitData";
+    //DATA GRID Setting
+    //-- paging
     const [paginationModel, setPaginationModel] = React.useState({
         pageSize: 25,
         page: 0,
     });
+    //-- loading state
     const [loadingYn, setLoadingYn] = useState(false);
-
-    //console.log("ConsEffGrid : " + props.search);
-    
+    //-- Data Grid toolbar setting
     const CustomToolbar = () => {
         const apiRef = useGridApiContext();
         const getFilteredRows = ({ apiRef }) => gridExpandedSortedRowIdsSelector(apiRef);
@@ -63,7 +58,7 @@ function ConsEffGrid(props) {
         );
     };
 
-    //TAB2 - DATA GRID 세팅
+    //-- DATA GRID Column Setting
     const columns = [
         { field: 'sow_type', headerName: 'SOW\nType', width: 60, align: 'center', },
         { field: 'warranty_yn', headerName: 'In warranty\n(Y/N)', width: 90, align: 'center', },
@@ -122,6 +117,12 @@ function ConsEffGrid(props) {
     ];
     
     // List Retrieve (call Backend API)
+    const propFrDate = useRef(null);
+    const propToDate = useRef(null);
+
+    const [visitList, setVisitList] = useState([]);
+    const VISIT_DATA_LIST_URL = "/api/consolidation/select/visitData";
+    
     const fetchList = useCallback(async () => { 
         try {
             setLoadingYn(true);
@@ -154,12 +155,13 @@ function ConsEffGrid(props) {
         }
     },[]);
 
-    // 화면 처음 렌더링 될 때 호출 되는 함수
+    // Function called when the search button clicked
     useEffect(() => {
         //console.log("ConsEffGrid : effect");
+        // Inquiry period setting (get from the parent prop)
         propFrDate.current = dayjs(props.frDate.current).format('MM/DD/YYYY');
         propToDate.current = dayjs(props.toDate.current).format('MM/DD/YYYY');
-        // API를 이용하여 List 조회
+        // Call List inquiry function
         fetchList();
     }, [props.search]);
 
@@ -189,7 +191,7 @@ function ConsEffGrid(props) {
             onPaginationModelChange={setPaginationModel}
             sx={{
                 '.MuiDataGrid-columnHeaderTitle' : {
-                    whiteSpace: 'pre-line', // 줄바꿈 허용
+                    whiteSpace: 'pre-line', // multi-line allowance
                     lineHeight: '1',  
                     textAlign: 'center',
                 },

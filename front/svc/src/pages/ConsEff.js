@@ -16,14 +16,8 @@ import ConsEffGrid from  '../components/ConsEffGrid';
 
 export default function ConsEff() {
     //console.log("ConsEff");
-    const navigate = useNavigate();
-    //선택된 조회기간 저장
-    const frDate = useRef(dayjs().add(-1,'month').startOf('month'));
-    const toDate = useRef(dayjs().add(-1,'month').endOf('month'));
-    const [search, setSearch] = useState(0); //조회버튼
-
-    //TAB
-    const [value, setValue] = useState(0);  //Tab Index값 저장\
+    //TAB Start ==========================================================
+    const [value, setValue] = useState(0);  //Tab Index state
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -58,17 +52,23 @@ export default function ConsEff() {
             'aria-controls': `simple-tabpanel-${index}`,
         };
     };
+    // Tab End  ============================================================
     
-    //Report / Grid 조회
-    const fetchList = () => { 
-        // Eff of SOW Report 조회
+    const navigate = useNavigate();
+    //Inquiry period setting
+    const frDate = useRef(dayjs().add(-1,'month').startOf('month'));
+    const toDate = useRef(dayjs().add(-1,'month').endOf('month'));
+    const [search, setSearch] = useState(0); //Search Button state
+
+    //Report / Grid inquiry
+    const fetchList = () => {
         setSearch(search +1);
     };
-
-    // 화면 처음 렌더링 될 때 호출 되는 함수
+    
+    // function called when the window first rendering
     useEffect(() => {
         //console.log("ConsEff : useEffect");
-        //로그인 체크 
+        //Login Check
         if (sessionStorage.getItem("id")==="" || sessionStorage.getItem("id")=== null){
             navigate("/login");
             return;

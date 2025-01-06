@@ -19,22 +19,18 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const ConsEvcPartGrid = (props) => {
-    const propFrDate = useRef(null);
-    const propToDate = useRef(null);
-
+    //DATA GRID Setting
+    //-- paging
     const [paginationModel, setPaginationModel] = React.useState({
         pageSize: 25,
         page: 0,
     });
-
-    //# List
-    const CONSOLIDATION_LIST_URL = "/api/consolidation/select/r_evcPart";
-    const [boardList, setBoardList] = useState([]);
+    //-- loading state
     const [loadingYn, setLoadingYn] = useState(false);
-    const getFilteredRows = ({ apiRef }) => gridExpandedSortedRowIdsSelector(apiRef);
-
+    //-- Data Grid toolbar setting
     const CustomToolbar = () => {
         const apiRef = useGridApiContext();
+        const getFilteredRows = ({ apiRef }) => gridExpandedSortedRowIdsSelector(apiRef);
         const handleExport = (options) => apiRef.current.exportDataAsCsv(options);
 
         const buttonBaseProps = {
@@ -64,7 +60,7 @@ const ConsEvcPartGrid = (props) => {
         );
     };
 
-    //DATA GRID 세팅
+    //-- DATA GRID Column Setting
     const columns = [
         { field: 'use_part', headerName: 'Use Part', width: 130, },
         { field: 'use_part_qty', headerName: 'Use Part Qty', width: 110, type: Number, align: 'right', },
@@ -176,7 +172,13 @@ const ConsEvcPartGrid = (props) => {
         { field: 'total_others', headerName: 'Total Others', width: 110, type: Number, align: 'right', },
     ];
 
-    // List Retrieve (call Backend API)
+    // List Inquiry (call Backend API)
+    const propFrDate = useRef(null);
+    const propToDate = useRef(null);
+
+    const CONSOLIDATION_LIST_URL = "/api/consolidation/select/r_evcPart";
+    const [boardList, setBoardList] = useState([]);
+
     const fetchList = useCallback(async () => { 
         try {
             setLoadingYn(true);
@@ -209,11 +211,12 @@ const ConsEvcPartGrid = (props) => {
         }
     },[]);
 
-    // 화면 처음 렌더링 될 때 호출 되는 함수
+    // Function called when the search button clicked
     useEffect(() => {
+        // Inquiry period setting (get from the parent prop)
         propFrDate.current = dayjs(props.frDate.current).format('MM/DD/YYYY');
         propToDate.current = dayjs(props.toDate.current).format('MM/DD/YYYY');
-        // API를 이용하여 List 조회
+        // Call List inquiry function
         fetchList();
     }, [props.search]);
 
@@ -243,7 +246,7 @@ const ConsEvcPartGrid = (props) => {
             onPaginationModelChange={setPaginationModel}
             sx={{
                 '.MuiDataGrid-columnHeaderTitle' : {
-                    whiteSpace: 'pre-line', // 줄바꿈 허용
+                    whiteSpace: 'pre-line', // multi-line allowance
                     lineHeight: '1',  
                     textAlign: 'center',
                 },
@@ -254,21 +257,22 @@ const ConsEvcPartGrid = (props) => {
 
 
 const ConsEvcPart = () => {
+    //console.log("ConsEvcPart");
     const navigate = useNavigate();
-    //선택된 조회기간 저장
+    //Inquiry period setting
     const frDate = useRef(dayjs().startOf('month'));
     const toDate = useRef(dayjs());
-    const [search, setSearch] = useState(0); //조회버튼
+    const [search, setSearch] = useState(0); //Search Button state
     
-    //Report / Grid 조회
-    const fetchList = () => { 
-        // Eff of SOW Report 조회
+    //Report / Grid inquiry
+    const fetchList = () => {
         setSearch(search +1);
     };
 
-    // 화면 처음 렌더링 될 때 호출 되는 함수
+    // function called when the window first rendering
     useEffect(() => {
-        //로그인 체크 
+        //console.log("ConsEvcPart : useEffect");
+        //Login Check
         if (sessionStorage.getItem("id")==="" || sessionStorage.getItem("id")=== null){
             navigate("/login");
             return;

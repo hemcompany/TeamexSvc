@@ -6,25 +6,27 @@ import dayjs from 'dayjs';
 import { Viewer } from "@grapecity/activereports-react";
 
 function ConsEffReport(props) {
+    //# TAB1. Report Inquiry
     //console.log("ConsEffReport : " + props.search);
     //console.log(props);
     const viewerRef = useRef(null);
     const propFrDate = useRef(null);
     const propToDate = useRef(null);
 
-    //# TAB1. Report 조회
-    //REPORT 양식 PATH
+    //REPORT Setting
+    //-- REPORT form path
     const reportPath = "/reports/compareWH.rdlx-json";
-    // REPORT 내보내기 가능 타입
+    //-- export type setting
     const availableExports = ["pdf"]; //, "html", "tabular-data"
-    // 내보내기 버튼 사이드바로 (상단)
+    //-- export button type : sidebar (upper side)
     const panelsLayout = "sidebar";
+    //-- Toolbar setting
     const toolbarLayout = {
         default: ["$navigation","$split","$refresh","$split","$zoom","$split"],
         fullscreen: ["$navigation","$split","$refresh","$split","$zoom","$split"],
         mobile: ["$navigation","$split","$refresh","$split","$zoom","$split"]
     };
-    //Report Pdf Export 세팅
+    //-- PDF export setting
     const setExportSetting = () => {
         return {
             pdf: {
@@ -43,7 +45,7 @@ function ConsEffReport(props) {
         };
     };
 
-    // Report viewer Retrieve (call Backend API)
+    // Report viewer Inquiry (call Backend API)
     const fetchViewer = useCallback(async () => { 
         try {
             if (!viewerRef.current) return;
@@ -60,7 +62,7 @@ function ConsEffReport(props) {
                 });
             }
             return () => {
-                if (viewer && viewer.dispose === "function") viewer.dispose(); // 리소스 정리
+                if (viewer && viewer.dispose === "function") viewer.dispose(); // clear resources
             };
         } catch (err) {
             console.log(err);
@@ -68,13 +70,13 @@ function ConsEffReport(props) {
         }
     },[]);
 
-    //Report Viewer 조회
+    // Function called when the search button clicked
     useEffect(() => {
         //console.log("ConsEffReport : effect");
+        // Inquiry period setting (get from the parent prop)
         propFrDate.current = dayjs(props.frDate.current).format('MM/DD/YYYY');
         propToDate.current = dayjs(props.toDate.current).format('MM/DD/YYYY');
-        
-        // Report 조회
+        // Call Report inquiry function
         fetchViewer();
 
     },[props.search]); 
