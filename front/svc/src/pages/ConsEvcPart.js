@@ -295,7 +295,7 @@ const ConsEvcPart = () => {
                     label="To" 
                     format="MM/DD/YYYY" 
                     defaultValue={toDate.current}
-                    onChange={(newValue) => {frDate.current = newValue;}}
+                    onChange={(newValue) => {toDate.current = newValue;}}
                     sx={{ ml: 1}}
                     slotProps={{ textField: { size: 'small', inputRef: toDate.current } }}
                 />
