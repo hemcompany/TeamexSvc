@@ -46,6 +46,12 @@
            a.warranty_yn                as warranty_yn,
            a.cycle                      as cycle,
            a.priority                   as priority,
+           svc.no_biz_hours(decode(substr(a.transaction_no,11,1),'A','EA','V','EVGO','AG'),a.elam_date, a.response_date) AS response_time,
+           case when b.check_out is not null then to_char(round(b.check_out - a.response_date, 2))
+                when nvl(b.visit_yn,'N') = 'Y' then 'Needs visit'
+                when nvl(b.visit_yn,'N') = 'N' then 'No need to visit'
+           end    as stat_days,
+           round((b.check_out - a.response_date) * 24 , 2) as stat_hours,
            b.symptom                    as symptom,
            b.teamviewer                 as teamviewer,
            b.exp_reason                 as exp_reason,
@@ -54,6 +60,8 @@
            b.exp_reason_cd              as exp_reason_cd,
            e.visit_dt                   as visit_dt,
            decode(g.sow, null, f.action_detail, g.sow)   as work_done,
+           b.visit_dt                   as visit_dt,
+           b.check_out                  as check_out,
            b.use_part1                  as use_part1,
            b.use_part1_qty              as use_part1_qty,
            b.use_part2                  as use_part2,
@@ -61,7 +69,9 @@
            b.use_part3                  as use_part3,
            b.use_part3_qty              as use_part3_qty,
            b.symptom_cd                 as symptom_cd,
+           r.description                as symptom_desc,
            b.repair_cd                  as repair_cd,
+           s.description                as action_taken,
            b.warranty_cd                as warranty_cd,
            b.visit_yn                   as visit_yn,
            b.repaired_by                as tech_company,
@@ -158,6 +168,8 @@
         left outer join svc.msuserms o on o.div = a.div and o.user_id = a.create_id
         left outer join svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A'
         left outer join svc.qttraneh q on q.div = a.div and q.site_cd = a.site_cd and q.transaction_status in ('B','C')
+        left outer join svc.mspdrcms r on r.div = a.div and r.code_type = 'DEFECT' and r.code = b.symptom_cd
+        left outer join svc.mspdrcms s on s.div = a.div and s.code_type = 'REPAIR' and s.code = b.repair_cd
      where a.div = #{div}
        and a.transaction_status not in ('V')
        and a.transaction_date <![CDATA[ >= ]]> to_date(#{date_fr},'mm/dd/yyyy') and a.transaction_date <![CDATA[ < ]]> to_date(#{date_to},'mm/dd/yyyy')+1
