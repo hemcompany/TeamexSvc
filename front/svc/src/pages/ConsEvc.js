@@ -51,7 +51,7 @@ const ConsEvcGrid = (props) => {
             {...buttonBaseProps}
             onClick={() => handleExport({ 
                 getRowsToExport: getFilteredRows,
-                fileName: 'EVC Part Usage Report',
+                fileName: 'Consolidation Report',
             })}
             >
             Export Filtered rows
