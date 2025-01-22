@@ -18,12 +18,12 @@
            b.product_cd                 as product_cd,
            b.model_no                   as model_no,
            b.gen_type                   as gen_type,
-           a.site_name                  as site_name,
-           a.address1 || a.address2     as address,
-           a.city                       as city,
-           a.state_cd                   as state_cd,
-           a.zip_cd                     as zip_cd,
-           a.country_cd                 as country_cd,
+           p.name                       as site_name,
+           p.address1 || p.address2     as address,
+           p.city                       as city,
+           p.state_cd                   as state_cd,
+           p.zip_cd                     as zip_cd,
+           p.country_cd                 as country_cd,
            decode(p.e_mail,'Y','Y','N') as teamex_coverage,
            q.upload_date                as commissioned_date,
            svc.f_get_station_aging (to_date(#{date_fr},'mm/dd/yyyy'), 
@@ -166,7 +166,7 @@
         left outer join svc.sitevrdt f on f.div = e.div and f.reportno = e.reportno and f.seq = c.seq
         left outer join svc.fssowmsg g on g.div = b.div and g.transaction_no = b.transaction_no and g.wo_no = b.work_order
         left outer join svc.msuserms o on o.div = a.div and o.user_id = a.create_id
-        left outer join svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd and p.status = 'A'
+        left outer join svc.mssitems p on p.div = a.div and p.site_cd = a.site_cd
         left outer join svc.qttraneh q on q.div = a.div and q.site_cd = a.site_cd and q.transaction_status in ('B','C')
         left outer join svc.mspdrcms r on r.div = a.div and r.code_type = 'DEFECT' and r.code = b.symptom_cd
         left outer join svc.mspdrcms s on s.div = a.div and s.code_type = 'REPAIR' and s.code = b.repair_cd
@@ -194,12 +194,12 @@
            b.product_cd                 as product_cd,
            b.model_no                   as model_no,
            b.gen_type                   as gen_type,
-           a.site_name                  as site_name,
-           a.address1 || a.address2     as address,
-           a.city                       as city,
-           a.state_cd                   as state_cd,
-           a.zip_cd                     as zip_cd,
-           a.country_cd                 as country_cd,
+           p.name                       as site_name,
+           p.address1 || p.address2     as address,
+           p.city                       as city,
+           p.state_cd                   as state_cd,
+           p.zip_cd                     as zip_cd,
+           p.country_cd                 as country_cd,
            decode(p.e_mail,'Y','Y','N') as teamex_coverage,
            q.upload_date                as commissioned_date,
            svc.f_get_station_aging (to_date(#{date_fr},'mm/dd/yyyy'), 
@@ -342,7 +342,7 @@
         left outer join svc.sitevrdt f on f.div = e.div  and f.reportno = e.reportno and f.seq = c.seq
         left outer join svc.fssowmsg g on g.div = b.div  and g.transaction_no = b.transaction_no and g.wo_no = b.work_order
         left outer join svc.msuserms o on o.div = a.div  and o.user_id = a.create_id
-        left outer join svc.mssitems p on p.div = a.div  and p.site_cd = a.site_cd and p.status = 'A'
+        left outer join svc.mssitems p on p.div = a.div  and p.site_cd = a.site_cd
         left outer join svc.qttraneh q on q.div = a.div  and q.site_cd = a.site_cd and q.transaction_status in ('B','C')
         left outer join svc.mspartms r on r.div = b1.div and r.part_no = b1.use_part
      where a.div = #{div}
