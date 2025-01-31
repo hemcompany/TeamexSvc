@@ -58,7 +58,7 @@ public class Consolidation_EVC {
 	String exp_reason_cd;
 	String visit_date;
 	String work_done;
-	String visit_dt;
+	String case_visit_dt;
 	String check_out;
 	String use_part1;
 	int    use_part1_qty;
@@ -88,6 +88,7 @@ public class Consolidation_EVC {
 	String work_order;
 	String plan_date;
 	String dispatch_date;
+	String case_tech;
 	String technician;
 	int    tech_count;
 	String car1_id;
@@ -101,6 +102,7 @@ public class Consolidation_EVC {
 	String zip;
 	String total_workhour;
 	String workhour_range;
+	String visit_dt;
 	String check_in_1;
 	String check_out_1;
 	String check_in_2;

@@ -58,9 +58,8 @@
            b.instruction                as instruction,
            b.close_fg                   as close_fg,
            b.exp_reason_cd              as exp_reason_cd,
-           e.visit_dt                   as visit_dt,
            decode(g.sow, null, f.action_detail, g.sow)   as work_done,
-           b.visit_dt                   as visit_dt,
+           b.visit_dt                   as case_visit_dt,
            b.check_out                  as check_out,
            b.use_part1                  as use_part1,
            b.use_part1_qty              as use_part1_qty,
@@ -90,6 +89,7 @@
            b.work_order                 as work_order,
            d.available_date             as plan_date,
            d.start_date                 as dispatch_date,
+           b.tech_nm                    as case_tech,
            d.technician                 as technician,
            d.numberoftech               as tech_count,
            d.car1_id                    as car1_id,
@@ -132,6 +132,7 @@
                + nvl((e.wt_co3 - e.wt_ci3),0) 
                + nvl((e.wt_co4 - e.wt_ci4),0)  
                + nvl((e.wt_co5 - e.wt_ci5),0)) *24) <![CDATA[ > ]]> 4 then '4 hrs~'  end as workhour_range,
+           e.visit_dt                   as visit_dt,
            e.wt_ci1                     as check_in_1,
            e.wt_co1                     as check_out_1,
            e.wt_ci2                     as check_in_2,
@@ -228,7 +229,7 @@
            b.instruction                as instruction,
            b.close_fg                   as close_fg,
            b.exp_reason_cd              as exp_reason_cd,
-           e.visit_dt                   as visit_dt,
+           b.visit_dt                   as case_visit_dt,
            decode(g.sow, null, f.action_detail, g.sow)   as work_done,
            b.symptom_cd                 as symptom_cd,
            b.repair_cd                  as repair_cd,
@@ -250,6 +251,7 @@
            b.work_order                 as work_order,
            d.available_date             as plan_date,
            d.start_date                 as dispatch_date,
+           b.tech_nm                    as case_tech,
            d.technician                 as technician,
            d.numberoftech               as tech_count,
            d.car1_id                    as car1_id,
@@ -292,6 +294,7 @@
                + nvl((e.wt_co3 - e.wt_ci3),0) 
                + nvl((e.wt_co4 - e.wt_ci4),0)  
                + nvl((e.wt_co5 - e.wt_ci5),0)) *24) <![CDATA[ > ]]> 4 then '4 hrs~'  end as workhour_range,
+           e.visit_dt                   as visit_dt,
            e.wt_ci1                     as check_in_1,
            e.wt_co1                     as check_out_1,
            e.wt_ci2                     as check_in_2,
