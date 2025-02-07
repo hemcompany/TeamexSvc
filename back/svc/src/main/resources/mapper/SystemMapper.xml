@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.teamex.svc.mapper.SystemMapper">
+
+<!-- ## DB Standard ## -->
+
+<!-- Retrieve Menu List --> 
+<select id="selectMenuList" parameterType="Map" resultType="Menu">
+    SELECT a.program_id || a.menu_id as id,
+           a.program_id          as program_id,
+           a.menu_id             as menu_id,
+           a.lvl                 as lvl,
+           a.menu_name           as menu_name,
+           a.window_yn           as window_yn,
+           a.window_name         as window_name,
+           a.parent_menu         as parent_menu,
+           a.remark              as remark,
+           a.sort                as sort,
+           a.create_id           as create_id, 
+           a.create_date         as create_date,
+           a.update_id           as update_id,
+           a.update_date         as update_date
+      FROM msmenums a
+     WHERE 1 = 1 
+       <if test='program_id != null and program_id != ""'>
+       <![CDATA[ AND a.program_id = #{program_id} ]]>
+       </if>
+       
+     ORDER BY  a.program_id, a.sort, a.menu_id
+</select>
+
+<!-- Retrieve menu list per authority group --> 
+<select id="selectAuthMenuList" parameterType="Map" resultType="Menu">
+    SELECT a.auth_group          as auth_group,
+           a.program_id          as program_id,
+           a.menu_id             as menu_id, 
+           a.auth_retrieve       as auth_retrieve, 
+           a.auth_update         as auth_update, 
+           a.auth_confirm        as auth_confirm,
+           a.auth_etc_1          as auth_etc_1, 
+           a.auth_etc_2          as auth_etc_2, 
+           a.auth_etc_3          as auth_etc_3,
+           a.create_id           as create_id, 
+           a.create_date         as create_date,
+           a.update_id           as update_id,
+           a.update_date         as update_date
+      FROM msauthgm a
+     WHERE 1 = 1 
+       <if test='auth_group != null and auth_group != ""'>
+       <![CDATA[ AND a.auth_group = #{auth_group} ]]>
+       </if>
+       <if test='program_id != null and program_id != ""'>
+       <![CDATA[ AND a.program_id = #{program_id} ]]>
+       </if>
+       <if test='menu_id != null and menu_id != ""'>
+       <![CDATA[ AND a.menu_id = #{menu_id} ]]>
+       </if>
+     ORDER BY  a.auth_group, a.program_id, a.menu_id
+</select>
+
+<!-- Retrieve authority group  per user_id --> 
+<select id="selectUserAuth" parameterType="Map" resultType="Menu">
+    SELECT a.user_id             as user_id,
+           a.div                 as div, 
+           a.auth_group          as auth_group,
+           a.remark              as remark,
+           a.create_id           as create_id, 
+           a.create_date         as create_date,
+           a.update_id           as update_id,
+           a.update_date         as update_date
+      FROM msauthug a
+     WHERE 1 = 1 
+       <if test='user_id != null and user_id != ""'>
+       <![CDATA[ AND a.user_id = #{user_id} ]]>
+       </if>
+       <if test='div != null and div != ""'>
+       <![CDATA[ AND a.div = #{div} ]]>
+       </if>
+       <if test='auth_group != null and auth_group != ""'>
+       <![CDATA[ AND a.auth_group = #{auth_group} ]]>
+       </if>
+     ORDER BY a.user_id, a.div, a.auth_group
+</select>
+
+<!-- INSERT/UPDATE Menu Master -->
+<insert id="upsertMenu" parameterType="Menu">
+    MERGE INTO msmenums a
+    USING dual
+       ON ( a.program_id = #{program_id} and a.menu_id = #{menu_id})
+    WHEN MATCHED THEN
+      UPDATE
+         SET a.lvl =#{lvl},
+             a.menu_name = #{menu_name},
+             a.window_yn = #{window_yn},
+             a.window_name = #{window_name},
+             a.paren_menu = #{paren_menu},
+             a.remark = #{remark, jdbcType = VARCHAR},
+             a.update_id = #{user_id},
+             a.update_date = sysdate
+    WHEN NOT MATCHED THEN 
+      INSERT 
+        (a.program_id, a.menu_id, a.lvl, a.menu_name, a.window_yn, a.window_name, a.parent_menu, a.remark, a.create_id, a.create_date)
+      VALUES
+        (#{program_id}, #{menu_id}, #{lvl}, #{menu_name}, #{window_yn}, #{window_name}, #{parent_menu}, #{remark, jdbcType = VARCHAR}, #{user_id}, sysdate)
+</insert>
+
+<!-- INSERT/UPDATE Menu list per authority group -->
+<insert id="upsertAuthMenu" parameterType="Menu">
+    MERGE INTO msauthgm a
+    USING dual
+       ON ( a.auth_group = #{auth_group} and a.program_id = #{program_id} and a.menu_id = #{menu_id})
+    WHEN MATCHED THEN
+      UPDATE
+         SET a.auth_retrieve =#{auth_retrieve},
+             a.auth_update = #{auth_update},
+             a.auth_confirm = #{auth_confirm},
+             a.auth_etc_1 = #{auth_etc_1},
+             a.auth_etc_2 = #{auth_etc_2},
+             a.auth_etc_3 = #{auth_etc_3},
+             a.update_id = #{user_id},
+             a.update_date = sysdate
+    WHEN NOT MATCHED THEN 
+      INSERT 
+        (a.auth_group, a.program_id, a.menu_id, a.auth_retrieve, a.auth_update, a.auth_confirm, a.auth_etc_1, a.auth_etc_2, a.auth_etc_3, a.create_id, a.create_date)
+      VALUES
+        (#{auth_group}, #{program_id}, #{menu_id}, #{auth_retrieve}, #{auth_update}, #{auth_confirm}, #{auth_etc_1}, #{auth_etc_2}, #{auth_etc_3}, #{user_id}, sysdate)
+</insert>
+
+<!-- INSERT/UPDATE authority group  per user_id -->
+<insert id="upsertUserAuth" parameterType="Menu">
+    MERGE INTO msauthug a
+    USING dual
+       ON ( a.user_id = #{user_id} and a.div = #{div} and a.auth_group = #{auth_group})
+    WHEN MATCHED THEN
+      UPDATE
+         SET a.remark =#{remark, jdbcType = VARCHAR},
+             a.update_id = #{user_id},
+             a.update_date = sysdate
+    WHEN NOT MATCHED THEN 
+      INSERT 
+        (a.user_id, a.div, a.auth_group, a.remark, a.create_id, a.create_date)
+      VALUES
+        (#{user_id}, #{div}, #{auth_group}, #{remark, jdbcType = VARCHAR}, #{user_id}, sysdate)
+</insert>
+
+<!-- DELETE Menu Master -->
+<delete id="deleteMenu">
+    DELETE FROM msmenums 
+     WHERE program_id = #{program_id}
+       AND menu_id = #{menu_id}
+</delete>
+
+<!-- DELETE menu list per authority group -->
+<delete id="deleteAuthMenu">
+    DELETE FROM msauthgm 
+     WHERE auth_group = #{auth_group}
+       AND program_id = #{program_id}
+       AND menu_id = #{menu_id}
+</delete>
+
+<!-- DELETE authority group  per user_id -->
+<delete id="deleteUserAuth">
+    DELETE FROM msauthug 
+     WHERE user_id = #{user_id}
+       AND div = #{div}
+       AND auth_group = #{auth_group}
+</delete>
+
+</mapper>

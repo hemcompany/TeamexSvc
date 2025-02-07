@@ -10,6 +10,7 @@ import lombok.Setter;
 @JsonInclude
 public class Menu {
     //Menu authority list
+	String id;
     String user_id;
     String div;
     String program_id;

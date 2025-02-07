@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.teamex.svc.mapper.DBStandardMapper">
+
+<!-- ## DB Standard ## -->
+
+<!-- Retrieve Word List --> 
+<select id="selectWordList" parameterType="Map" resultType="DBStandard">
+    SELECT a.db_name || a.db_user || a.word   as id,
+           a.db_name             as db_name,
+           a.db_user             as db_user,
+           a.word                as word,
+           a.word_name           as word_name,
+           a.abb_yn              as abb_yn,
+           a.org_word            as org_word,
+           a.use_yn              as use_yn,
+           a.create_id           as create_id, 
+           a.create_date         as create_date,
+           a.update_id           as update_id,
+           a.update_date         as update_date
+      FROM dbstword a
+     WHERE a.db_name = #{db_name}
+       AND a.db_user = #{db_user}
+       AND a.word like '%' || upper(#{word}) || '%'
+       <if test='word_name != null and word_name != ""'>
+       <![CDATA[ AND upper(a.word_name) like '%' || upper(#{word_name}) || '%' ]]>
+       </if>
+     ORDER BY  a.db_name, a.db_user, a.word
+</select>
+
+<!-- Retrieve Term list --> 
+<select id="selectTermList" parameterType="Map" resultType="DBStandard">
+    SELECT a.db_name || a.db_user || a.term   as id,
+           a.db_name             as db_name,
+           a.db_user             as db_user,
+           a.term                as term,
+           a.term_name           as term_name,
+           a.term_desc           as term_desc,
+           a.data_type           as data_type,
+           a.use_yn              as use_yn,
+           a.create_id           as create_id, 
+           a.create_date         as create_date,
+           a.update_id           as update_id,
+           a.update_date         as update_date
+      FROM dbstterm a
+     WHERE a.db_name = #{db_name}
+       AND a.db_user = #{db_user}
+       AND a.term like '%' || upper(#{term}) || '%'
+       <if test='term_name != null and term_name != ""'>
+       <![CDATA[ AND (upper(a.term_name) like '%' || upper(#{term_name}) || '%'  or upper(a.term_desc) like '%' || upper(#{term_name}) || '%' )]]>
+       </if>
+     ORDER BY  a.db_name, a.db_user, a.term
+</select>
+
+<!-- Retrieve Table List --> 
+<select id="selectTableList" parameterType="Map" resultType="DBStandard">
+    SELECT a.db_name || a.db_user || a.table_name as id,
+           a.db_name             as db_name,
+           a.db_user             as db_user,
+           a.table_name          as table_name,
+           a.table_comments      as table_comments,
+           a.tablespace_name     as tablespace_name,
+           a.use_yn              as use_yn,
+           a.create_id           as create_id, 
+           a.create_date         as create_date,
+           a.update_id           as update_id,
+           a.update_date         as update_date
+      FROM dbsttabh a
+     WHERE a.db_name = #{db_name}
+       AND a.db_user = #{db_user}
+       AND upper(a.table_name) like '%' || upper(#{table_name}) || '%'
+       <if test='table_comments != null and table_comments != ""'>
+       <![CDATA[ AND upper(a.table_comments) = upper(#{table_comments}) ]]>
+       </if>
+     ORDER BY a.db_name, a.db_user, a.table_name
+</select>
+
+<!-- Retrieve Table Head --> 
+<select id="selectTableHead" parameterType="Map" resultType="DBStandard">
+    SELECT a.db_name             as db_name,
+           a.db_user             as db_user,
+           a.table_name          as table_name,
+           a.table_comments      as table_comments,
+           a.tablespace_name     as tablespace_name,
+           a.use_yn              as use_yn,
+           a.create_id           as create_id, 
+           a.create_date         as create_date,
+           a.update_id           as update_id,
+           a.update_date         as update_date
+      FROM dbsttabh a
+     WHERE a.db_name = #{db_name}
+       AND a.db_user = #{db_user}
+       AND a.table_name = #{table_name}
+</select>
+
+<!-- Retrieve Table Detail --> 
+<select id="selectTableDetail" parameterType="Map" resultType="DBStandard">
+    SELECT a.db_name || a.db_user || a.table_name || a.column_name as id,
+           a.db_name             as db_name,
+           a.db_user             as db_user,
+           a.table_name          as table_name,
+           a.column_name         as column_name,
+           a.data_type           as data_type,
+           a.key_yn              as key_yn,
+           a.key_position        as key_position,
+           a.nullable            as nullable,
+           a.default_data        as default_data,
+           a.column_desc         as column_desc,
+           a.column_comments     as column_comments,
+           a.column_seq          as column_seq,
+           a.manual_yn           as manual_yn,
+           a.use_yn              as use_yn,
+           a.create_id           as create_id, 
+           a.create_date         as create_date,
+           a.update_id           as update_id,
+           a.update_date         as update_date
+      FROM dbsttabd a
+     WHERE a.db_name = #{db_name}
+       AND a.db_user = #{db_user}
+       AND upper(a.table_name) like '%' || upper(#{table_name}) || '%'
+       <if test='column_name != null and column_name != ""'>
+       <![CDATA[ AND a.column_name = #{column_name} ]]>
+       </if>
+       <if test='column_name != null and column_name != ""'>
+       <![CDATA[ AND a.column_name = #{column_name} ]]>
+       </if>
+       <if test='column_desc != null and column_desc != ""'>
+       <![CDATA[ AND a.column_desc = #{column_desc} ]]>
+       </if>
+       <if test='column_comments != null and column_comments != ""'>
+       <![CDATA[ AND a.column_comments = #{column_comments} ]]>
+       </if>
+     ORDER BY a.db_name, a.db_user, a.table_name, a.column_seq
+</select>
+
+<!-- INSERT/UPDATE Word -->
+<insert id="upsertWord" parameterType="DBStandard">
+    MERGE INTO dbstword a
+    USING dual
+       ON ( a.db_name = #{db_name} and a.db_user = #{db_user} and a.word = #{word})
+    WHEN MATCHED THEN
+      UPDATE
+         SET a.word_name = #{word_name},
+             a.abb_yn = #{abb_yn},
+             a.org_word = #{org_word},
+             a.use_yn = #{use_yn},
+             a.update_id = #{user_id},
+             a.update_date = sysdate
+    WHEN NOT MATCHED THEN 
+      INSERT 
+        (a.db_name, a.db_user, a.word, a.word_name, a.abb_yn, a.org_word, a.use_yn, a.create_id, a.create_date)
+      VALUES
+        (#{db_name}, #{db_user}, #{word}, #{word_name}, #{abb_yn}, #{org_word}, #{use_yn}, #{user_id}, sysdate)
+</insert>
+
+<!-- ## INSERT/UPDATE Term -->
+<insert id="upsertTerm" parameterType="DBStandard">
+    MERGE INTO dbstterm a
+    USING dual
+       ON ( a.db_name = #{db_name} and a.db_user = #{db_user} and a.term = #{term})
+    WHEN MATCHED THEN
+      UPDATE
+         SET a.term_name = #{term_name},
+             a.term_desc = #{term_desc},
+             a.data_type = #{data_type},
+             a.use_yn = #{use_yn},
+             a.update_id = #{user_id},
+             a.update_date = sysdate
+    WHEN NOT MATCHED THEN 
+      INSERT 
+        (a.db_name, a.db_user, a.term, a.term_name, a.term_desc, a.data_type, a.use_yn, a.create_id, a.create_date)
+      VALUES
+        (#{db_name}, #{db_user}, #{term}, #{term_name}, #{term_desc}, #{data_type}, #{use_yn}, #{user_id}, sysdate)
+</insert>
+
+<!-- INSERT/UPDATE Table Head -->
+<insert id="upsertTableHead" parameterType="DBStandard">
+    MERGE INTO dbsttabh a
+    USING dual
+       ON ( a.db_name = #{db_name} and a.db_user = #{db_user} and a.table_name = #{table_name})
+    WHEN MATCHED THEN
+      UPDATE
+         SET a.table_comments =#{table_comments, jdbcType = VARCHAR},
+             a.tablespace_name = #{tablespace_name},
+             a.use_yn = #{use_yn},
+             a.update_id = #{user_id},
+             a.update_date = sysdate
+    WHEN NOT MATCHED THEN 
+      INSERT 
+        (a.db_name, a.db_user, a.table_name, a.table_comments, a.tablespace_name, a.use_yn, a.create_id, a.create_date)
+      VALUES
+        (#{db_name}, #{db_user}, #{table_name}, #{table_comments, jdbcType = VARCHAR}, #{tablespace_name}, #{use_yn}, #{user_id}, sysdate)
+</insert>
+
+<!-- INSERT/UPDATE Table Detail -->
+<insert id="upsertTableDetail" parameterType="DBStandard">
+    MERGE INTO dbsttabd a
+    USING dual
+       ON ( a.db_name = #{db_name} and a.db_user = #{db_user} and a.table_name = #{table_name} and a.column_name = #{column_name})
+    WHEN MATCHED THEN
+      UPDATE
+         SET a.data_type = #{data_type},
+             a.key_yn = #{key_yn},
+             a.key_position = #{key_position},
+             a.nullable = #{nullable},
+             a.default_data = #{default_data},
+             a.column_desc = #{column_desc, jdbcType = VARCHAR},
+             a.column_comments = #{column_comments, jdbcType = VARCHAR},
+             a.column_seq = #{column_seq},
+             a.manual_yn = #{manual_yn},
+             a.use_yn = #{use_yn},
+             a.update_id = #{user_id},
+             a.update_date = sysdate
+    WHEN NOT MATCHED THEN 
+      INSERT 
+        (a.db_name, a.db_user, a.table_name, a.column_name, 
+         a.data_type, a.key_yn, a.key_position, a.nullable, a.default_data, a.column_desc, a.column_comments, a.column_seq, a.manual_yn, 
+         a.use_yn, a.create_id, a.create_date)
+      VALUES
+        (#{db_name}, #{db_user}, #{table_name}, #{column_name},
+         #{data_type}, #{key_yn}, #{key_position}, #{nullable}, #{default_data},
+         #{column_desc, jdbcType = VARCHAR}, #{column_comments, jdbcType = VARCHAR}, #{column_seq}, #{manual_yn},
+         #{use_yn}, #{user_id}, sysdate)
+</insert>
+
+<!-- DELETE Word -->
+<delete id="deleteWord">
+    DELETE FROM dbstword 
+     WHERE db_name = #{db_name}
+       AND db_user = #{db_user}
+       AND word = #{word}
+</delete>
+
+<!-- DELETE Term -->
+<delete id="deleteTerm">
+    DELETE FROM dbstterm
+     WHERE db_name = #{db_name}
+       AND db_user = #{db_user}
+       AND word = #{term}
+</delete>
+
+<!-- DELETE Table Head -->
+<delete id="deleteTableHead">
+    DELETE FROM dbsttabh 
+     WHERE db_name = #{db_name}
+       AND db_user = #{db_user}
+       AND table_name = #{table_name}
+</delete>
+
+<!-- DELETE Table Detail -->
+<delete id="deleteTableDetail">
+    DELETE FROM dbsttabd 
+     WHERE db_name = #{db_name}
+       AND db_user = #{db_user}
+       AND table_name = #{table_name}
+       AND column_name = #{column_name}
+</delete>
+
+</mapper>
