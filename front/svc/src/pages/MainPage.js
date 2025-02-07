@@ -1,6 +1,5 @@
 import * as React from "react";
 import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -40,7 +39,6 @@ function MainPage() {
     return (
         <>
             <Box sx={{display: 'flex'}}>
-                <CssBaseline />
                 <MenuBar />
                 <Box component="main"
                     sx={{ flexGrow: 1, bgcolor: 'background.default', p: 1 }}>
