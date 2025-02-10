@@ -18,6 +18,7 @@ function App() {
     const [dark, setDark] = React.useState(false);
     const [theme, setTheme] = React.useState(createTheme({typography: {
         fontSize: 13,
+        fontFamily: 'sans-serif',
     },
     components: {
         MuiDataGrid: {
@@ -48,6 +49,7 @@ function App() {
         },
         typography: {
             fontSize: 13,
+            fontFamily: 'sans-serif',
         },
         components: {
             MuiDataGrid: {
@@ -58,7 +60,6 @@ function App() {
                     },
                     columnHeader: {
                         fontSize: '13px',
-                        backgroundColor:  '#f0f8ff',
                     },
                     cell: {
                         fontSize: '12px',
@@ -74,6 +75,7 @@ function App() {
     const defaultTheme = createTheme({
         typography: {
             fontSize: 13,
+            fontFamily: 'sans-serif',
         },
         components: {
             MuiDataGrid: {
