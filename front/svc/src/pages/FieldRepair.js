@@ -81,7 +81,7 @@ const Tab1ListForm = (props) => {
 
     const fetchList = useCallback(async () => { 
         try {
-            console.log("Tab1ListForm fetchList" + props.inputs.frDate);
+            //console.log("Tab1ListForm fetchList" + props.inputs.frDate);
             setLoadingYn(true);
             axios(FIELD_REPAIR_LIST_URL, {
                 method: 'GET',
@@ -151,7 +151,7 @@ const Tab1ListForm = (props) => {
 
     // Function called when the from ~ to date changed
     useEffect(() => {
-        console.log("Tab1Form: useEffect" + props.inputs.frDate);
+        //console.log("Tab1Form: useEffect" + props.inputs.frDate);
         // Inquiry condition setting (get from the parent prop)
 
         // Call List inquiry function
@@ -252,7 +252,7 @@ const Tab2ReportForm = (props) => {
 
     //Inquiry Report Viewer
     useEffect(() => {
-        console.log("Tab2ReportForm useEffect " + props.reportno.current);
+        //console.log("Tab2ReportForm useEffect " + props.reportno.current);
         try {
             if (props.reportno.current== null) return;
             if (!viewerRef.current) return;
