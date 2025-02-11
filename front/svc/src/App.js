@@ -29,7 +29,7 @@ function App() {
                 },
                 columnHeader: {
                     fontSize: '13px',
-                    backgroundColor: '#f0f8ff',
+                    backgroundColor: '#e5f8ff',
                 },
                 cell: {
                     fontSize: '12px',
@@ -86,7 +86,7 @@ function App() {
                     },
                     columnHeader: {
                         fontSize: '13px',
-                        backgroundColor:  '#f0f8ff',
+                        backgroundColor:  '#e5f8ff',
                     },
                     cell: {
                         fontSize: '12px',

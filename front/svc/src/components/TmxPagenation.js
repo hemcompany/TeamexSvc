@@ -19,12 +19,12 @@ export default function TmxPagination({ apiRef }) {
 
     return (
         <Box display="flex" justifyContent="space-between" alignItems="center" padding="7px">
-            <Typography>Rows per page: </Typography>
+            <Typography variant="inherit">Rows per page: </Typography>
             <Select
                 value={pageSize}
                 onChange={handlePageSizeChange}
                 size="small"
-                style={{ marginLeft: 16, border: 0 }}  
+                style={{ marginLeft: 16, border: 0 }} 
             >
                 {[25, 50, 100].map((size) => (
                     <MenuItem key={size} value={size}>

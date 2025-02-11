@@ -18,11 +18,6 @@ import { styled } from '@mui/system';
 
 const TableListForm = (props) => {
     //DATA GRID Setting
-    //-- paging : Don't use in this form.
-    const [paginationModel, setPaginationModel] = React.useState({
-        pageSize: 25,
-        page: 0,
-    });
     //-- loading state
     const [loadingYn, setLoadingYn] = useState(false);
     //-- Data Grid toolbar setting
@@ -265,7 +260,7 @@ const TableDetailForm = (props) => {
 
     return(
         <>
-            <Box sx={{ display: 'flex', height: '5vh', width: '55vw', m: 1, mt: 2}}>
+            <Box sx={{ display: 'flex', height: '10%', width: '55vw', m: 1, mt: 2}}>
                 <Grid container spacing={1}>
                     <Grid item xs={2.5}>
                         <Item variant="outlined">Table Name</Item>
@@ -280,7 +275,7 @@ const TableDetailForm = (props) => {
                     </Grid>
                     <Grid item xs={3} mt={1}>
                         <Typo variant="button">
-                            {props.table.tablespace}
+                            {props.table.tablespace_name}
                         </Typo>
                     </Grid>
                     <Grid item xs={2.5}>
@@ -293,7 +288,7 @@ const TableDetailForm = (props) => {
                     </Grid>
                 </Grid>
             </Box>
-            <Box sx={{ display: 'flex', height: '5vh', width: '55vw', m: 1, mt: 2}}>
+            <Box sx={{ display: 'flex', height: '90%', width: '55vw', m: 1, mt: 2}}>
             <DataGrid
                 rows={boardList}
                 columns={columns}
@@ -360,11 +355,6 @@ const Table = () => {
         update_date: "",
     });
 
-    //Grid inquiry (Do not use on this page)
-    const fetchList = () => {
-        //setSearch(search +1);
-    };
-
     // function called when the window first rendering
     useEffect(() => {
         //console.log("Table : useEffect");
@@ -377,8 +367,8 @@ const Table = () => {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Box sx={{ display: 'flex', m: 1, mt: 2}}>
-            <TextField label="DB Name"
+            <Box sx={{ display: 'flex', m: 1, mt: 2 }}>
+                <TextField label="DB Name"
                            defaultValue={dbName.current}
                            onChange={(newValue) => {dbName.current = newValue;}}
                            size="small"
@@ -421,18 +411,16 @@ const Table = () => {
                            focused
                 />
             </Box>
-                <Box sx={{ display: 'flex', height: '77vh', width: '20vw', m: 1, mt: 2}}>
+            <Box sx={{display: "flex", justifyContent: "flex-start", width: '77vw' }}>
+                <Box sx={{ display: 'flex', height: '77vh', width: '20vw', mr: 2 }}>
                     <TableListForm dbName={dbName} dbUser={dbUser} inputs={inputs} setTable={setTable} />
                 </Box>
-                <Box sx={{ display: 'flex',
-                            flexWrap: 'wrap',
-                            '& > :not(style)': {
-                                height: '77vh', width: '55vw', m: 1, mt: 2
-                            }, }}
-                    >
+                <Box display="flex" flexDirection="column" alignItems="top" 
+                    sx={{ height: '70vh', width: '50vw'}}>
                     <TableDetailForm dbName={dbName} dbUser={dbUser} table={table} />
                 </Box>
             </Box>
+        </Box>
     );
 }
 

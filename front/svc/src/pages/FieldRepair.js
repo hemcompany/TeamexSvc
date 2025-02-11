@@ -151,12 +151,12 @@ const Tab1ListForm = (props) => {
 
     // Function called when the from ~ to date changed
     useEffect(() => {
-        //console.log("Tab1Form: useEffect" + props.inputs.frDate);
+        //console.log("Tab1ListForm: useEffect" + props.inputs.frDate);
         // Inquiry condition setting (get from the parent prop)
 
         // Call List inquiry function
         fetchList();
-    }, [props.search]);
+    }, [fetchList]);
 
     return(
         <>
@@ -270,7 +270,7 @@ const Tab2ReportForm = (props) => {
                 viewer.panelsLayout = {panelsLayout};
             }
         } catch(error) {}
-    },[props.search]); 
+    }); 
 
     return (
         <div id="designer-host" style={{ height: '100%', width: '100%' }} >
@@ -300,7 +300,7 @@ const FieldReport = () => {
                 aria-labelledby={`simple-tab-${index}`}
             >
             {value === index && (
-                <Container  sx={{p: 1}}>
+                <Container maxWidth={false} sx={{p: 1}}>
                     <Box>{children}</Box>
                 </Container>
             )}
@@ -329,12 +329,6 @@ const FieldReport = () => {
         frDate: dayjs().add(-1, 'month'),
         toDate: dayjs(),
     });
-    const [search, setSearch] = useState(0); //Search Button state
-
-    //Report / Grid inquiry
-    const fetchList = () => {
-        setSearch(search +1);
-    };
 
     // function called when the window first rendering
     useEffect(() => {
@@ -357,12 +351,12 @@ const FieldReport = () => {
             
             <CustomTabPanel value={value} index={0}>
                 <Box>
-                    <Tab1ListForm inputs={inputs} setInputs={setInputs} reportno={reportno} setValue={setValue} search={search}/>
+                    <Tab1ListForm inputs={inputs} setInputs={setInputs} reportno={reportno} setValue={setValue} />
                 </Box>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1} >
                 <Box sx={{ display: 'flex', height: '77vh', width: '77vw' }}>
-                    <Tab2ReportForm inputs={inputs} reportno={reportno} search={search}/>
+                    <Tab2ReportForm inputs={inputs} reportno={reportno} />
                 </Box>
             </CustomTabPanel>
         </Box>
