@@ -117,10 +117,7 @@
       FROM dbsttabd a
      WHERE a.db_name = #{db_name}
        AND a.db_user = #{db_user}
-       AND upper(a.table_name) like '%' || upper(#{table_name}) || '%'
-       <if test='column_name != null and column_name != ""'>
-       <![CDATA[ AND a.column_name = #{column_name} ]]>
-       </if>
+       AND upper(a.table_name) = upper(#{table_name})
        <if test='column_name != null and column_name != ""'>
        <![CDATA[ AND a.column_name = #{column_name} ]]>
        </if>
